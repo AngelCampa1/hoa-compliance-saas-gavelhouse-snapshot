@@ -1,0 +1,120 @@
+---
+import "../styles/global.css";
+import BaseLayout from "../layouts/base-layout.astro";
+import SiteHeader from "../components/site-header.astro";
+import SiteFooter from "../components/site-footer.astro";
+import { siteConfig } from "../config/site";
+---
+
+<BaseLayout
+  title={`Data Processing Agreement | ${siteConfig.name}`}
+  description={`Data Processing Agreement for ${siteConfig.name} enterprise customers.`}
+  canonicalUrl={`https://${siteConfig.domain}/dpa/`}
+  siteName={siteConfig.name}
+  themeColor={siteConfig.theme.primary}
+>
+  <SiteHeader
+    slot="header"
+    siteName={siteConfig.name}
+    navItems={siteConfig.nav?.items}
+    ctaText={siteConfig.funnel.bofu.ctaText}
+    ctaHref={siteConfig.funnel.bofu.ctaTarget}
+  />
+
+  <div class="max-w-2xl mx-auto px-4 py-16">
+    <h1 class="text-3xl font-bold text-[var(--color-brand-text)] mb-2">
+      Data Processing Agreement
+    </h1>
+    <p class="text-sm text-[var(--color-brand-muted)] mb-8">
+      Last updated: April 14, 2026
+    </p>
+
+    <div
+      class="mb-8 rounded-lg border border-[var(--color-accent-200)] bg-[var(--color-accent-50)] p-5"
+    >
+      <p class="text-[var(--color-accent-800)] font-medium">
+        This DPA is available upon request for enterprise customers. Contact us
+        at{" "}
+        <a href={`mailto:${siteConfig.privacyEmail}`} class="underline">
+          {siteConfig.privacyEmail}
+        </a>
+        {" "}to request a signed copy.
+      </p>
+    </div>
+
+    <div class="prose prose-lg max-w-none text-[var(--color-brand-muted)]">
+      <h2>Purpose</h2>
+      <p>
+        This Data Processing Agreement ("DPA") sets out the terms under which
+        {siteConfig.legalEntity}, processes personal data on behalf of
+        enterprise customers who are subject to GDPR, CCPA, or similar data
+        protection regulations. The DPA supplements and is incorporated into the
+        Gavelhouse Terms of Service.
+      </p>
+      <p>
+        Gavelhouse acts as a data processor with respect to personal data that
+        enterprise customers upload or generate through the platform. The
+        customer acts as the data controller and retains responsibility for
+        determining the purposes and means of processing.
+      </p>
+
+      <h2>GDPR and CCPA Compliance</h2>
+      <p>
+        Gavelhouse is committed to processing personal data in accordance with
+        applicable data protection law, including the General Data Protection
+        Regulation (GDPR) for customers in the European Economic Area and the
+        California Consumer Privacy Act (CCPA) for California residents. We
+        implement technical and organizational measures appropriate to the risk
+        of processing.
+      </p>
+      <p>
+        We process personal data only on documented instructions from the
+        customer, unless required by law to do otherwise. Our sub-processors are
+        bound by data protection terms no less protective than those in this
+        DPA, and we maintain an up-to-date public list at{" "}
+        <a href="/subprocessors/" class="underline">/subprocessors</a>.
+      </p>
+
+      <h2>Data Subject Rights</h2>
+      <p>
+        We assist enterprise customers in responding to data subject requests,
+        including requests for access, rectification, erasure, restriction, and
+        portability. When we receive a request directly from a data subject, we
+        will promptly notify the customer and await their instructions before
+        responding.
+      </p>
+      <p>
+        Enterprise customers may export all community data in machine-readable
+        format from the account settings at any time. Upon termination, we will
+        delete or return all personal data within 90 days unless retention is
+        required by law.
+      </p>
+
+      <h2>Security Measures</h2>
+      <p>
+        We implement appropriate technical and organizational security measures
+        including encryption at rest and in transit, access controls, regular
+        security assessments, and incident response procedures. We will notify
+        enterprise customers of any data breach affecting their data within 72
+        hours of becoming aware of it.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        To request a signed DPA or for questions about data processing, contact
+        our privacy team at{" "}
+        <a href={`mailto:${siteConfig.privacyEmail}`} class="underline">
+          {siteConfig.privacyEmail}
+        </a>.
+      </p>
+    </div>
+  </div>
+
+  <SiteFooter
+    slot="footer"
+    siteName={siteConfig.name}
+    tagline={siteConfig.tagline}
+    linkGroups={siteConfig.footer?.linkGroups}
+    legalLinks={siteConfig.footer?.legalLinks}
+  />
+</BaseLayout>

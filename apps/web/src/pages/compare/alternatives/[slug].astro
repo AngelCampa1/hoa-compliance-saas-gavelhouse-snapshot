@@ -1,0 +1,185 @@
+---
+import "../../../styles/global.css";
+import { getCollection } from "astro:content";
+import ComparisonLayout from "../../../layouts/comparison-layout.astro";
+import ComparisonTable from "../../../components/comparison-table.astro";
+import FaqSection from "../../../components/faq-section.astro";
+import FunnelCta from "../../../components/funnel-cta.astro";
+import RelatedPages from "../../../components/related-pages.astro";
+import ProsConsBlock from "../../../seo/pros-cons-block.astro";
+import AnswerBlock from "../../../seo/answer-block.astro";
+import StatisticCitation from "../../../seo/statistic-citation.astro";
+import { siteConfig } from "../../../config/site";
+import { buildAlternativeBreadcrumbs } from "@/lib/breadcrumbs";
+import { buildAlternativeComparisonRows } from "@/lib/comparison-rows";
+import { buildContentMap } from "@/lib/page-helpers";
+import { resolveRelatedPageLinks } from "../../../lib/related-page-resolver";
+import { resolveCompareProductVisualPreset } from "../../../lib/generated-product-visuals";
+import { resolveMagnetForPage } from "@/lib/resolve-lead-magnet";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("alternatives");
+  return entries.map((entry) => ({
+    params: { slug: entry.data.competitor.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const {
+  title,
+  description,
+  bluf,
+  buyerStage,
+  publishedAt,
+  updatedAt,
+  reviewedAt,
+  competitor,
+  faqs,
+  relatedPages,
+  proscons,
+  answers,
+  pricingStats,
+  sources,
+} = entry.data;
+
+const breadcrumbs = buildAlternativeBreadcrumbs(
+  competitor.name,
+  competitor.slug,
+);
+const comparisonRows = buildAlternativeComparisonRows(
+  competitor.pricing,
+  competitor.setupFee,
+  siteConfig.product.price,
+);
+const productVisual = resolveCompareProductVisualPreset({
+  type: "alternative",
+  competitorName: competitor.name,
+  competitorPricing: competitor.pricing,
+});
+
+const [
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+] = await Promise.all([
+  getCollection("alternatives"),
+  getCollection("comparisons"),
+  getCollection("pricing-breakdowns"),
+  getCollection("listicles"),
+  getCollection("guides"),
+  getCollection("state-pages"),
+  getCollection("lead-magnets"),
+  getCollection("product-pages"),
+  getCollection("solutions"),
+]);
+const contentMap = buildContentMap({
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+});
+const relatedLinks = resolveRelatedPageLinks(relatedPages, contentMap);
+const canonicalPath = `/compare/alternatives/${competitor.slug}`;
+const leadMagnetOverride = await resolveMagnetForPage({
+  explicitSlug: entry.data.magnetSlug,
+  primaryKeyword: title,
+  tags: entry.data.tags,
+  path: canonicalPath,
+});
+---
+
+<ComparisonLayout
+  title={title}
+  description={description}
+  bluf={bluf}
+  buyerStage={buyerStage}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  reviewedAt={reviewedAt}
+  canonicalPath={canonicalPath}
+  config={siteConfig}
+  breadcrumbs={breadcrumbs}
+  leadMagnetOverride={leadMagnetOverride}
+  answers={answers?.map((a) => ({ question: a.q, answer: a.a }))}
+  faqs={faqs}
+  sources={sources}
+  productVisual={productVisual}
+>
+  <div
+    class="mb-8 rounded-[calc(var(--radius-lg)+2px)] border border-[color-mix(in_srgb,var(--color-accent-300)_72%,transparent)] bg-[linear-gradient(145deg,color-mix(in_srgb,var(--color-accent-50)_80%,white),color-mix(in_srgb,var(--surface-primary)_92%,white))] p-5 shadow-[var(--shadow-sm)]"
+  >
+    <p
+      class="font-[family-name:var(--font-heading)] font-bold text-[var(--color-brand-text)] mb-2"
+    >
+      Quick Verdict
+    </p>
+    <p class="text-[var(--color-neutral-700)] text-sm leading-relaxed">
+      {bluf}
+    </p>
+  </div>
+
+  <ComparisonTable
+    headers={["Feature", competitor.name, siteConfig.name]}
+    rows={comparisonRows}
+    highlightColumn={2}
+    verdict={`${siteConfig.name} offers reserve fund compliance and true fund accounting at ${siteConfig.product.price} with zero setup fees, vs. ${competitor.name} at ${competitor.pricing}${competitor.setupFee ? ` + ${competitor.setupFee} setup` : ""}.`}
+  />
+
+  <Content />
+
+  {
+    proscons?.map((pc) => (
+      <ProsConsBlock
+        subject={pc.subject}
+        pros={pc.pros}
+        cons={pc.cons}
+        reviewer={siteConfig.author}
+      />
+    ))
+  }
+
+  {answers?.map((a) => <AnswerBlock question={a.q} answer={a.a} />)}
+
+  {
+    pricingStats?.map((s) => (
+      <StatisticCitation
+        stat={s.stat}
+        source={s.source}
+        sourceUrl={s.sourceUrl}
+      />
+    ))
+  }
+
+  <FaqSection
+    faqs={faqs}
+    bottomCtaHeading={siteConfig.copy?.faq?.bottomCtaHeading}
+    bottomCtaText={siteConfig.copy?.faq?.bottomCtaText}
+    bottomCtaTarget={siteConfig.copy?.faq?.bottomCtaTarget}
+  />
+
+  <FunnelCta
+    stage={buyerStage}
+    funnel={siteConfig.funnel}
+    heading="Ready to switch?"
+    benefitBullets={siteConfig.copy?.funnelCta?.benefitBullets}
+  />
+
+  {
+    relatedLinks.length > 0 && (
+      <RelatedPages pages={relatedLinks} heading="Related Comparisons" />
+    )
+  }
+</ComparisonLayout>

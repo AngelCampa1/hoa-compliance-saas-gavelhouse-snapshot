@@ -1,0 +1,301 @@
+---
+import BaseLayout from "./base-layout.astro";
+import BreadcrumbNav from "../components/breadcrumb-nav.astro";
+import BlufBlock from "../seo/bluf-block.astro";
+import SchemaMarkup from "../seo/schema-markup.astro";
+import {
+  buildArticleSchema,
+  buildPageIdentityGraphSchemas,
+  mergeFaqSources,
+} from "../lib/schema-builders";
+import { buildGraph, withId } from "../lib/schema-graph";
+import {
+  resolveSchemaImage,
+  buyerStageToSection,
+  ensureTrailingSlash,
+} from "../lib/meta";
+import SiteHeader from "../components/site-header.astro";
+import ArticleMeta from "../components/article-meta.astro";
+import SiteFooter from "../components/site-footer.astro";
+import SidebarCta from "../components/sidebar-cta.astro";
+import SourcesSection from "../components/sources-section.astro";
+import ResourceHubLinks from "../components/resource-hub-links.astro";
+import GeneratedProductMockup from "../components/generated-product-mockup.astro";
+import { ExitIntentPopup } from "../components/exit-intent-popup";
+import { resolveExitPopupProps } from "../lib/exit-popup-props";
+import { buildSidebarCtaProps } from "../lib/sidebar-cta-utils";
+import { resolvePublicApiUrl } from "../lib/public-runtime-urls";
+import type {
+  SiteConfig,
+  BuyerStage,
+  FaqItem,
+  ContentSource,
+  LeadMagnet,
+} from "../lib/types";
+import type { GeneratedProductVisualPreset } from "../lib/generated-product-visuals";
+
+interface Props {
+  title: string;
+  description: string;
+  bluf: string;
+  buyerStage?: BuyerStage;
+  publishedAt: string;
+  updatedAt: string;
+  reviewedAt?: string;
+  canonicalPath: string;
+  config: SiteConfig;
+  breadcrumbs: { label: string; href: string }[];
+  schemas?: Record<string, unknown>[];
+  ogImage?: string;
+  noindex?: boolean;
+  answers?: { question: string; answer: string }[];
+  faqs?: FaqItem[];
+  tags?: string[];
+  sources?: ContentSource[];
+  productVisual?: GeneratedProductVisualPreset;
+  leadMagnetOverride?: LeadMagnet;
+}
+const {
+  title,
+  description,
+  bluf,
+  buyerStage,
+  publishedAt,
+  updatedAt,
+  reviewedAt,
+  canonicalPath,
+  config,
+  breadcrumbs,
+  schemas = [],
+  ogImage,
+  noindex,
+  answers = [],
+  faqs = [],
+  tags,
+  sources = [],
+  productVisual,
+  leadMagnetOverride,
+} = Astro.props;
+const exitPopupProps =
+  config.exitPopup?.enabled !== false
+    ? resolveExitPopupProps(config)
+    : undefined;
+const publicApiUrl = resolvePublicApiUrl(import.meta.env.PUBLIC_API_URL);
+const sidebarCtaProps = buyerStage
+  ? buildSidebarCtaProps(config, buyerStage)
+  : undefined;
+const canonicalUrl = ensureTrailingSlash(
+  `https://${config.domain}${canonicalPath}`,
+);
+
+const siteUrl = `https://${config.domain}`;
+const orgId = `${siteUrl}/#organization`;
+const identitySchemas = buildPageIdentityGraphSchemas({
+  siteName: config.name,
+  siteUrl,
+  pageUrl: canonicalUrl,
+  pageName: title,
+  pageDescription: description,
+  breadcrumbs,
+  author: config.author,
+  logo: config.logo?.light,
+  sameAs: config.sameAs,
+  contactEmail: config.contactEmail,
+  areaServed: config.areaServed,
+  searchPathTemplate: config.searchPathTemplate,
+});
+const articleSchema = buildArticleSchema({
+  headline: title,
+  description,
+  datePublished: publishedAt,
+  dateModified: updatedAt,
+  lastReviewed: reviewedAt ?? updatedAt,
+  publisher: { "@id": orgId },
+  author: config.author,
+  image: resolveSchemaImage(config.domain, ogImage, config.defaultOgImage),
+  mainEntityOfPage: canonicalUrl,
+  speakableCssSelectors: [".bluf-block", ".faq-answer", ".answer-block-answer"],
+});
+const faqSchema = mergeFaqSources(faqs, answers);
+const articleId = `${canonicalUrl}#article`;
+const graph = buildGraph([
+  ...identitySchemas,
+  withId(articleSchema, articleId),
+  ...schemas,
+  ...(faqSchema ? [faqSchema] : []),
+]);
+---
+
+<BaseLayout
+  title={`${title} | ${config.name}`}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  siteName={config.name}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  twitterSite={config.social?.twitterHandle}
+  articleAuthor={config.author?.name}
+  themeColor={config.theme.primary}
+  theme={config.theme}
+  fonts={config.theme.fonts}
+  preserveMetaTagCopy={config.preserveMetaTagCopy}
+  appleTouchIcon={config.appleTouchIcon}
+  ogImage={ogImage}
+  noindex={noindex}
+  rssUrl="/rss.xml"
+  siteUrl={`https://${config.domain}`}
+  analyticsEnabled={config.analytics?.enabled ?? true}
+  enableScrollReveal={false}
+  articleSection={buyerStage ? buyerStageToSection(buyerStage) : undefined}
+  articleTags={tags}
+>
+  <SiteHeader
+    slot="header"
+    siteName={config.name}
+    navItems={config.nav?.items}
+    ctaText={config.funnel.bofu.ctaText}
+    ctaHref={config.funnel.bofu.ctaTarget}
+    ctaVariant="primary"
+  />
+  <div
+    data-editorial-layout
+    class:list={[
+      "article-page-shell editorial-shell mx-auto px-4 py-[var(--section-py)]",
+      buyerStage ? "max-w-6xl" : "max-w-5xl",
+    ]}
+  >
+    <div
+      data-editorial-article
+      class="article-page-intro b1-template-comparison relative overflow-hidden rounded-[var(--r-lg)] border border-[var(--hairline)] bg-[var(--paper-0)] px-5 py-6 shadow-[var(--shadow-1)] sm:px-6 lg:px-8 lg:py-8"
+    >
+      <BreadcrumbNav
+        items={breadcrumbs}
+        siteUrl={`https://${config.domain}`}
+        emitSchema={false}
+      />
+      <div
+        class="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.82fr)] lg:items-center"
+      >
+        <div class="relative z-[1] max-w-[var(--content-measure-wide)]">
+          <p class="b1-eyebrow">T1 · Comparison</p>
+          <h1 class="b1-h1 mt-4">
+            {title}
+          </h1>
+          <ArticleMeta
+            authorName={config.author?.name}
+            authorTitle={config.author?.title}
+            authorUrl={config.author?.url}
+            publishedAt={publishedAt}
+            updatedAt={updatedAt}
+            reviewedAt={reviewedAt}
+          />
+        </div>
+        {
+          productVisual ? (
+            <GeneratedProductMockup {...productVisual} compact />
+          ) : (
+            <div class="redline-block">
+              <p>
+                The board needs <span class="out">generic software</span>{" "}
+                <span class="in">clear board records</span> before pricing,
+                controls, and owner access can be compared.
+              </p>
+            </div>
+          )
+        }
+      </div>
+    </div>
+    <div
+      class:list={[
+        "article-page-grid mt-8",
+        buyerStage && "lg:grid lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-12",
+      ]}
+    >
+      <article
+        class="article-page-body min-w-0 max-w-[var(--content-measure-wide)] rounded-[var(--r-lg)] border border-[var(--hairline)] bg-[var(--paper-0)] px-5 py-6 shadow-[var(--shadow-1)] sm:px-6 lg:px-8 lg:py-8"
+      >
+        <section class="b1-verdict b1-card">
+          <p class="b1-eyebrow">§ 1 · Verdict</p>
+          <div class="b1-grid-3">
+            <p>
+              <strong>Pick them if</strong><br />their workflow is already the
+              board's source of truth.
+            </p>
+            <p>
+              <strong>Pick both if</strong><br />the board needs a transition
+              period.
+            </p>
+            <p>
+              <strong>Pick Gavelhouse if</strong><br />reserve discipline and
+              board evidence are the requirement.
+            </p>
+          </div>
+        </section>
+        <BlufBlock text={bluf} />
+        <div
+          class="article-prose prose prose-lg max-w-none prose-p:max-w-[var(--content-measure)] prose-li:max-w-[var(--content-measure)]"
+        >
+          <slot />
+        </div>
+        <section class="b1-card honest-take">
+          <p class="b1-eyebrow">§ 3 · Honest take</p>
+          <p class="b1-body">
+            Honest take: some competitors win on breadth, age, or back-office
+            depth. Gavelhouse should win only when the board needs a simpler way
+            to keep records clear.
+          </p>
+        </section>
+        <SourcesSection sources={sources} />
+      </article>
+      {
+        sidebarCtaProps && (
+          <aside
+            data-editorial-sidebar
+            class="article-page-sidebar mt-8 lg:mt-0"
+            aria-label="Get started"
+          >
+            <SidebarCta {...sidebarCtaProps} />
+          </aside>
+        )
+      }
+    </div>
+  </div>
+  <ResourceHubLinks pathname={canonicalPath} />
+  <style>
+    .article-page-intro {
+      isolation: isolate;
+    }
+
+    .article-page-intro::before {
+      display: none;
+    }
+
+    .b1-verdict,
+    .honest-take {
+      margin-bottom: 1.5rem;
+    }
+  </style>
+  <SchemaMarkup graph={graph} />
+  {
+    exitPopupProps && (
+      <ExitIntentPopup
+        client:load
+        apiUrl={publicApiUrl}
+        siteName={config.name}
+        leadMagnet={leadMagnetOverride ?? config.leadMagnet}
+        {...exitPopupProps}
+      />
+    )
+  }
+  <SiteFooter
+    slot="footer"
+    siteName={config.name}
+    tagline={config.tagline}
+    linkGroups={config.footer?.linkGroups}
+    legalLinks={config.footer?.legalLinks}
+    contactEmail={config.contactEmail}
+    captureVariant="none"
+    surface="ink"
+    colophon="Built in public for self-managed HOA and condo boards. Gavelhouse is an operating tool, not legal advice — consult your state's HOA statute and a licensed attorney for specific obligations."
+  />
+</BaseLayout>

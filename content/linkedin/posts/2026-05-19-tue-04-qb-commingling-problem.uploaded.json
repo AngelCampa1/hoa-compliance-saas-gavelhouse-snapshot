@@ -1,0 +1,12 @@
+{
+  "uploadedAt": "2026-05-11T20:21:58.457Z",
+  "postizId": "cmp1ndz3w03gblj0yczl4wbof",
+  "entry": {
+    "id": "2026-05-19-tue-04",
+    "scheduledAt": "2026-05-19T08:00:00-05:00",
+    "channel": "company",
+    "pillar": "anti-quickbooks",
+    "hook": "QuickBooks can label accounts whatever you want. It cannot prevent a transaction from posting to the wrong one.",
+    "file": "content/linkedin/posts/2026-05-19-tue-04-qb-commingling-problem.md"
+  }
+}

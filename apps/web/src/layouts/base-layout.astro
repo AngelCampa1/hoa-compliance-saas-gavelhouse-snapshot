@@ -1,0 +1,196 @@
+---
+import MetaTags from "../seo/meta-tags.astro";
+import { buildGoogleFontsUrl, buildFontCssOverrides } from "../lib/fonts";
+import { buildPostHogBootstrapScript } from "../lib/analytics";
+import {
+  buildChunkRecoveryScript,
+  buildDocumentBootstrapScript,
+  buildScrollRevealScript,
+} from "../lib/base-layout-scripts";
+import {
+  AI_SDR_WIDGET_BUNDLE_URL,
+  AI_SDR_WIDGET_ROOT_ID,
+  buildAiSdrWidgetInitScript,
+} from "../lib/ai-sdr/widget";
+import { ensureTrailingSlash } from "../lib/meta";
+import { generateThemeCSS } from "../lib/generate-theme-css";
+import PromoBar from "../components/promo-bar.astro";
+import { isLimitedOfferActive } from "@boardstack/shared";
+import type { SiteTheme } from "../lib/types";
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalUrl: string;
+  siteName: string;
+  ogImage?: string;
+  ogImageWidth?: number;
+  ogImageHeight?: number;
+  ogImageAlt?: string;
+  publishedAt?: string;
+  updatedAt?: string;
+  noindex?: boolean;
+  ogType?: string;
+  twitterSite?: string;
+  articleAuthor?: string;
+  articleSection?: string;
+  articleTags?: string[];
+  themeColor?: string;
+  appleTouchIcon?: string;
+  showHeader?: boolean;
+  showFooter?: boolean;
+  theme?: SiteTheme;
+  fonts?: { heading: string; body: string; mono?: string };
+  siteUrl?: string;
+  preserveMetaTagCopy?: boolean;
+  prevUrl?: string;
+  nextUrl?: string;
+  analyticsEnabled?: boolean;
+  rssUrl?: string;
+  enableScrollReveal?: boolean;
+  showPromoBanner?: boolean;
+}
+const {
+  showHeader = true,
+  showFooter = true,
+  showPromoBanner = true,
+  theme,
+  fonts,
+  themeColor,
+  appleTouchIcon,
+  prevUrl,
+  nextUrl,
+  analyticsEnabled = true,
+  rssUrl,
+  enableScrollReveal = true,
+  siteName,
+  canonicalUrl: rawCanonicalUrl,
+  preserveMetaTagCopy = false,
+  ...props
+} = Astro.props;
+const canonicalUrl = ensureTrailingSlash(rawCanonicalUrl);
+
+const b1Fonts = {
+  heading: "Source Serif 4",
+  body: "Inter",
+  mono: "JetBrains Mono",
+};
+const fontsUrl = buildGoogleFontsUrl(b1Fonts);
+const fontCssOverrides = buildFontCssOverrides(b1Fonts);
+const themeCss = theme ? generateThemeCSS(theme) : "";
+const documentBootstrapScript = buildDocumentBootstrapScript();
+const chunkRecoveryScript = buildChunkRecoveryScript();
+const scrollRevealScript = buildScrollRevealScript();
+const postHogBootstrapScript = buildPostHogBootstrapScript(siteName);
+const aiSdrWidgetInitScript = buildAiSdrWidgetInitScript();
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {appleTouchIcon && <link rel="apple-touch-icon" href={appleTouchIcon} />}
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {
+      rssUrl && (
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={`${siteName} RSS Feed`}
+          href={rssUrl}
+        />
+      )
+    }
+    {themeColor && <meta name="theme-color" content={themeColor} />}
+    <meta
+      name="build-commit"
+      content={import.meta.env.PUBLIC_BUILD_COMMIT ?? "dev"}
+    />
+    <MetaTags
+      siteName={siteName}
+      canonicalUrl={canonicalUrl}
+      preserveAuthoredMetadata={preserveMetaTagCopy}
+      {...props}
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href={fontsUrl} />
+    <style set:html={fontCssOverrides}></style>
+    {themeCss && <style set:html={themeCss} />}
+    <script is:inline set:html={documentBootstrapScript} />
+    <script is:inline set:html={chunkRecoveryScript} />
+    {
+      analyticsEnabled && import.meta.env.PROD && (
+        <script is:inline set:html={postHogBootstrapScript} />
+      )
+    }
+    {
+      import.meta.env.PROD && (
+        <script>
+          import {initSentry} from "../lib/sentry-client"; const siteName =
+          document.body.getAttribute("data-site-name") ?? "unknown";
+          initSentry(siteName);
+        </script>
+      )
+    }
+    {
+      analyticsEnabled && import.meta.env.PROD && (
+        <script>
+          import {initCroTracking} from "../lib/cro-tracker"; initCroTracking();
+        </script>
+      )
+    }
+    <slot name="head" />
+    {prevUrl && <link rel="prev" href={prevUrl} />}
+    {nextUrl && <link rel="next" href={nextUrl} />}
+    <style>
+      /* The sticky wrapper in <body> owns the top-0 stickiness for both
+         the promo banner and the site header. Neutralise the header's own
+         sticky so it flows naturally inside the wrapper instead of racing
+         the banner for the same viewport top edge. */
+      .promo-header-stack .site-header {
+        position: relative !important;
+        top: auto !important;
+      }
+    </style>
+  </head>
+  <body
+    class="relative min-h-screen bg-brand-surface text-brand-text font-[family-name:var(--font-body)] antialiased selection:bg-[color-mix(in_srgb,var(--color-accent-200)_80%,transparent)] selection:text-[var(--color-neutral-950)]"
+    data-site-name={siteName}
+  >
+    <div class="site-canvas" aria-hidden="true">
+      <div class="site-canvas-glow site-canvas-glow--north"></div>
+      <div class="site-canvas-glow site-canvas-glow--east"></div>
+      <div class="site-canvas-grid"></div>
+    </div>
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand-primary focus:text-[var(--color-neutral-50)] focus:rounded-full focus:text-sm focus:font-medium"
+    >
+      Skip to main content
+    </a>
+    <div
+      class="promo-header-stack sticky top-0 z-50"
+      style="padding-top: var(--safe-top);"
+    >
+      {showPromoBanner && isLimitedOfferActive() && <PromoBar />}
+      {showHeader && <slot name="header" />}
+    </div>
+    <main
+      id="main-content"
+      class="relative z-[1] overflow-x-hidden"
+      data-pagefind-body
+    >
+      <slot />
+    </main>
+    {showFooter && <slot name="footer" />}
+    {enableScrollReveal && <script is:inline set:html={scrollRevealScript} />}
+    <div id={AI_SDR_WIDGET_ROOT_ID}></div>
+    <script is:inline src={AI_SDR_WIDGET_BUNDLE_URL} defer></script>
+    <script is:inline set:html={aiSdrWidgetInitScript} />
+  </body>
+</html>

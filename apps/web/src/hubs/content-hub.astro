@@ -1,0 +1,558 @@
+---
+import type {
+  SiteConfig,
+  CategorySummary,
+  BreadcrumbItem,
+  FaqItem,
+} from "../lib/types";
+import { sumCategoryCounts } from "../lib/collections";
+import { hasHubFaqs, normalizeHubCanonicalUrl } from "../lib/hub-utils";
+import { buildCollectionPageSchema } from "../lib/schema-builders";
+import { buildGraph, withId } from "../lib/schema-graph";
+import BaseLayout from "../layouts/base-layout.astro";
+import SiteHeader from "../components/site-header.astro";
+import SiteFooter from "../components/site-footer.astro";
+import BreadcrumbNav from "../components/breadcrumb-nav.astro";
+import SectionBand from "../components/section-band.astro";
+import FaqSection from "../components/faq-section.astro";
+import SchemaMarkup from "../seo/schema-markup.astro";
+
+interface Props {
+  config: SiteConfig;
+  title: string;
+  description: string;
+  categories: CategorySummary[];
+  canonicalUrl: string;
+  breadcrumbs: BreadcrumbItem[];
+  browseLinkText?: string;
+  itemNoun?: string;
+  categoryNoun?: string;
+  categoryNounPlural?: string;
+  faqs?: FaqItem[];
+  faqHeading?: string;
+  eyebrow?: string;
+  variant?: "default" | "editorial";
+  interludeEyebrow?: string;
+  interludeTitle?: string;
+  interludeBody?: string;
+}
+
+const {
+  config,
+  title,
+  description,
+  categories = [],
+  canonicalUrl,
+  breadcrumbs,
+  browseLinkText = "Browse ->",
+  itemNoun = "article",
+  categoryNoun = "category",
+  categoryNounPlural = "categories",
+  faqs = [],
+  faqHeading,
+  eyebrow,
+  variant = "default",
+  interludeEyebrow = "— why this section exists",
+  interludeTitle,
+  interludeBody,
+} = Astro.props;
+
+const totalItems = sumCategoryCounts(categories);
+const siteUrl = `https://${config.domain}`;
+const normalizedCanonicalUrl = normalizeHubCanonicalUrl(canonicalUrl);
+const collectionSchema = buildCollectionPageSchema({
+  name: title,
+  description,
+  url: normalizedCanonicalUrl,
+  items: categories.map((cat) => ({
+    name: cat.name,
+    description: cat.description,
+    url: `${siteUrl}${cat.href}`,
+  })),
+});
+const graph = buildGraph([
+  withId(collectionSchema, `${normalizedCanonicalUrl}#collection`),
+]);
+const hasCustomHero = Astro.slots.has("custom-hero");
+const browseLabel = browseLinkText.replace(/->$/, "").trimEnd();
+
+const leadCategory = categories[0];
+const restCategories = categories.slice(1);
+const { leftCats, rightCats } = (() => {
+  if (restCategories.length === 0) {
+    return { leftCats: [], rightCats: [] };
+  }
+  const leftCount = Math.ceil(restCategories.length * 0.6);
+  return {
+    leftCats: restCategories.slice(0, leftCount),
+    rightCats: restCategories.slice(leftCount),
+  };
+})();
+const showInterlude = variant === "editorial" && Boolean(interludeBody);
+---
+
+<BaseLayout
+  title={`${title} | ${config.name}`}
+  description={description}
+  canonicalUrl={normalizedCanonicalUrl}
+  siteName={config.name}
+  ogType="website"
+  themeColor={config.theme.primary}
+  theme={config.theme}
+  fonts={config.theme.fonts}
+  appleTouchIcon={config.appleTouchIcon}
+>
+  <SiteHeader
+    slot="header"
+    siteName={config.name}
+    navItems={config.nav?.items}
+    ctaText={config.funnel.bofu.ctaText}
+    ctaHref={config.funnel.bofu.ctaTarget}
+  />
+
+  {
+    hasCustomHero && (
+      <div class="mx-auto max-w-6xl px-4 pt-[var(--section-py-sm)]">
+        <BreadcrumbNav
+          items={breadcrumbs}
+          siteUrl={`https://${config.domain}`}
+        />
+      </div>
+    )
+  }
+
+  {hasCustomHero && <slot name="custom-hero" />}
+
+  <div
+    data-hub-layout
+    class:list={[
+      "hub-shell mx-auto px-4 py-[var(--section-py-sm)]",
+      variant === "editorial" ? "max-w-6xl editorial-shell" : "max-w-5xl",
+    ]}
+  >
+    {
+      !hasCustomHero && (
+        <BreadcrumbNav
+          items={breadcrumbs}
+          siteUrl={`https://${config.domain}`}
+        />
+      )
+    }
+
+    {
+      !hasCustomHero && (
+        <header
+          data-hub-hero
+          class:list={[
+            "hub-intro mt-4 overflow-hidden",
+            variant === "editorial"
+              ? "mb-12 rounded-[calc(var(--radius-xl)+4px)] border border-[color-mix(in_srgb,var(--color-neutral-300)_34%,transparent)] bg-[var(--surface-primary)] px-6 py-7 shadow-[var(--shadow-lg)] lg:px-8"
+              : "mb-10 rounded-[calc(var(--radius-xl)+2px)] border border-[color-mix(in_srgb,var(--color-neutral-300)_40%,transparent)] bg-[var(--surface-primary)] px-6 py-7 shadow-[var(--shadow-card)]",
+          ]}
+        >
+          <div class="max-w-[var(--content-measure-wide)]">
+            {eyebrow && variant === "editorial" && (
+              <p class="editorial-kicker">{eyebrow}</p>
+            )}
+            <h1
+              class:list={[
+                "font-heading font-bold text-[var(--color-brand-text)]",
+                variant === "editorial"
+                  ? "mt-4 text-[length:var(--text-editorial-title)] leading-[1.04]"
+                  : "mb-3 text-[length:var(--text-heading)]",
+              ]}
+            >
+              {title}
+            </h1>
+            <p
+              class:list={[
+                "text-[var(--color-brand-muted)]",
+                variant === "editorial"
+                  ? "editorial-lede"
+                  : "max-w-2xl text-[length:var(--text-body-lg)]",
+              ]}
+            >
+              {description}
+            </p>
+            <p
+              class:list={[
+                variant === "editorial"
+                  ? "mt-5 u-inline-metadata"
+                  : "mt-4 inline-flex rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--color-neutral-300)_42%,transparent)] bg-[color-mix(in_srgb,var(--surface-elevated)_86%,white)] px-4 py-3 text-[length:var(--text-caption)] text-[var(--color-neutral-500)]",
+              ]}
+            >
+              {variant === "editorial" ? "—" : ""}
+              {totalItems}
+              {` ${totalItems === 1 ? itemNoun : `${itemNoun}s`} across `}
+              {categories.length}
+              {` ${categories.length === 1 ? categoryNoun : categoryNounPlural}`}
+            </p>
+          </div>
+        </header>
+      )
+    }
+
+    <section
+      aria-label={`Content ${categories.length === 1 ? categoryNoun : categoryNounPlural}`}
+      class="editorial-hub-body"
+    >
+      {
+        variant === "editorial" && leadCategory ? (
+          <>
+            <article class="editorial-hub-body__lead">
+              <p class="u-kicker-serif" style="margin: 0;">
+                — lead section, {leadCategory.count}{" "}
+                {leadCategory.count === 1 ? itemNoun : `${itemNoun}s`}
+              </p>
+              <h2 class="editorial-hub-body__lead-title">
+                <a href={leadCategory.href}>{leadCategory.name}</a>
+              </h2>
+              <p class="u-lede editorial-hub-body__lead-lede">
+                {leadCategory.description}
+              </p>
+              <a href={leadCategory.href} class="editorial-hub-body__lead-cta">
+                {browseLabel} →
+              </a>
+            </article>
+
+            {showInterlude && (
+              <SectionBand surface="ink" class="editorial-hub-body__interlude">
+                <p class="u-kicker-serif" style="margin: 0;">
+                  {interludeEyebrow}
+                </p>
+                {interludeTitle && (
+                  <h3 class="editorial-hub-body__interlude-title">
+                    {interludeTitle}
+                  </h3>
+                )}
+                <p class="editorial-hub-body__interlude-body">
+                  {interludeBody}
+                </p>
+              </SectionBand>
+            )}
+
+            {restCategories.length > 0 && (
+              <div class="editorial-hub-body__grid">
+                <div class="editorial-hub-body__col-main">
+                  {leftCats.map((category) => (
+                    <a
+                      href={category.href}
+                      class="editorial-hub-body__secondary group"
+                    >
+                      <p class="u-inline-metadata">
+                        — {category.count}{" "}
+                        {category.count === 1 ? itemNoun : `${itemNoun}s`}
+                      </p>
+                      <h3 class="editorial-hub-body__secondary-title">
+                        {category.name}
+                      </h3>
+                      <p class="editorial-hub-body__secondary-desc">
+                        {category.description}
+                      </p>
+                      <span
+                        class="editorial-hub-body__secondary-link"
+                        aria-hidden="true"
+                      >
+                        {browseLabel} →
+                      </span>
+                    </a>
+                  ))}
+                </div>
+                {rightCats.length > 0 && (
+                  <aside
+                    class="editorial-hub-body__col-side"
+                    aria-label="More sections"
+                  >
+                    <p class="u-kicker-serif" style="margin: 0 0 1rem;">
+                      — also in this hub
+                    </p>
+                    <ul class="editorial-hub-body__tight-list">
+                      {rightCats.map((category) => (
+                        <li>
+                          <a
+                            href={category.href}
+                            class="editorial-hub-body__tight group"
+                          >
+                            <h4 class="editorial-hub-body__tight-title">
+                              {category.name}
+                            </h4>
+                            <p class="u-inline-metadata editorial-hub-body__tight-meta">
+                              — {category.count}{" "}
+                              {category.count === 1 ? itemNoun : `${itemNoun}s`}
+                            </p>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </aside>
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          <div
+            data-hub-card-grid
+            class="hub-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {categories.map((category) => (
+              <a
+                href={category.href}
+                data-hub-card
+                class="group block rounded-[calc(var(--radius-lg)+2px)] border border-[color-mix(in_srgb,var(--color-neutral-300)_50%,transparent)] bg-[var(--surface-primary)] p-6 shadow-[var(--shadow-card)] hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--color-brand-primary)_42%,var(--color-neutral-300))] hover:bg-[var(--surface-elevated)] transition-[transform,box-shadow,border-color,background-color] duration-[var(--transition-base)]"
+              >
+                <div class="mb-3 flex items-start justify-between gap-3">
+                  <h2 class="font-heading font-bold text-[var(--color-brand-text)] transition-colors text-[length:var(--text-body-lg)] group-hover:text-[var(--color-brand-primary)]">
+                    {category.name}
+                  </h2>
+                  <span class="shrink-0 px-2.5 py-1 text-[length:var(--text-caption)] rounded-full bg-[var(--surface-secondary)] text-[var(--color-neutral-500)] u-inline-metadata">
+                    {category.count}
+                  </span>
+                </div>
+                <p class="mt-2 text-[length:var(--text-caption)] leading-relaxed text-[var(--color-brand-muted)]">
+                  {category.description}
+                </p>
+                <span
+                  class="mt-4 inline-flex items-center gap-1 text-[length:var(--text-caption)] font-medium text-[var(--color-brand-primary)]"
+                  aria-hidden="true"
+                >
+                  {browseLabel}
+                  {browseLinkText.includes("->") && (
+                    <span class="inline-block transition-transform duration-[var(--transition-fast)] group-hover:translate-x-1">
+                      -&gt;
+                    </span>
+                  )}
+                </span>
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </section>
+
+    <slot name="extra" />
+    <slot name="cta" />
+
+    {
+      hasHubFaqs(faqs) && (
+        <FaqSection
+          faqs={faqs}
+          heading={faqHeading}
+          emitSchema={true}
+          showBottomCta={false}
+          ctaVariant="compact"
+        />
+      )
+    }
+  </div>
+
+  <SiteFooter
+    slot="footer"
+    siteName={config.name}
+    tagline={config.tagline}
+    linkGroups={config.footer?.linkGroups}
+    legalLinks={config.footer?.legalLinks}
+    captureVariant="compact"
+  />
+  <SchemaMarkup graph={graph} />
+</BaseLayout>
+
+<style>
+  .editorial-hub-body {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 4vw, 4rem);
+  }
+
+  .editorial-hub-body__lead {
+    max-width: var(--content-measure-wide, 72ch);
+    padding-bottom: clamp(1.5rem, 2.5vw, 2.25rem);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-brand-primary) 22%, transparent);
+  }
+
+  .editorial-hub-body__lead-title {
+    margin: 0.4rem 0 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.012em;
+    color: var(--color-brand-text);
+    font-size: clamp(2rem, 3.4vw, 3rem);
+  }
+
+  .editorial-hub-body__lead-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .editorial-hub-body__lead-title a:hover {
+    color: var(--color-brand-primary);
+  }
+
+  .editorial-hub-body__lead-lede {
+    margin-top: 1rem;
+    max-width: 58ch;
+  }
+
+  .editorial-hub-body__lead-cta {
+    display: inline-block;
+    margin-top: 1.25rem;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-accent-600);
+    text-decoration: none;
+  }
+
+  .editorial-hub-body__lead-cta:hover {
+    color: var(--color-accent-700);
+  }
+
+  .editorial-hub-body__interlude :global(.section-band__inner) {
+    padding-block: clamp(2rem, 3vw, 2.75rem);
+  }
+
+  .editorial-hub-body__interlude-title {
+    margin: 0.4rem 0 0.75rem;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.25rem, 1.6vw, 1.6rem);
+    line-height: 1.25;
+    color: inherit;
+  }
+
+  .editorial-hub-body__interlude-body {
+    max-width: 62ch;
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.6;
+    font-size: clamp(1rem, 1.15vw, 1.12rem);
+    color: inherit;
+    opacity: 0.88;
+  }
+
+  .editorial-hub-body__grid {
+    display: grid;
+    gap: clamp(2rem, 3vw, 3rem);
+  }
+
+  @media (min-width: 900px) {
+    .editorial-hub-body__grid {
+      grid-template-columns: minmax(0, 1.9fr) minmax(15rem, 1fr);
+      align-items: start;
+    }
+  }
+
+  .editorial-hub-body__col-main {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.75rem, 2.4vw, 2.5rem);
+  }
+
+  .editorial-hub-body__col-main > :global(a + a) {
+    padding-top: clamp(1.75rem, 2.4vw, 2.5rem);
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-neutral-300) 55%, transparent);
+  }
+
+  .editorial-hub-body__secondary {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .editorial-hub-body__secondary-title {
+    margin: 0.4rem 0 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.15;
+    font-size: clamp(1.35rem, 1.8vw, 1.7rem);
+    color: var(--color-brand-text);
+    transition: color 180ms ease;
+  }
+
+  .editorial-hub-body__secondary.group:hover
+    .editorial-hub-body__secondary-title {
+    color: var(--color-brand-primary);
+  }
+
+  .editorial-hub-body__secondary-desc {
+    margin-top: 0.75rem;
+    max-width: 52ch;
+    font-size: var(--text-body);
+    line-height: 1.65;
+    color: var(--color-brand-muted);
+  }
+
+  .editorial-hub-body__secondary-link {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-accent-600);
+  }
+
+  .editorial-hub-body__col-side {
+    position: relative;
+    padding-left: clamp(0rem, 1.5vw, 1.25rem);
+    border-left: 1px solid
+      color-mix(in srgb, var(--color-brand-primary) 18%, transparent);
+  }
+
+  @media (max-width: 899px) {
+    .editorial-hub-body__col-side {
+      padding-left: 0;
+      padding-top: 1.5rem;
+      margin-top: 0.5rem;
+      border-left: 0;
+      border-top: 1px solid
+        color-mix(in srgb, var(--color-brand-primary) 18%, transparent);
+    }
+  }
+
+  .editorial-hub-body__tight-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .editorial-hub-body__tight-list > li {
+    padding-bottom: 1.1rem;
+    border-bottom: 1px dotted
+      color-mix(in srgb, var(--color-neutral-300) 65%, transparent);
+  }
+
+  .editorial-hub-body__tight-list > li:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .editorial-hub-body__tight {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .editorial-hub-body__tight-title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.08rem;
+    line-height: 1.2;
+    color: var(--color-brand-text);
+    transition: color 180ms ease;
+  }
+
+  .editorial-hub-body__tight.group:hover .editorial-hub-body__tight-title {
+    color: var(--color-brand-primary);
+  }
+
+  .editorial-hub-body__tight-meta {
+    margin-top: 0.25rem;
+    font-size: 0.82rem;
+  }
+</style>

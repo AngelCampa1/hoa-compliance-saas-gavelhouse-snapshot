@@ -1,0 +1,261 @@
+---
+import "../../styles/global.css";
+import LandingLayout from "../../layouts/landing-layout.astro";
+import DocHeader from "../../components/doc-header.astro";
+import { siteConfig } from "../../config/site";
+
+const formats = [
+  { label: "All", count: "62", href: "/resources/" },
+  { label: "Guides", count: "24", href: "/resources/guides/" },
+  { label: "Best-of", count: "12", href: "/resources/best/" },
+  { label: "Free templates", count: "9", href: "/free/" },
+  { label: "State pages", count: "7", href: "/hoa-compliance/" },
+  { label: "Hubs", count: "6", href: "/resources/hubs/all-board-resources/" },
+  { label: "Comparisons", count: "4", href: "/compare/" },
+];
+
+const topicLinks = [
+  { label: "Reserve funds", href: "/resources/hubs/reserve-studies/" },
+  { label: "Dues", href: "/resources/guides/hoa-fees-guide/" },
+  {
+    label: "Audits",
+    href: "/resources/guides/hoa-audit-requirements-by-state/",
+  },
+  { label: "Governance", href: "/resources/hubs/self-managed-boards/" },
+  { label: "State law", href: "/hoa-compliance/" },
+  { label: "Treasurer", href: "/resources/guides/hoa-treasurer-duties/" },
+  { label: "President", href: "/resources/guides/hoa-president-duties/" },
+  { label: "Secretary", href: "/resources/guides/hoa-secretary-duties/" },
+];
+
+const featured = [
+  [
+    "HOA reserve study guide",
+    "/resources/guides/hoa-reserve-study-guide/",
+    "Reserve funds",
+  ],
+  [
+    "HOA accounting software guide",
+    "/resources/guides/hoa-accounting-software-guide/",
+    "Accounting",
+  ],
+  [
+    "50-state reserve requirements",
+    "/free/50-state-reserve-fund-requirements/",
+    "Free template",
+  ],
+];
+
+const latest = [
+  {
+    title: "Fannie Mae HOA reserve requirements",
+    topic: "Reserve funds",
+    href: "/resources/guides/fannie-mae-hoa-reserve-requirements/",
+  },
+  {
+    title: "HOA board liability guide",
+    topic: "Governance",
+    href: "/resources/guides/hoa-board-liability-guide/",
+  },
+  {
+    title: "HOA annual meeting planner",
+    topic: "Free template",
+    href: "/free/hoa-annual-meeting-planner/",
+  },
+  {
+    title: "HOA audit requirements by state",
+    topic: "State law",
+    href: "/resources/guides/hoa-audit-requirements-by-state/",
+  },
+];
+---
+
+<LandingLayout
+  config={siteConfig}
+  canonicalPath="/resources/"
+  title="Gavelhouse resources"
+  description="Guides, templates, state pages, and comparison pages for self-managed HOA and condo boards."
+>
+  <section class="b1-section">
+    <div class="b1-container">
+      <DocHeader
+        kicker="RESOURCES"
+        re="Guides and templates for self-managed boards."
+        meta={[
+          { label: "OWNER", value: "Gavelhouse" },
+          { label: "FORMAT", value: "Library" },
+        ]}
+      />
+      <h1 class="b1-h1">Find the answer before the next meeting.</h1>
+      <p class="b1-body-lg">
+        Use these guides and templates when your board needs a plain answer. Use
+        Gavelhouse when the answer needs to become part of the record.
+      </p>
+    </div>
+  </section>
+
+  <section class="resource-nav">
+    <div class="b1-container">
+      <div class="format-tabs">
+        {
+          formats.map(({ label, count, href }, index) => (
+            <a class:list={[index === 0 && "is-active"]} href={href}>
+              {label} <span>{count}</span>
+            </a>
+          ))
+        }
+      </div>
+      <div class="filter-row">
+        {
+          topicLinks.map(({ label, href }, index) => (
+            <a class:list={[index === 0 && "is-active"]} href={href}>
+              {label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section b1-section--alt">
+    <div class="b1-container">
+      <p class="b1-eyebrow">§ 1 · Featured</p>
+      <div class="b1-grid-3">
+        {
+          featured.map(([title, href, topic], index) => (
+            <a
+              class:list={[
+                "b1-card resource-card",
+                index === 0 && "is-featured",
+              ]}
+              href={href}
+            >
+              <span class="b1-badge b1-badge--acc">{topic}</span>
+              <h2 class="b1-h3">{title}</h2>
+              <p class="b1-small">Open resource</p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section">
+    <div class="b1-container">
+      <p class="b1-eyebrow">Latest</p>
+      <h2 class="b1-h2">New guides for board questions.</h2>
+      <div class="latest-list">
+        {
+          latest.map(({ title, topic, href }) => (
+            <a href={href} class="latest-row">
+              <strong>{title}</strong>
+              <span class="b1-badge">{topic}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</LandingLayout>
+
+<style>
+  .resource-nav {
+    border-block: 1px solid var(--hairline);
+    background: var(--paper-0);
+    padding: 18px 0;
+  }
+
+  .format-tabs {
+    display: flex;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 16px;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .format-tabs a {
+    border-bottom: 2.5px solid transparent;
+    color: var(--ink-1);
+    padding-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+
+  .format-tabs a.is-active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .format-tabs span {
+    border-radius: 999px;
+    background: var(--paper-2);
+    padding: 2px 7px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+  }
+
+  .format-tabs .is-active span {
+    background: var(--accent-3);
+  }
+
+  .filter-row {
+    margin-top: 16px;
+  }
+
+  .filter-row a {
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    background: var(--paper-0);
+    color: var(--ink-1);
+    padding: 7px 14px;
+    font-size: 13px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .filter-row a.is-active {
+    background: var(--ink-0);
+    color: #fff;
+  }
+
+  .resource-card {
+    color: var(--ink-0);
+    text-decoration: none;
+  }
+
+  .resource-card.is-featured {
+    border-left: 3px solid var(--accent);
+  }
+
+  .latest-list {
+    border-top: 1px solid var(--hairline);
+    margin-top: 20px;
+  }
+
+  .latest-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px solid var(--hairline);
+    padding: 18px 0;
+    color: var(--ink-0);
+    text-decoration: none;
+    min-height: 44px;
+  }
+</style>

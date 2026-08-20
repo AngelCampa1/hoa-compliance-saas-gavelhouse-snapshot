@@ -1,0 +1,233 @@
+---
+import "../../styles/global.css";
+import { getCollection } from "astro:content";
+import ArticleLayout from "../../layouts/article-layout.astro";
+import FaqSection from "../../components/faq-section.astro";
+import FunnelCta from "../../components/funnel-cta.astro";
+import RelatedPages from "../../components/related-pages.astro";
+import AnswerBlock from "../../seo/answer-block.astro";
+import DataTableBlock from "../../seo/data-table-block.astro";
+import { siteConfig } from "../../config/site";
+import {
+  buildSoftwareApplicationSchema,
+  buildProductSchema,
+} from "../../lib/schema-builders";
+import { buildContentMap } from "../../lib/page-helpers";
+import { resolveRelatedPageLinks } from "../../lib/related-page-resolver";
+import { resolveProductVisualPreset } from "../../lib/generated-product-visuals";
+import { resolveMagnetForPage } from "@/lib/resolve-lead-magnet";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("product-pages");
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await entry.render();
+const {
+  title,
+  description,
+  bluf,
+  buyerStage,
+  publishedAt,
+  updatedAt,
+  reviewedAt,
+  faqs,
+  relatedPages,
+  tableData,
+  answers,
+  tags,
+  keyFeatures,
+  productCategory,
+  sources,
+} = entry.data;
+
+const canonicalPath = `/product/${entry.slug}`;
+const productVisual = resolveProductVisualPreset({
+  slug: entry.slug,
+  productCategory,
+});
+
+const [
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+] = await Promise.all([
+  getCollection("alternatives"),
+  getCollection("comparisons"),
+  getCollection("pricing-breakdowns"),
+  getCollection("listicles"),
+  getCollection("guides"),
+  getCollection("state-pages"),
+  getCollection("lead-magnets"),
+  getCollection("product-pages"),
+  getCollection("solutions"),
+]);
+
+const contentMap = buildContentMap({
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+});
+const relatedLinks = resolveRelatedPageLinks(relatedPages, contentMap);
+const leadMagnetOverride = await resolveMagnetForPage({
+  explicitSlug: entry.data.magnetSlug,
+  primaryKeyword: title,
+  tags: entry.data.tags,
+  path: canonicalPath,
+});
+const siteUrl = `https://${siteConfig.domain}`;
+const canonicalUrl = `${siteUrl}${canonicalPath}/`;
+const softwareSchema = buildSoftwareApplicationSchema({
+  name: title,
+  description,
+  url: canonicalUrl,
+  image: `${siteUrl}${siteConfig.defaultOgImage}`,
+  brand: { name: siteConfig.name },
+  featureList: keyFeatures,
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  offers: {
+    price: siteConfig.product.price,
+    url: `${siteUrl}/pricing/`,
+  },
+});
+const productSchema = buildProductSchema({
+  name: title,
+  description,
+  url: canonicalUrl,
+  image: `${siteUrl}${siteConfig.defaultOgImage}`,
+  category: productCategory,
+  brand: { name: siteConfig.name },
+  offers: siteConfig.pricingTiers.map((tier) => ({
+    price: tier.price,
+    url: `${siteUrl}/pricing/`,
+  })),
+});
+---
+
+<ArticleLayout
+  title={title}
+  description={description}
+  bluf={bluf}
+  buyerStage={buyerStage}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  reviewedAt={reviewedAt}
+  canonicalPath={canonicalPath}
+  config={siteConfig}
+  breadcrumbs={[
+    { label: "Home", href: "/" },
+    { label: "Features", href: "/features/" },
+    { label: title, href: `${canonicalPath}/` },
+  ]}
+  schemas={[softwareSchema, productSchema]}
+  headings={headings}
+  answers={answers?.map((a) => ({ question: a.q, answer: a.a }))}
+  faqs={faqs}
+  tags={tags}
+  sources={sources}
+  productVisual={productVisual}
+  leadMagnetOverride={leadMagnetOverride}
+>
+  <section class="mb-10 border-y border-[var(--color-neutral-200)] py-6">
+    <p class="u-kicker-serif mb-3 text-[var(--color-neutral-500)]">
+      Plain answer
+    </p>
+    <h2
+      class="mb-4 font-heading text-2xl font-bold text-[var(--color-brand-text)]"
+    >
+      What this helps with
+    </h2>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div
+        class="border-l-2 border-[color-mix(in_srgb,var(--color-brand-primary)_32%,transparent)] pl-4 text-sm text-[var(--color-brand-text)]"
+      >
+        <h3 class="mb-2 font-heading text-xl font-bold">The board problem</h3>
+        <p class="leading-6">{bluf}</p>
+      </div>
+      <div
+        class="border-l-2 border-[color-mix(in_srgb,var(--color-accent-600)_36%,transparent)] pl-4 text-sm text-[var(--color-brand-text)]"
+      >
+        <h3 class="mb-2 font-heading text-xl font-bold">
+          How Gavelhouse helps
+        </h3>
+        <p class="leading-6">
+          {keyFeatures[0]} This stays tied to money, meetings, owners, and records
+          so the board does not rebuild answers from old files.
+        </p>
+      </div>
+    </div>
+    <a
+      href="/features/"
+      class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--color-brand-primary)_24%,transparent)] bg-[var(--surface-primary)] px-4 py-2 font-heading font-semibold text-[var(--color-brand-primary)] no-underline"
+    >
+      See all features
+    </a>
+  </section>
+
+  <section class="mb-10 border-b border-[var(--color-neutral-200)] pb-6">
+    <p class="u-kicker-serif mb-3 text-[var(--color-neutral-500)]">
+      What you can do
+    </p>
+    <ul class="grid list-none gap-3 p-0 sm:grid-cols-2">
+      {
+        (keyFeatures.length > 1 ? keyFeatures.slice(1) : keyFeatures).map(
+          (feature) => (
+            <li class="border-l-2 border-[color-mix(in_srgb,var(--color-brand-primary)_24%,transparent)] py-2 pl-4 text-sm text-[var(--color-brand-text)]">
+              {feature}
+            </li>
+          ),
+        )
+      }
+    </ul>
+  </section>
+
+  <Content />
+
+  {
+    tableData && (
+      <DataTableBlock
+        name={tableData.name}
+        description={tableData.description}
+        columns={tableData.columns}
+        rows={tableData.rows}
+      />
+    )
+  }
+
+  {answers?.map((a) => <AnswerBlock question={a.q} answer={a.a} />)}
+
+  <FaqSection
+    faqs={faqs}
+    emitSchema={false}
+    bottomCtaHeading="Want to see this workflow inside Gavelhouse?"
+    bottomCtaText="Start trial"
+    bottomCtaTarget={siteConfig.funnel.bofu.ctaTarget}
+  />
+
+  <FunnelCta
+    stage="bofu"
+    funnel={siteConfig.funnel}
+    heading="See the board work in one place"
+    subtitle={siteConfig.copy?.funnelCta?.subtitle}
+    benefitBullets={siteConfig.copy?.funnelCta?.benefitBullets}
+  />
+
+  {relatedLinks.length > 0 && <RelatedPages pages={relatedLinks} />}
+</ArticleLayout>

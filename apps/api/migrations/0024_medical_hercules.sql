@@ -1,0 +1,7 @@
+ALTER TABLE "reserve_components" ADD CONSTRAINT "reserve_components_useful_life_positive" CHECK ("reserve_components"."useful_life_years" >= 1) NOT VALID;--> statement-breakpoint
+ALTER TABLE "reserve_components" ADD CONSTRAINT "reserve_components_remaining_life_nonnegative" CHECK ("reserve_components"."remaining_life_years" >= 0) NOT VALID;--> statement-breakpoint
+ALTER TABLE "reserve_components" ADD CONSTRAINT "reserve_components_remaining_life_lte_useful" CHECK ("reserve_components"."remaining_life_years" <= "reserve_components"."useful_life_years") NOT VALID;--> statement-breakpoint
+ALTER TABLE "reserve_components" ADD CONSTRAINT "reserve_components_replacement_cost_nonnegative" CHECK ("reserve_components"."replacement_cost_cents" >= 0) NOT VALID;--> statement-breakpoint
+ALTER TABLE "reserve_components" ADD CONSTRAINT "reserve_components_current_reserve_nonnegative" CHECK ("reserve_components"."current_reserve_cents" >= 0) NOT VALID;--> statement-breakpoint
+ALTER TABLE "reserve_studies" ADD CONSTRAINT "reserve_studies_annual_budget_nonnegative" CHECK ("reserve_studies"."annual_budget_cents" IS NULL OR "reserve_studies"."annual_budget_cents" >= 0) NOT VALID;--> statement-breakpoint
+ALTER TABLE "reserve_studies" ADD CONSTRAINT "reserve_studies_annual_contribution_nonnegative" CHECK ("reserve_studies"."annual_reserve_contribution_cents" IS NULL OR "reserve_studies"."annual_reserve_contribution_cents" >= 0) NOT VALID;

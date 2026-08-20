@@ -1,0 +1,25 @@
+---
+import { resolvePublicSignupCta } from "../lib/public-signup-cta";
+
+interface Props {
+  sourcePage: string;
+  buttonText?: string;
+  ctaText?: string;
+  ctaTarget?: string;
+}
+
+const { sourcePage, buttonText, ctaText, ctaTarget } = Astro.props;
+
+const resolvedCta = resolvePublicSignupCta({
+  sourcePage,
+  explicitTarget: ctaTarget,
+  explicitText: ctaText ?? buttonText,
+});
+---
+
+<a
+  href={resolvedCta.target}
+  class="btn-primary btn-shimmer inline-flex items-center justify-center"
+>
+  {resolvedCta.text}
+</a>

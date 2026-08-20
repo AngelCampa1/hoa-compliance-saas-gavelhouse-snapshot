@@ -1,0 +1,62 @@
+---
+import SchemaMarkup from "../seo/schema-markup.astro";
+import { buildBreadcrumbSchema } from "../lib/schema-builders";
+import { ChevronRightIcon } from "../lib/icons";
+import { formatSlugAsLabel } from "../lib/breadcrumbs";
+
+interface BreadcrumbItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+  siteUrl: string;
+  emitSchema?: boolean;
+}
+const { items, siteUrl, emitSchema = true } = Astro.props;
+
+const breadcrumbSchema = buildBreadcrumbSchema(items, siteUrl);
+---
+
+<nav
+  aria-label="Breadcrumb"
+  class="w-full bg-[var(--surface-secondary)] py-3 text-[length:var(--text-caption)] text-brand-muted"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <ol
+      class="flex flex-wrap items-center gap-1 sm:flex-nowrap sm:overflow-x-auto sm:whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+    >
+      {
+        items.map((item, i) => (
+          <li class="flex min-w-0 items-center gap-1">
+            {i > 0 && (
+              <span
+                class="text-[var(--color-neutral-300)]"
+                aria-hidden="true"
+                set:html={ChevronRightIcon}
+              />
+            )}
+            {i === items.length - 1 ? (
+              <span
+                class="block min-h-11 min-w-11 py-2 font-semibold text-[var(--color-brand-primary)] break-words max-sm:w-full max-sm:whitespace-normal sm:inline-flex sm:min-w-11 sm:items-center sm:max-w-[220px] sm:truncate"
+                title={formatSlugAsLabel(item.label)}
+                aria-current="page"
+              >
+                {formatSlugAsLabel(item.label)}
+              </span>
+            ) : (
+              <a
+                href={item.href}
+                class="inline-flex min-h-11 min-w-11 shrink-0 items-center py-2 transition-colors duration-[var(--transition-fast)] hover:text-brand-primary"
+              >
+                {formatSlugAsLabel(item.label)}
+              </a>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+  {emitSchema && <SchemaMarkup schemas={[breadcrumbSchema]} />}
+</nav>

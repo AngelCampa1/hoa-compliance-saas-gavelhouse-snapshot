@@ -1,0 +1,182 @@
+---
+interface Props {
+  eyebrow?: string;
+  headline: string;
+  subheadline: string;
+  trustSignal?: string;
+  benefits?: string[];
+  panelEyebrow?: string;
+  panelNote?: string;
+  variant?: "default" | "editorial";
+}
+
+const {
+  eyebrow,
+  headline,
+  subheadline,
+  trustSignal,
+  benefits,
+  panelEyebrow,
+  panelNote,
+  variant = "default",
+} = Astro.props;
+---
+
+<section
+  data-hero
+  data-section="hero"
+  class="hero-section relative w-full overflow-hidden"
+>
+  <div
+    class="pointer-events-none absolute inset-0 -z-10"
+    style="background: var(--section-gradient-a);"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top_left,color-mix(in_srgb,var(--color-primary-100)_60%,transparent),transparent_58%)]"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute right-[-8rem] top-24 -z-10 h-64 w-64 rounded-full bg-[color-mix(in_srgb,var(--color-accent-100)_78%,transparent)] blur-3xl"
+  >
+  </div>
+
+  {
+    variant === "editorial" ? (
+      <div
+        data-hero-content
+        class="hero-shell editorial-shell mx-auto max-w-6xl px-4 pb-[var(--section-py-sm)] pt-[var(--section-py)]"
+      >
+        <div class="editorial-grid editorial-grid--2 gap-y-[var(--component-gap)]">
+          <div class="max-w-[var(--content-measure-wide)]">
+            {trustSignal && (
+              <p
+                data-hero-trust
+                class="editorial-kicker animate-[var(--animate-fade-in)]"
+              >
+                {trustSignal}
+              </p>
+            )}
+            <h1
+              data-hero-title
+              class="mt-5 font-heading text-[length:var(--text-editorial-title)] font-bold leading-[1.02] text-[var(--color-brand-text)] animate-[var(--animate-fade-in)]"
+              style="letter-spacing: -0.03em"
+            >
+              {headline}
+            </h1>
+            <p
+              data-hero-copy
+              class="editorial-lede mt-[var(--component-gap-sm)] animate-[var(--animate-slide-up)]"
+            >
+              {subheadline}
+            </p>
+            <div class="mt-[var(--component-gap)]">
+              <slot />
+            </div>
+          </div>
+
+          {benefits && benefits.length > 0 && (
+            <div
+              data-hero-benefits
+              class="hero-benefits-panel editorial-panel self-end p-5 md:p-6"
+            >
+              <p class="u-kicker-serif">Why teams join early</p>
+              <ul class="mt-4 list-none space-y-3 p-0">
+                {benefits.map((benefit) => (
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="mt-0.5 flex-shrink-0 font-[family-name:var(--font-heading)] text-[var(--color-primary-700)]"
+                      aria-hidden="true"
+                    >
+                      ▸
+                    </span>
+                    <span class="text-[length:var(--text-caption)] font-semibold leading-6 text-[var(--color-brand-text)]">
+                      {benefit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    ) : (
+      <div
+        data-hero-content
+        class="hero-shell mx-auto max-w-6xl px-4 pb-[var(--section-py-sm)] pt-[var(--section-py)]"
+      >
+        <div class="hero-grid grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(19rem,0.8fr)] lg:items-start lg:gap-12">
+          <div class="hero-copy max-w-4xl">
+            {eyebrow && <p class="u-kicker-serif">{eyebrow}</p>}
+            <h1
+              data-hero-title
+              class:list={[
+                "font-heading text-[length:var(--text-hero)] font-bold leading-[0.94] text-[var(--color-brand-text)] animate-[var(--animate-fade-in)]",
+                eyebrow ? "mt-5" : "",
+              ]}
+              style="letter-spacing: -0.03em"
+            >
+              {headline}
+            </h1>
+            <p
+              data-hero-copy
+              class="mt-[var(--component-gap-sm)] max-w-[46rem] text-[length:var(--text-body-lg)] leading-8 text-[var(--color-brand-muted)] animate-[var(--animate-slide-up)]"
+            >
+              {subheadline}
+            </p>
+            {benefits && benefits.length > 0 && (
+              <ul class="mt-[var(--component-gap)] grid list-none gap-3 p-0 sm:grid-cols-2">
+                {benefits.map((benefit) => (
+                  <li class="flex items-start gap-3 border-t border-[color-mix(in_srgb,var(--color-neutral-300)_42%,transparent)] pt-3">
+                    <span
+                      class="mt-0.5 flex-shrink-0 font-[family-name:var(--font-heading)] text-[var(--color-primary-700)]"
+                      aria-hidden="true"
+                    >
+                      ▸
+                    </span>
+                    <span class="text-[length:var(--text-caption)] font-semibold leading-6 text-[var(--color-brand-text)]">
+                      {benefit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {trustSignal && (
+              <p
+                data-hero-trust
+                class="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--color-accent-200)] bg-[color-mix(in_srgb,var(--color-accent-50)_84%,transparent)] px-4 py-2 text-[length:var(--text-caption)] font-medium text-[var(--color-accent-700)]"
+              >
+                <span
+                  class="inline-flex h-2 w-2 rounded-full bg-[var(--color-accent-500)]"
+                  aria-hidden="true"
+                />
+                {trustSignal}
+              </p>
+            )}
+          </div>
+
+          <div
+            data-hero-benefits
+            class="hero-benefits-panel rounded-[calc(var(--radius-xl)+2px)] border border-[color-mix(in_srgb,var(--color-neutral-200)_72%,transparent)] bg-[color-mix(in_srgb,var(--surface-elevated)_84%,transparent)] p-6 shadow-[var(--shadow-lg)] backdrop-blur-sm lg:mt-10 lg:sticky lg:top-28"
+          >
+            {panelEyebrow && <p class="u-kicker-serif">{panelEyebrow}</p>}
+            <div class="mt-4 flex flex-wrap gap-3 lg:flex-col">
+              <slot />
+            </div>
+            {panelNote && (
+              <p class="mt-5 border-t border-[color-mix(in_srgb,var(--color-neutral-300)_36%,transparent)] pt-4 text-[length:var(--text-caption)] leading-6 text-[var(--color-brand-muted)]">
+                {panelNote}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  <div
+    class="pointer-events-none absolute bottom-0 left-0 right-0 h-px"
+    style="background: linear-gradient(to right, transparent, var(--color-accent-200), transparent);"
+  >
+  </div>
+</section>

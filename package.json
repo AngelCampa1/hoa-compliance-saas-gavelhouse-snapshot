@@ -1,0 +1,61 @@
+{
+  "private": true,
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "prepare": "husky",
+    "lint": "pnpm exec turbo lint",
+    "typecheck": "pnpm exec turbo typecheck",
+    "test:coverage": "pnpm exec turbo test:coverage",
+    "test:scripts": "pnpm exec vitest run --coverage --config scripts/vitest.config.ts",
+    "dev:bootstrap": "tsx scripts/bootstrap-dev.ts",
+    "knowledge:check": "pnpm --filter @boardstack/shared run knowledge:check",
+    "check:cloudflare:api": "tsx scripts/check-boardstack-api-cloudflare.ts",
+    "check:no-raw-wrangler": "tsx scripts/check-no-raw-wrangler.ts",
+    "check:public-facts": "tsx scripts/check-public-facts.ts",
+    "screenshots:hero": "tsx scripts/build-hero-set.ts",
+    "screenshots:index": "tsx scripts/render-screenshot-index.ts",
+    "screenshots:optimize": "tsx scripts/optimize-screenshots.ts",
+    "snapshot:build": "tsx scripts/build-snapshot.ts",
+    "metrics:generate": "tsx scripts/collect-metrics.ts",
+    "metrics:check": "tsx scripts/collect-metrics.ts --check",
+    "posthog:dashboards": "tsx scripts/sync-posthog-dashboards.ts",
+    "deploy:api": "pnpm --filter @boardstack/api run deploy",
+    "deploy:app": "pnpm --filter @boardstack/app run deploy",
+    "deploy:web": "pnpm --filter @boardstack/web run deploy",
+    "deploy:marketing": "pnpm run deploy:web",
+    "deploy:all": "pnpm run deploy:api && pnpm run deploy:app && pnpm run deploy:web",
+    "deploy:touched": "tsx scripts/deploy-touched.ts",
+    "verify": "pnpm run lint && pnpm run typecheck && pnpm run knowledge:check && pnpm run check:public-facts && pnpm run metrics:check && pnpm --filter @boardstack/web audit:seo && pnpm run check:no-raw-wrangler && pnpm run test:coverage && pnpm run test:scripts",
+    "dev": "pnpm exec turbo dev",
+    "build": "pnpm exec turbo build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@vitest/coverage-v8": "^4.1.3",
+    "astro-eslint-parser": "1.4.0",
+    "eslint": "^10.2.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-astro": "1.7.0",
+    "globals": "^17.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-astro": "^0.14.1",
+    "tsx": "^4.21.0",
+    "turbo": "^2.9.5",
+    "typescript": "^5.7",
+    "typescript-eslint": "^8.58.0",
+    "vitest": "^4.1.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{astro,json,css,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "packageManager": "pnpm@10.33.0"
+}

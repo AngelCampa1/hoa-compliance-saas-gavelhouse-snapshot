@@ -1,0 +1,133 @@
+---
+import SchemaMarkup from "../seo/schema-markup.astro";
+import { buildItemListSchema } from "../lib/schema-builders";
+import type { BuyerStage, RelatedPage } from "../lib/types";
+import { stageHeading } from "../lib/stage-heading";
+
+interface Props {
+  pages: RelatedPage[];
+  heading?: string;
+  stage?: BuyerStage;
+  maxItems?: number;
+  variant?: "default" | "editorial" | "compact";
+}
+
+const {
+  pages,
+  heading,
+  stage,
+  maxItems = 6,
+  variant = "default",
+} = Astro.props;
+
+const displayPages = pages.slice(0, maxItems);
+const resolvedHeading = heading ?? stageHeading(stage);
+const itemListSchema =
+  displayPages.length > 0
+    ? buildItemListSchema(
+        displayPages.map((p) => ({
+          name: p.title,
+          url: p.href,
+          description: p.description,
+        })),
+      )
+    : null;
+---
+
+{
+  displayPages.length > 0 && (
+    <section
+      class:list={[
+        variant === "compact"
+          ? "mx-auto max-w-3xl px-4 py-8"
+          : "related-pages mx-auto max-w-4xl px-4 py-[var(--section-py-sm)]",
+      ]}
+    >
+      <div
+        class={
+          variant === "compact" ? "max-w-[var(--content-measure-wide)]" : ""
+        }
+      >
+        {variant === "editorial" && (
+          <p class="editorial-kicker">Keep reading</p>
+        )}
+        <h2
+          class:list={[
+            "font-heading font-bold text-brand-text",
+            variant === "compact"
+              ? "mb-4 text-[length:var(--text-body-lg)]"
+              : "mb-[var(--component-gap)] mt-4 text-[length:var(--text-subheading)]",
+          ]}
+        >
+          {resolvedHeading}
+        </h2>
+      </div>
+
+      {variant === "compact" ? (
+        <div class="grid gap-[var(--component-gap-sm)]">
+          {displayPages.map((page) => (
+            <a
+              href={page.href}
+              class="group block border-b border-[var(--color-neutral-200)] py-3 no-underline transition-[color,transform] duration-[var(--transition-base)]"
+            >
+              <div class="flex items-center justify-between gap-2">
+                <p class="font-heading font-semibold text-[var(--color-brand-text)]">
+                  {page.title}
+                </p>
+                <span
+                  class="text-brand-muted transition-transform duration-[var(--transition-fast)] group-hover:translate-x-1"
+                  aria-hidden="true"
+                >
+                  &rarr;
+                </span>
+              </div>
+              {page.description && (
+                <p class="mt-2 line-clamp-2 text-[length:var(--text-caption)] leading-6 text-[var(--color-brand-muted)]">
+                  {page.description}
+                </p>
+              )}
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="grid gap-4 md:grid-cols-2">
+          {displayPages.map((page, index) => (
+            <a
+              href={page.href}
+              class:list={[
+                "related-page-item group flex gap-4 border-t pt-4 no-underline transition-[color,transform,border-color] duration-[var(--transition-base)] hover:border-[var(--color-accent-400)] hover:-translate-y-[1px]",
+                variant === "editorial"
+                  ? "border-[color-mix(in_srgb,var(--color-neutral-300)_60%,transparent)]"
+                  : "border-[color-mix(in_srgb,var(--color-neutral-300)_82%,transparent)]",
+              ]}
+            >
+              <span class="mt-0.5 text-[length:var(--text-caption)] font-semibold uppercase tracking-[0.18em] text-[var(--color-brand-muted)]">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between gap-2">
+                  <p class="font-heading font-semibold text-[var(--color-brand-primary)]">
+                    {page.title}
+                  </p>
+                  <span
+                    class="text-brand-muted transition-transform duration-[var(--transition-fast)] group-hover:translate-x-1"
+                    aria-hidden="true"
+                  >
+                    &rarr;
+                  </span>
+                </div>
+                {page.description && (
+                  <p class="mt-2 line-clamp-2 text-[length:var(--text-caption)] text-[var(--color-brand-muted)]">
+                    {page.description}
+                  </p>
+                )}
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+
+      {itemListSchema && <SchemaMarkup schemas={[itemListSchema]} />}
+    </section>
+  )
+}

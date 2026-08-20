@@ -1,0 +1,12 @@
+{
+  "uploadedAt": "2026-05-11T19:05:30.332Z",
+  "postizId": "cmp1knmyl036lqf0y0w7g98wr",
+  "entry": {
+    "id": "2026-05-13-wed-02",
+    "scheduledAt": "2026-05-13T07:00:00-05:00",
+    "channel": "company",
+    "pillar": "anti-quickbooks",
+    "hook": "QuickBooks runs on a single general ledger. That architecture is incompatible with HOA fund separation requirements.",
+    "file": "content/linkedin/posts/2026-05-13-wed-02-quickbooks-single-ledger-problem.md"
+  }
+}

@@ -1,0 +1,142 @@
+---
+import { filterTocHeadings } from "../lib/headings";
+import type { TocHeading } from "../lib/headings";
+
+interface Props {
+  headings: TocHeading[];
+  label?: string;
+}
+const { headings, label = "ON THIS PAGE" } = Astro.props;
+const filtered = filterTocHeadings(headings);
+---
+
+{
+  filtered.length > 0 && (
+    <>
+      <details
+        data-toc-panel
+        aria-label="Table of contents"
+        class="sticky bottom-0 z-20 rounded-t-[var(--radius-md)] border border-b-0 border-[var(--color-neutral-200)] bg-[var(--surface-elevated)] px-4 py-3 shadow-[var(--shadow-sm)] lg:hidden"
+        style="padding-bottom: var(--safe-bottom, env(safe-area-inset-bottom, 0.75rem));"
+      >
+        <summary class="flex min-h-11 list-none cursor-pointer items-center justify-between gap-3 u-kicker-serif text-[var(--color-accent-800)] select-none [&::-webkit-details-marker]:hidden">
+          {label}
+          <span
+            aria-hidden="true"
+            class="text-[var(--color-accent-600)] text-xs"
+          >
+            &#9650;
+          </span>
+        </summary>
+        <ul class="mt-3 max-h-[50vh] overflow-y-auto space-y-2 border-l border-[var(--color-accent-200)]">
+          {filtered.map((h) => (
+            <li class={h.depth === 3 ? "pl-6" : "pl-3"}>
+              <a
+                href={`#${h.slug}`}
+                class="min-h-11 flex items-center text-[length:var(--text-caption)] text-[var(--color-accent-800)] hover:text-[var(--color-brand-primary)] transition-colors duration-[var(--transition-fast)]"
+              >
+                {h.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+      <nav
+        data-toc-panel
+        aria-label="Table of contents"
+        class="sticky top-24 hidden max-h-[calc(100vh-6rem)] overflow-y-auto rounded-[var(--radius-md)] border border-[var(--color-neutral-200)] bg-[var(--surface-elevated)] px-5 py-5 shadow-[var(--shadow-sm)] lg:block"
+      >
+        <p class="u-kicker-serif mb-3 text-[var(--color-accent-800)]">
+          {label}
+        </p>
+        <ul class="space-y-2 border-l border-[var(--color-accent-200)]">
+          {filtered.map((h) => (
+            <li class={h.depth === 3 ? "pl-6" : "pl-3"}>
+              <a
+                href={`#${h.slug}`}
+                class="min-h-11 flex items-center text-[length:var(--text-caption)] text-[var(--color-accent-800)] hover:text-[var(--color-brand-primary)] transition-colors duration-[var(--transition-fast)]"
+              >
+                {h.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </>
+  )
+}
+
+<style>
+  .toc-active {
+    color: var(--color-brand-primary);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  const tocContainers = document.querySelectorAll<HTMLElement>(
+    'nav[aria-label="Table of contents"], details[aria-label="Table of contents"]',
+  );
+  if (tocContainers.length > 0) {
+    // Collect all unique TOC links across both containers
+    const allLinks: HTMLAnchorElement[] = [];
+    tocContainers.forEach((container) => {
+      container
+        .querySelectorAll<HTMLAnchorElement>('a[href^="#"]')
+        .forEach((a) => allLinks.push(a));
+    });
+
+    if (allLinks.length > 0) {
+      // Map from heading id → ALL matching links (could be 2 per heading: mobile + desktop)
+      const linkMap = new Map<string, HTMLAnchorElement[]>();
+      allLinks.forEach((a) => {
+        const id = a.getAttribute("href")?.slice(1);
+        if (!id) return;
+        const existing = linkMap.get(id) ?? [];
+        linkMap.set(id, [...existing, a]);
+      });
+
+      let activeId: string | null = null;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const target = entry.target as HTMLElement;
+            if (entry.isIntersecting) {
+              target.dataset.visible = "1";
+            } else {
+              delete target.dataset.visible;
+            }
+          });
+
+          const visibleHeadings = [
+            ...document.querySelectorAll("h2[id], h3[id]"),
+          ].filter((h) => (h as HTMLElement).dataset.visible === "1");
+
+          const next =
+            (visibleHeadings[0] as HTMLElement | undefined)?.id ?? null;
+          if (next !== activeId) {
+            // Remove active from previous
+            if (activeId)
+              linkMap
+                .get(activeId)
+                ?.forEach((a) => a.classList.remove("toc-active"));
+            // Add active to new
+            if (next)
+              linkMap.get(next)?.forEach((a) => a.classList.add("toc-active"));
+            activeId = next;
+          }
+        },
+        { rootMargin: "-10% 0px -70% 0px", threshold: 0 },
+      );
+
+      // Note: observer.disconnect() is intentionally omitted. This codebase does not use
+      // Astro View Transitions (<ViewTransitions />), so the observer lifecycle is tied to
+      // the page - the browser cleans up all observers on navigation. If View Transitions
+      // are ever added, add: document.addEventListener('astro:before-swap', () => observer.disconnect(), { once: true })
+      document.querySelectorAll("h2[id], h3[id]").forEach((h) => {
+        if (linkMap.has(h.id)) observer.observe(h);
+      });
+    }
+  }
+</script>

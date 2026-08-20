@@ -1,0 +1,35 @@
+---
+import { normalizeSteps } from "../lib/steps-block-utils";
+
+interface Props {
+  steps: { title: string; content: string }[];
+}
+
+const { steps } = Astro.props;
+const normalized = normalizeSteps(steps);
+---
+
+{
+  normalized.length > 0 && (
+    <ol class="my-8 space-y-6 list-none pl-0">
+      {normalized.map((step, index) => (
+        <li class="flex gap-4">
+          <span
+            class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-[var(--color-brand-primary)] text-[var(--color-neutral-50)] font-bold text-[length:var(--text-caption)] mt-0.5"
+            aria-hidden="true"
+          >
+            {index + 1}
+          </span>
+          <div class="flex-1">
+            <h3 class="font-bold text-[var(--color-brand-text)] text-[length:var(--text-subheading)] mb-1">
+              {step.title}
+            </h3>
+            <p class="text-[var(--color-brand-muted)] text-[length:var(--text-body)] leading-relaxed">
+              {step.content}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  )
+}

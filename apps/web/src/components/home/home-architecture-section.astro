@@ -1,0 +1,297 @@
+---
+import StateReserveLawMap from "../data-viz/state-reserve-law-map.astro";
+
+interface WorkflowPillar {
+  title: string;
+  href: string;
+  description: string;
+  bullets: string[];
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  pillars: WorkflowPillar[];
+  manifesto: string;
+}
+
+const { eyebrow, title, intro, pillars, manifesto } = Astro.props;
+---
+
+<div id="board-architecture" class="home-architecture__shell">
+  <div class="home-architecture__header">
+    <div>
+      <p class="home-architecture__eyebrow editorial-kicker">{eyebrow}</p>
+      <h2 class="home-architecture__title">{title}</h2>
+    </div>
+    <p class="home-architecture__intro">{intro}</p>
+  </div>
+
+  <p class="home-architecture__manifesto">{manifesto}</p>
+
+  <div class="home-architecture__grid">
+    {
+      pillars.map((pillar, index) => (
+        <article class="home-architecture__pillar">
+          <p class="home-architecture__pillar-step">0{index + 1}</p>
+          <p class="home-architecture__pillar-label">{pillar.title}</p>
+          <p class="home-architecture__pillar-copy">{pillar.description}</p>
+          <ul class="home-architecture__list">
+            {pillar.bullets.map((bullet) => (
+              <li>{bullet}</li>
+            ))}
+          </ul>
+          <a href={pillar.href} class="home-architecture__link">
+            Explore {pillar.title.toLowerCase()}
+          </a>
+        </article>
+      ))
+    }
+  </div>
+
+  <div class="home-architecture__map-panel">
+    <div class="home-architecture__map-copy">
+      <p class="u-kicker-serif">-- mapped to state law</p>
+      <h3 class="home-architecture__map-title">
+        What state compliance means for your board.
+      </h3>
+      <p class="home-architecture__map-body">
+        Reserve fund rules change from state to state. Twelve states require
+        formal reserve studies on a set schedule. Five ban mixing operating and
+        reserve money in one account. States with no rule still face federal
+        Fannie Mae disclosure rules as of 2027. Gavelhouse maps each rule to the
+        exact workflow that meets it.
+      </p>
+      <a href="/hoa-compliance/" class="home-architecture__map-link">
+        See the 50-state rule library &rarr;
+      </a>
+    </div>
+    <div class="home-architecture__map-figure">
+      <StateReserveLawMap
+        variant="parchment"
+        compact={true}
+        showLegend={true}
+      />
+    </div>
+  </div>
+</div>
+
+<style>
+  .home-architecture__shell {
+    display: block;
+  }
+
+  .home-architecture__header {
+    display: grid;
+    gap: 1.25rem;
+    align-items: end;
+  }
+
+  .home-architecture__title {
+    margin: 1rem 0 0;
+    max-width: 14ch;
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 4.2vw, 4.8rem);
+    line-height: 0.96;
+    letter-spacing: -0.06em;
+    color: var(--color-brand-text);
+    text-wrap: balance;
+  }
+
+  .home-architecture__intro {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: color-mix(
+      in srgb,
+      var(--color-brand-muted) 84%,
+      var(--color-primary-900)
+    );
+  }
+
+  .home-architecture__manifesto {
+    margin: 2rem 0 0;
+    max-width: 48rem;
+    padding: 1.1rem 0;
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-accent-500) 36%, transparent);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-accent-500) 36%, transparent);
+    font-family: var(--font-heading);
+    font-style: italic;
+    color: color-mix(in srgb, var(--color-primary-800) 90%, black);
+    font-size: clamp(1.05rem, 1.35vw, 1.2rem);
+    line-height: 1.6;
+  }
+
+  .home-architecture__grid {
+    display: grid;
+    gap: clamp(2rem, 3vw, 3rem);
+    margin-top: 3rem;
+  }
+
+  .home-architecture__pillar {
+    display: grid;
+    gap: 1rem;
+    padding: 0;
+  }
+
+  .home-architecture__pillar-step {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(1.6rem, 2.2vw, 2rem);
+    line-height: 1;
+    color: var(--color-accent-500);
+    letter-spacing: -0.01em;
+  }
+
+  .home-architecture__pillar-label {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 0.95rem;
+    letter-spacing: 0;
+    color: color-mix(in srgb, var(--color-accent-700) 84%, black);
+  }
+
+  .home-architecture__pillar-copy {
+    margin: 0;
+    max-width: 32ch;
+    font-family: var(--font-heading);
+    font-size: clamp(1.25rem, 1.55vw, 1.7rem);
+    line-height: 1.18;
+    letter-spacing: -0.03em;
+    color: color-mix(in srgb, var(--color-brand-text) 94%, black);
+  }
+
+  .home-architecture__list {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .home-architecture__list li {
+    padding-top: 0.75rem;
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-primary-900) 12%, transparent);
+    font-size: 0.97rem;
+    line-height: 1.65;
+    color: color-mix(
+      in srgb,
+      var(--color-brand-text) 90%,
+      var(--color-primary-900)
+    );
+  }
+
+  .home-architecture__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: fit-content;
+    min-height: 44px;
+    font-weight: 700;
+    color: color-mix(in srgb, var(--color-primary-700) 90%, black);
+    text-decoration: none;
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .home-architecture__link::after {
+    content: "\2197";
+    font-size: 0.95rem;
+  }
+
+  .home-architecture__link:hover {
+    transform: translateX(3px);
+  }
+
+  .home-architecture__map-panel {
+    display: grid;
+    gap: 2rem;
+    margin-top: clamp(2.5rem, 4vw, 3.5rem);
+    padding-top: clamp(2rem, 3vw, 2.75rem);
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-primary-900) 14%, transparent);
+  }
+
+  .home-architecture__map-copy {
+    display: grid;
+    gap: 1rem;
+    max-width: 36rem;
+  }
+
+  .home-architecture__map-title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: clamp(1.3rem, 1.65vw, 1.55rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--color-brand-text);
+  }
+
+  .home-architecture__map-body {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: color-mix(
+      in srgb,
+      var(--color-brand-muted) 84%,
+      var(--color-primary-900)
+    );
+  }
+
+  .home-architecture__map-link {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-accent-700);
+    text-decoration: none;
+    width: fit-content;
+    min-height: 44px;
+    transition: color var(--transition-fast, 180ms) ease;
+  }
+
+  .home-architecture__map-link:hover {
+    color: var(--color-accent-800);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .home-architecture__map-figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  @media (min-width: 68rem) {
+    .home-architecture__header {
+      grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.75fr);
+    }
+
+    .home-architecture__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .home-architecture__map-panel {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 3rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-architecture__link:hover {
+      transform: none;
+    }
+  }
+</style>

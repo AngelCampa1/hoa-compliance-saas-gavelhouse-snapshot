@@ -1,0 +1,48 @@
+---
+import SchemaMarkup from "../seo/schema-markup.astro";
+import { buildReviewSchema } from "../lib/schema-builders";
+
+interface Props {
+  quote: string;
+  name: string;
+  title?: string;
+  reviewOf?: string;
+  rating?: number;
+}
+const { quote, name, title, reviewOf, rating } = Astro.props;
+
+const reviewSchema = reviewOf
+  ? buildReviewSchema({ quote, name, title, reviewOf, rating })
+  : null;
+---
+
+<blockquote
+  class="bg-[var(--surface-primary)] shadow-[var(--shadow-sm)] rounded-[var(--radius-md)] p-[var(--component-gap)] my-[var(--component-gap)]"
+>
+  <div class="relative">
+    <svg
+      width="36"
+      height="28"
+      viewBox="0 0 36 28"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      class="text-[var(--color-accent-300)] mb-2"
+      aria-hidden="true"
+    >
+      <path
+        d="M0 28V17.2C0 13.4667 0.8 10.2 2.4 7.4C4.06667 4.6 6.46667 2.26667 9.6 0.4L12.4 4.2C10.4 5.4 8.86667 6.93333 7.8 8.8C6.73333 10.6 6.2 12.8 6.2 15.4H12V28H0ZM20 28V17.2C20 13.4667 20.8 10.2 22.4 7.4C24.0667 4.6 26.4667 2.26667 29.6 0.4L32.4 4.2C30.4 5.4 28.8667 6.93333 27.8 8.8C26.7333 10.6 26.2 12.8 26.2 15.4H32V28H20Z"
+      ></path>
+    </svg>
+    <p
+      class="text-[length:var(--text-body-lg)] text-brand-text leading-relaxed"
+    >
+      {quote}
+    </p>
+  </div>
+  <footer class="mt-6">
+    <div class="w-10 h-[3px] bg-[var(--color-accent-500)] mb-4"></div>
+    <span class="block font-heading font-bold text-brand-text">{name}</span>
+    {title && <span class="u-inline-metadata block mt-1">{title}</span>}
+  </footer>
+</blockquote>
+{reviewSchema && <SchemaMarkup schemas={[reviewSchema]} />}

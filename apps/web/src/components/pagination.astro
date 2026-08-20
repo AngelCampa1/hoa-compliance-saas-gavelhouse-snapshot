@@ -1,0 +1,77 @@
+---
+import { pageUrl, getPageNumbers } from "../lib/pagination";
+
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  basePath: string;
+}
+
+const { currentPage, totalPages, basePath } = Astro.props;
+
+const pages = getPageNumbers(currentPage, totalPages);
+const hasPrev = currentPage > 1;
+const hasNext = currentPage < totalPages;
+---
+
+{
+  totalPages > 1 && (
+    <nav
+      aria-label="Pagination"
+      class="flex items-center justify-center gap-1 mt-10"
+    >
+      {hasPrev ? (
+        <a
+          href={pageUrl(currentPage - 1, basePath)}
+          class="min-h-11 min-w-11 flex items-center justify-center px-3 py-2 text-[length:var(--text-caption)] font-medium text-[var(--color-brand-text)] rounded-full hover:bg-[var(--surface-secondary)] transition-colors duration-[var(--transition-fast)]"
+          aria-label="Previous page"
+        >
+          &larr; Prev
+        </a>
+      ) : (
+        <span class="min-h-11 min-w-11 flex items-center justify-center rounded-full px-3 py-2 text-[length:var(--text-caption)] font-medium text-[var(--color-neutral-300)] cursor-not-allowed">
+          &larr; Prev
+        </span>
+      )}
+
+      {pages.map((page) =>
+        page === "ellipsis" ? (
+          <span
+            class="px-2 py-2 text-[length:var(--text-caption)] text-[var(--color-neutral-400)]"
+            aria-hidden="true"
+          >
+            &hellip;
+          </span>
+        ) : page === currentPage ? (
+          <span
+            class="min-h-11 min-w-11 flex items-center justify-center px-3 py-2 text-[length:var(--text-caption)] font-bold bg-[var(--color-brand-primary)] text-[var(--color-neutral-50)] rounded-full"
+            aria-current="page"
+          >
+            {page}
+          </span>
+        ) : (
+          <a
+            href={pageUrl(page, basePath)}
+            class="min-h-11 min-w-11 flex items-center justify-center px-3 py-2 text-[length:var(--text-caption)] font-medium text-[var(--color-brand-text)] rounded-full hover:bg-[var(--surface-secondary)] transition-colors duration-[var(--transition-fast)]"
+          >
+            {page}
+          </a>
+        ),
+      )}
+
+      {hasNext ? (
+        <a
+          href={pageUrl(currentPage + 1, basePath)}
+          class="min-h-11 min-w-11 flex items-center justify-center px-3 py-2 text-[length:var(--text-caption)] font-medium text-[var(--color-brand-text)] rounded-full hover:bg-[var(--surface-secondary)] transition-colors duration-[var(--transition-fast)]"
+          aria-label="Next page"
+        >
+          Next &rarr;
+        </a>
+      ) : (
+        <span class="min-h-11 min-w-11 flex items-center justify-center rounded-full px-3 py-2 text-[length:var(--text-caption)] font-medium text-[var(--color-neutral-300)] cursor-not-allowed">
+          Next &rarr;
+        </span>
+      )}
+    </nav>
+  )
+}

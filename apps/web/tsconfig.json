@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "declaration": false,
+    "declarationMap": false,
+    "paths": {
+      "@/config/site": ["./src/config/site.ts"],
+      "@/config/hub-faqs": ["./src/config/hub-faqs.ts"],
+      "@/lib/*": ["./src/lib/*"]
+    }
+  },
+  "include": ["src", ".astro/types.d.ts"],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/pages/**",
+    "src/content.config.ts"
+  ]
+}

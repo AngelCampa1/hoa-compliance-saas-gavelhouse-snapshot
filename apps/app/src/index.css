@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
+@import "tailwindcss";
+@import "@boardstack/shared/tokens.css";
+/* tokens.css provides the raw color scale (--color-primary-50 … --color-primary-950),
+   shadow, radii, and transition primitives from @boardstack/design.
+   Note: @boardstack/design/app-theme.css (the Shadcn semantic layer) is NOT imported
+   here because @tailwindcss/vite does not process @theme inline from @import-ed files,
+   so the @theme inline and :root blocks are kept inline below instead. */
+@import "@boardstack/design/tokens.css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  /* Adjusted radius steps for 14px base (--radius-sm: 6px, --radius-md: 10px, --radius-lg: 14px, --radius-xl: 18px) */
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Public Sans", system-ui, sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, "Cascadia Code", "Fira Code", monospace;
+}
+
+:root {
+  /* Off-white background — slightly warm-tinted, never pure white */
+  --background: oklch(0.985 0.012 78);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(0.997 0.006 78);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(0.99 0.002 232);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  /* Brand navy primary — aligns with #163a5f from BRAND_THEME */
+  --primary: var(--brand-primary);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.49 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --success: oklch(0.5 0.15 150);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: oklch(0.76 0.18 80);
+  --warning-foreground: oklch(0.21 0.006 285.885);
+  --info: oklch(0.52 0.16 250);
+  --info-foreground: oklch(0.985 0 0);
+  --border: oklch(0.92 0.004 286.286);
+  --input: oklch(0.92 0.004 286.286);
+  --ring: var(--brand-primary);
+  --overlay: oklch(0.18 0.035 250 / 72%);
+  /* 14px base radius — matches web's --radius-md for visual consistency */
+  --radius: 0.875rem;
+  /* Gold highlight token — for badges, stat callouts */
+  --gold: oklch(0.62 0.15 73);
+  --gold-foreground: oklch(0.14 0.05 73);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  h1 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+  h2 {
+    @apply text-xl font-semibold;
+  }
+  h3 {
+    @apply text-base font-medium;
+  }
+}

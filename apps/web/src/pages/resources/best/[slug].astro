@@ -1,0 +1,188 @@
+---
+import "../../../styles/global.css";
+import { getCollection } from "astro:content";
+import ListicleLayout from "../../../layouts/listicle-layout.astro";
+import ComparisonTable from "../../../components/comparison-table.astro";
+import FaqSection from "../../../components/faq-section.astro";
+import FunnelCta from "../../../components/funnel-cta.astro";
+import RelatedPages from "../../../components/related-pages.astro";
+import InlineSignup from "../../../components/inline-signup.astro";
+import DataTableBlock from "../../../seo/data-table-block.astro";
+import AnswerBlock from "../../../seo/answer-block.astro";
+import { siteConfig } from "../../../config/site";
+import { buildListicleBreadcrumbs } from "@/lib/breadcrumbs";
+import { padToolIndex, buildContentMap } from "@/lib/page-helpers";
+import { resolveRelatedPageLinks } from "../../../lib/related-page-resolver";
+import { resolveMagnetForPage } from "@/lib/resolve-lead-magnet";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("listicles");
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await entry.render();
+const {
+  title,
+  description,
+  bluf,
+  buyerStage,
+  publishedAt,
+  updatedAt,
+  reviewedAt,
+  tools,
+  faqs,
+  relatedPages,
+  tableData,
+  answers,
+  sources,
+} = entry.data;
+const canonicalPath = `/resources/best/${entry.slug}`;
+
+const breadcrumbs = buildListicleBreadcrumbs(title, canonicalPath);
+
+const [
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+] = await Promise.all([
+  getCollection("alternatives"),
+  getCollection("comparisons"),
+  getCollection("pricing-breakdowns"),
+  getCollection("listicles"),
+  getCollection("guides"),
+  getCollection("state-pages"),
+  getCollection("lead-magnets"),
+  getCollection("product-pages"),
+  getCollection("solutions"),
+]);
+const contentMap = buildContentMap({
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+});
+const relatedLinks = resolveRelatedPageLinks(relatedPages, contentMap);
+const leadMagnetOverride = await resolveMagnetForPage({
+  explicitSlug: entry.data.magnetSlug,
+  primaryKeyword: title,
+  tags: entry.data.tags,
+  category: entry.data.category,
+  path: canonicalPath,
+});
+---
+
+<ListicleLayout
+  title={title}
+  description={description}
+  bluf={bluf}
+  buyerStage={buyerStage}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  reviewedAt={reviewedAt}
+  canonicalPath={canonicalPath}
+  config={siteConfig}
+  breadcrumbs={breadcrumbs}
+  tools={tools}
+  leadMagnetOverride={leadMagnetOverride}
+  headings={headings}
+  answers={answers?.map((a) => ({ question: a.q, answer: a.a }))}
+  faqs={faqs}
+  sources={sources}
+>
+  {
+    tools.map((tool, i) => (
+      <section class="mb-12">
+        <div class="flex items-start gap-4 mb-3">
+          <span class="font-heading text-4xl font-bold text-[var(--color-neutral-200)] leading-none select-none shrink-0">
+            {padToolIndex(i)}
+          </span>
+          <h2 class="font-[family-name:var(--font-heading)] text-2xl font-bold text-[var(--color-brand-text)] leading-tight pt-1">
+            {tool.name}
+          </h2>
+        </div>
+        <p class="text-[var(--color-neutral-600)] mb-4 ml-[3.5rem]">
+          {tool.summary}
+        </p>
+        <div class="grid md:grid-cols-2 gap-4 mb-4 ml-[3.5rem]">
+          <div>
+            <h3 class="font-semibold text-[var(--color-primary-700)] mb-2">
+              Pros
+            </h3>
+            <ul class="space-y-1">
+              {tool.pros.map((p) => (
+                <li class="text-sm">&#10003; {p}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold text-[var(--color-error-600)] mb-2">
+              Cons
+            </h3>
+            <ul class="space-y-1">
+              {tool.cons.map((c) => (
+                <li class="text-sm">&times; {c}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <p class="text-sm ml-[3.5rem]">
+          <strong>Pricing:</strong> {tool.pricing}
+        </p>
+        <p class="text-sm mt-1 ml-[3.5rem]">
+          <strong>Verdict:</strong> {tool.verdict}
+        </p>
+      </section>
+    ))
+  }
+
+  <InlineSignup
+    heading="Compare your shortlist in Gavelhouse"
+    subtext="Try Scale features first. Pick a plan later."
+    sourcePage={Astro.url.pathname}
+  />
+
+  <Content />
+
+  {
+    tableData && (
+      <DataTableBlock
+        name={tableData.name}
+        description={tableData.description}
+        columns={tableData.columns}
+        rows={tableData.rows}
+      />
+    )
+  }
+
+  {answers?.map((a) => <AnswerBlock question={a.q} answer={a.a} />)}
+
+  <FunnelCta
+    stage="mofu"
+    funnel={siteConfig.funnel}
+    benefitBullets={siteConfig.copy?.funnelCta?.benefitBullets}
+  />
+
+  <FaqSection
+    faqs={faqs}
+    bottomCtaHeading={siteConfig.copy?.faq?.bottomCtaHeading}
+    bottomCtaText={siteConfig.copy?.faq?.bottomCtaText}
+    bottomCtaTarget={siteConfig.copy?.faq?.bottomCtaTarget}
+  />
+
+  {relatedLinks.length > 0 && <RelatedPages pages={relatedLinks} />}
+</ListicleLayout>

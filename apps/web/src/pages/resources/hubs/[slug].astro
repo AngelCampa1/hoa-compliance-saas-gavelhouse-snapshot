@@ -1,0 +1,172 @@
+---
+import "../../../styles/global.css";
+import BaseLayout from "../../../layouts/base-layout.astro";
+import SiteHeader from "../../../components/site-header.astro";
+import SiteFooter from "../../../components/site-footer.astro";
+import BreadcrumbNav from "../../../components/breadcrumb-nav.astro";
+import ContentCard from "../../../components/content-card.astro";
+import SchemaMarkup from "../../../seo/schema-markup.astro";
+import { getCollection } from "astro:content";
+import { siteConfig } from "../../../config/site";
+import { buildCollectionPageSchema } from "../../../lib/schema-builders";
+import { buildGraph, withId } from "../../../lib/schema-graph";
+import { ensureTrailingSlash } from "../../../lib/meta";
+import {
+  buildResourceHub,
+  getResourceHubStaticPaths,
+} from "../../../lib/resource-hub-builder";
+import { getResourceHubHref } from "../../../lib/resource-hub-data";
+
+export function getStaticPaths() {
+  return getResourceHubStaticPaths();
+}
+
+const { slug } = Astro.props;
+const [
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+] = await Promise.all([
+  getCollection("alternatives"),
+  getCollection("comparisons"),
+  getCollection("pricing-breakdowns"),
+  getCollection("listicles"),
+  getCollection("guides"),
+  getCollection("state-pages"),
+  getCollection("lead-magnets"),
+  getCollection("product-pages"),
+  getCollection("solutions"),
+]);
+const builtHub = buildResourceHub(slug, {
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+});
+
+if (!builtHub) {
+  return new Response("Resource hub not found", {
+    status: 404,
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
+}
+
+const { hub, resources, groupedResources } = builtHub;
+const canonicalPath = getResourceHubHref(hub.slug);
+const canonicalUrl = ensureTrailingSlash(
+  `https://${siteConfig.domain}${canonicalPath}`,
+);
+const collectionSchema = buildCollectionPageSchema({
+  name: hub.title,
+  description: hub.description,
+  url: canonicalUrl,
+  items: resources.map((resource) => ({
+    name: resource.title,
+    description: resource.description,
+    url: `https://${siteConfig.domain}${resource.href}`,
+  })),
+});
+const graph = buildGraph([
+  withId(collectionSchema, `${canonicalUrl}#collection`),
+]);
+---
+
+<BaseLayout
+  title={`${hub.title} | ${siteConfig.name}`}
+  description={hub.description}
+  canonicalUrl={canonicalUrl}
+  siteName={siteConfig.name}
+  ogType="website"
+  themeColor={siteConfig.theme.primary}
+  theme={siteConfig.theme}
+  fonts={siteConfig.theme.fonts}
+  appleTouchIcon={siteConfig.appleTouchIcon}
+>
+  <SiteHeader
+    slot="header"
+    siteName={siteConfig.name}
+    navItems={siteConfig.nav?.items}
+    ctaText={siteConfig.funnel.bofu.ctaText}
+    ctaHref={siteConfig.funnel.bofu.ctaTarget}
+  />
+
+  <main class="hub-shell mx-auto max-w-6xl px-4 py-[var(--section-py-sm)]">
+    <BreadcrumbNav
+      items={[
+        { label: "Home", href: "/" },
+        { label: "Resources", href: "/resources/" },
+        { label: hub.title, href: canonicalPath },
+      ]}
+      siteUrl={`https://${siteConfig.domain}`}
+    />
+
+    <header
+      class="mt-4 overflow-hidden rounded-[calc(var(--radius-xl)+4px)] border border-[color-mix(in_srgb,var(--color-neutral-300)_34%,transparent)] bg-[var(--surface-primary)] px-6 py-7 shadow-[var(--shadow-lg)] lg:px-8"
+    >
+      <p class="u-kicker-serif">{hub.menuSection}</p>
+      <h1
+        class="mt-4 font-heading text-[length:var(--text-editorial-title)] font-bold leading-[1.04] text-[var(--color-brand-text)]"
+      >
+        {hub.title}
+      </h1>
+      <p class="mt-4 max-w-[var(--content-measure-wide)] u-lede">
+        {hub.description}
+      </p>
+      <p class="mt-5 u-inline-metadata">
+        {resources.length} linked {
+          resources.length === 1 ? "resource" : "resources"
+        }
+      </p>
+    </header>
+
+    <div class="mt-12 grid gap-12">
+      {
+        groupedResources.map((group) => (
+          <section aria-labelledby={`${hub.slug}-${group.heading}`}>
+            <div class="mb-5 flex items-end justify-between gap-4 border-b border-[color-mix(in_srgb,var(--color-neutral-300)_60%,transparent)] pb-3">
+              <div>
+                <p class="u-kicker-serif">Hub section</p>
+                <h2
+                  id={`${hub.slug}-${group.heading}`}
+                  class="mt-2 font-heading text-2xl font-bold text-[var(--color-brand-text)]"
+                >
+                  {group.heading}
+                </h2>
+              </div>
+              <p class="u-inline-metadata">
+                {group.resources.length}{" "}
+                {group.resources.length === 1 ? "page" : "pages"}
+              </p>
+            </div>
+            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {group.resources.map((resource) => (
+                <ContentCard item={resource} />
+              ))}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </main>
+
+  <SiteFooter
+    slot="footer"
+    siteName={siteConfig.name}
+    tagline={siteConfig.tagline}
+    linkGroups={siteConfig.footer?.linkGroups}
+    legalLinks={siteConfig.footer?.legalLinks}
+    captureVariant="compact"
+  />
+  <SchemaMarkup graph={graph} />
+</BaseLayout>

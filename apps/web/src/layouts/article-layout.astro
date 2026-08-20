@@ -1,0 +1,342 @@
+---
+import BaseLayout from "./base-layout.astro";
+import BreadcrumbNav from "../components/breadcrumb-nav.astro";
+import BlufBlock from "../seo/bluf-block.astro";
+import SchemaMarkup from "../seo/schema-markup.astro";
+import {
+  buildArticleSchema,
+  buildPageIdentityGraphSchemas,
+  mergeFaqSources,
+} from "../lib/schema-builders";
+import { buildGraph, withId } from "../lib/schema-graph";
+import {
+  resolveSchemaImage,
+  buyerStageToSection,
+  ensureTrailingSlash,
+} from "../lib/meta";
+import SiteHeader from "../components/site-header.astro";
+import ArticleMeta from "../components/article-meta.astro";
+import SiteFooter from "../components/site-footer.astro";
+import TableOfContents from "../components/table-of-contents.astro";
+import SidebarCta from "../components/sidebar-cta.astro";
+import SourcesSection from "../components/sources-section.astro";
+import EditorialBody from "../components/editorial-body.astro";
+import ResourceHubLinks from "../components/resource-hub-links.astro";
+import GeneratedProductMockup from "../components/generated-product-mockup.astro";
+import { ExitIntentPopup } from "../components/exit-intent-popup";
+import { resolveExitPopupProps } from "../lib/exit-popup-props";
+import { buildSidebarCtaProps } from "../lib/sidebar-cta-utils";
+import { resolvePublicApiUrl } from "../lib/public-runtime-urls";
+import type {
+  SiteConfig,
+  BuyerStage,
+  FaqItem,
+  ContentSource,
+  LeadMagnet,
+} from "../lib/types";
+import type { GeneratedProductVisualPreset } from "../lib/generated-product-visuals";
+
+interface Props {
+  title: string;
+  description: string;
+  bluf: string;
+  buyerStage?: BuyerStage;
+  publishedAt: string;
+  updatedAt: string;
+  reviewedAt?: string;
+  canonicalPath: string;
+  config: SiteConfig;
+  breadcrumbs: { label: string; href: string }[];
+  schemas?: Record<string, unknown>[];
+  headings?: { depth: number; slug: string; text: string }[];
+  ogImage?: string;
+  noindex?: boolean;
+  answers?: { question: string; answer: string }[];
+  faqs?: FaqItem[];
+  tags?: string[];
+  sources?: ContentSource[];
+  productVisual?: GeneratedProductVisualPreset;
+  leadMagnetOverride?: LeadMagnet;
+}
+const {
+  title,
+  description,
+  bluf,
+  buyerStage,
+  publishedAt,
+  updatedAt,
+  reviewedAt,
+  canonicalPath,
+  config,
+  breadcrumbs,
+  schemas = [],
+  headings,
+  ogImage,
+  noindex,
+  answers = [],
+  faqs = [],
+  tags,
+  sources = [],
+  productVisual,
+  leadMagnetOverride,
+} = Astro.props;
+const exitPopupProps =
+  config.exitPopup?.enabled !== false
+    ? resolveExitPopupProps(config)
+    : undefined;
+const publicApiUrl = resolvePublicApiUrl(import.meta.env.PUBLIC_API_URL);
+const sidebarCtaProps = buyerStage
+  ? buildSidebarCtaProps(config, buyerStage)
+  : undefined;
+const canonicalUrl = ensureTrailingSlash(
+  `https://${config.domain}${canonicalPath}`,
+);
+
+const siteUrl = `https://${config.domain}`;
+const orgId = `${siteUrl}/#organization`;
+const identitySchemas = buildPageIdentityGraphSchemas({
+  siteName: config.name,
+  siteUrl,
+  pageUrl: canonicalUrl,
+  pageName: title,
+  pageDescription: description,
+  breadcrumbs,
+  author: config.author,
+  logo: config.logo?.light,
+  sameAs: config.sameAs,
+  contactEmail: config.contactEmail,
+  areaServed: config.areaServed,
+  searchPathTemplate: config.searchPathTemplate,
+});
+const articleSchema = buildArticleSchema({
+  headline: title,
+  description,
+  datePublished: publishedAt,
+  dateModified: updatedAt,
+  lastReviewed: reviewedAt ?? updatedAt,
+  publisher: { "@id": orgId },
+  author: config.author,
+  image: resolveSchemaImage(config.domain, ogImage, config.defaultOgImage),
+  mainEntityOfPage: canonicalUrl,
+  speakableCssSelectors: [".bluf-block", ".faq-answer", ".answer-block-answer"],
+});
+const faqSchema = mergeFaqSources(faqs, answers);
+const articleId = `${canonicalUrl}#article`;
+const graph = buildGraph([
+  ...identitySchemas,
+  withId(articleSchema, articleId),
+  ...schemas,
+  ...(faqSchema ? [faqSchema] : []),
+]);
+---
+
+<BaseLayout
+  title={`${title} | ${config.name}`}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  siteName={config.name}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  twitterSite={config.social?.twitterHandle}
+  articleAuthor={config.author?.name}
+  themeColor={config.theme.primary}
+  theme={config.theme}
+  fonts={config.theme.fonts}
+  preserveMetaTagCopy={config.preserveMetaTagCopy}
+  appleTouchIcon={config.appleTouchIcon}
+  ogImage={ogImage}
+  ogType="article"
+  noindex={noindex}
+  siteUrl={`https://${config.domain}`}
+  analyticsEnabled={config.analytics?.enabled ?? true}
+  enableScrollReveal={false}
+  articleSection={buyerStage ? buyerStageToSection(buyerStage) : undefined}
+  articleTags={tags}
+  rssUrl="/rss.xml"
+>
+  <SiteHeader
+    slot="header"
+    siteName={config.name}
+    navItems={config.nav?.items}
+    ctaText={config.funnel.bofu.ctaText}
+    ctaHref={config.funnel.bofu.ctaTarget}
+    ctaVariant="primary"
+  />
+  <div
+    data-editorial-layout
+    class="article-page-shell editorial-shell mx-auto max-w-6xl px-4 py-[var(--section-py)]"
+  >
+    <BreadcrumbNav
+      items={breadcrumbs}
+      siteUrl={`https://${config.domain}`}
+      emitSchema={false}
+    />
+    <div
+      data-editorial-article
+      class="article-page-intro b1-guide-header mt-6 overflow-hidden rounded-[var(--r-lg)] border border-[var(--hairline)] bg-[var(--ink-0)] px-5 py-6 text-[#f0ead8] shadow-[var(--shadow-1)] sm:px-6 lg:px-8 lg:py-8"
+    >
+      <div
+        class="article-page-intro-grid relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.82fr)] lg:items-center"
+      >
+        <div class="relative z-[1] max-w-[44rem]">
+          <p class="b1-eyebrow">
+            {productVisual ? "Feature page" : "Guide"}
+          </p>
+          <h1 class="b1-h1 mt-4 text-[#f0ead8]">
+            {title}
+          </h1>
+          <ArticleMeta
+            authorName={config.author?.name}
+            authorTitle={config.author?.title}
+            authorUrl={config.author?.url}
+            publishedAt={publishedAt}
+            updatedAt={updatedAt}
+            reviewedAt={reviewedAt}
+          />
+        </div>
+        {
+          productVisual ? (
+            <GeneratedProductMockup {...productVisual} compact />
+          ) : (
+            <div class="article-page-intro-note b1-card b1-card--ink relative z-[1] max-w-[18rem]">
+              <p class="b1-eyebrow">Author</p>
+              <p class="mt-3 text-[length:var(--text-body)] leading-7">
+                Angel Campa · builder-direct notes for volunteer boards.
+              </p>
+            </div>
+          )
+        }
+      </div>
+    </div>
+    <EditorialBody class="article-page-grid mt-8" proseTypography={false}>
+      <article
+        class="article-page-body min-w-0 max-w-[var(--content-measure-wide)] rounded-[calc(var(--radius-xl)+2px)] border border-[color-mix(in_srgb,var(--color-neutral-300)_32%,transparent)] bg-[color-mix(in_srgb,var(--surface-primary)_90%,white)] px-5 py-6 shadow-[var(--shadow-card)] sm:px-6 lg:px-8 lg:py-8"
+      >
+        <BlufBlock text={bluf} />
+        <div
+          class="article-prose prose prose-lg max-w-none prose-p:max-w-[var(--content-measure)] prose-li:max-w-[var(--content-measure)]"
+        >
+          <slot />
+        </div>
+        <SourcesSection sources={sources} />
+      </article>
+      {
+        ((headings && headings.length > 0) || sidebarCtaProps) && (
+          <Fragment slot="margin">
+            <div
+              data-editorial-sidebar
+              aria-label="Sidebar"
+              class="article-page-sidebar sticky-toc"
+            >
+              {headings && headings.length > 0 && (
+                <TableOfContents headings={headings} />
+              )}
+              {sidebarCtaProps && (
+                <div class={headings && headings.length > 0 ? "mt-6" : ""}>
+                  <SidebarCta {...sidebarCtaProps} />
+                </div>
+              )}
+            </div>
+          </Fragment>
+        )
+      }
+    </EditorialBody>
+  </div>
+  <ResourceHubLinks pathname={canonicalPath} />
+  <style>
+    .article-page-intro {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .article-page-intro::before {
+      content: "";
+      position: absolute;
+      inset: -14% auto auto 54%;
+      width: 18rem;
+      height: 18rem;
+      border-radius: 999px;
+      background: radial-gradient(
+        circle,
+        color-mix(in srgb, var(--color-accent-200) 42%, transparent) 0%,
+        transparent 72%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .article-page-intro::after {
+      content: "";
+      position: absolute;
+      inset: auto auto -18% -6%;
+      width: 20rem;
+      height: 12rem;
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--color-brand-primary) 10%, transparent),
+        transparent
+      );
+      filter: blur(18px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .article-page-intro :global(.b1-eyebrow) {
+      color: #d99a19;
+    }
+
+    .article-page-intro :global(.b1-h1) {
+      color: #fff8ea;
+      text-shadow: 0 2px 18px rgb(0 0 0 / 0.38);
+    }
+
+    .article-page-intro :global([data-article-meta]) {
+      margin-top: 1.5rem;
+      margin-bottom: 0;
+    }
+
+    .article-page-intro :global([data-article-meta] a),
+    .article-page-intro :global([data-article-meta] span) {
+      border-color: rgb(245 226 183 / 0.52);
+      background: rgb(255 248 234 / 0.1);
+      color: #f7ead2;
+      box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.04);
+    }
+
+    .article-page-intro :global([data-article-meta] a),
+    .article-page-intro :global([data-article-meta] span:first-child),
+    .article-page-intro :global([data-article-meta] span:last-child) {
+      background: #fff8ea;
+      color: #3b2c18;
+    }
+
+    .article-page-intro-note {
+      border-color: rgb(245 226 183 / 0.16);
+      background: rgb(255 248 234 / 0.07);
+      color: #fff8ea;
+    }
+  </style>
+  <SchemaMarkup graph={graph} />
+  {
+    exitPopupProps && (
+      <ExitIntentPopup
+        client:load
+        apiUrl={publicApiUrl}
+        siteName={config.name}
+        leadMagnet={leadMagnetOverride ?? config.leadMagnet}
+        {...exitPopupProps}
+      />
+    )
+  }
+  <SiteFooter
+    slot="footer"
+    siteName={config.name}
+    tagline={config.tagline}
+    linkGroups={config.footer?.linkGroups}
+    legalLinks={config.footer?.legalLinks}
+    contactEmail={config.contactEmail}
+    captureVariant="none"
+    surface="ink"
+    colophon="Built in public for self-managed HOA and condo boards. Gavelhouse is an operating tool, not legal advice. Consult your state's HOA statute and a licensed attorney for specific obligations."
+  />
+</BaseLayout>

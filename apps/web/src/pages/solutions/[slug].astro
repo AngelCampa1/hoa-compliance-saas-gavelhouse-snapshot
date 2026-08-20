@@ -1,0 +1,234 @@
+---
+import "../../styles/global.css";
+import { getCollection } from "astro:content";
+import ArticleLayout from "../../layouts/article-layout.astro";
+import FaqSection from "../../components/faq-section.astro";
+import FunnelCta from "../../components/funnel-cta.astro";
+import RelatedPages from "../../components/related-pages.astro";
+import AnswerBlock from "../../seo/answer-block.astro";
+import DataTableBlock from "../../seo/data-table-block.astro";
+import { siteConfig } from "../../config/site";
+import { buildCollectionPageSchema } from "../../lib/schema-builders";
+import { buildContentMap } from "../../lib/page-helpers";
+import { resolveRelatedPageLinks } from "../../lib/related-page-resolver";
+import { resolveSolutionVisualPreset } from "../../lib/generated-product-visuals";
+import { resolveMagnetForPage } from "@/lib/resolve-lead-magnet";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("solutions");
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await entry.render();
+const {
+  title,
+  description,
+  bluf,
+  publishedAt,
+  updatedAt,
+  reviewedAt,
+  faqs,
+  relatedPages,
+  tableData,
+  answers,
+  tags,
+  painPoints,
+  outcomes,
+  audienceLabel,
+  relatedProductSlugs,
+  solutionCategory,
+  sources,
+} = entry.data;
+
+const canonicalPath = `/solutions/${entry.slug}`;
+const productVisual = resolveSolutionVisualPreset({
+  relatedProductSlugs,
+  solutionCategory,
+});
+
+const [
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+] = await Promise.all([
+  getCollection("alternatives"),
+  getCollection("comparisons"),
+  getCollection("pricing-breakdowns"),
+  getCollection("listicles"),
+  getCollection("guides"),
+  getCollection("state-pages"),
+  getCollection("lead-magnets"),
+  getCollection("product-pages"),
+  getCollection("solutions"),
+]);
+
+const contentMap = buildContentMap({
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+});
+const leadMagnetOverride = await resolveMagnetForPage({
+  explicitSlug: entry.data.magnetSlug,
+  primaryKeyword: title,
+  tags: entry.data.tags,
+  path: canonicalPath,
+});
+const combinedRelatedPages = [...relatedPages];
+for (const slug of relatedProductSlugs) {
+  const path = `/product/${slug}`;
+  if (!combinedRelatedPages.includes(path)) {
+    combinedRelatedPages.push(path);
+  }
+}
+const relatedLinks = resolveRelatedPageLinks(combinedRelatedPages, contentMap);
+const siteUrl = `https://${siteConfig.domain}`;
+const canonicalUrl = `${siteUrl}${canonicalPath}/`;
+const collectionSchema = buildCollectionPageSchema({
+  name: title,
+  description,
+  url: canonicalUrl,
+  items: relatedLinks.map((page) => ({
+    name: page.title,
+    description: page.description,
+    url: `${siteUrl}${page.href}/`,
+  })),
+});
+
+const solutionAudienceSummary =
+  "boards, managers, and operators serving HOA and condo communities";
+---
+
+<ArticleLayout
+  title={title}
+  description={description}
+  bluf={bluf}
+  buyerStage="bofu"
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  reviewedAt={reviewedAt}
+  canonicalPath={canonicalPath}
+  config={siteConfig}
+  breadcrumbs={[
+    { label: "Home", href: "/" },
+    { label: "Solutions", href: "/solutions/" },
+    { label: title, href: `${canonicalPath}/` },
+  ]}
+  schemas={[collectionSchema]}
+  headings={headings}
+  answers={answers?.map((a) => ({ question: a.q, answer: a.a }))}
+  faqs={faqs}
+  tags={tags}
+  sources={sources}
+  productVisual={productVisual}
+  leadMagnetOverride={leadMagnetOverride}
+>
+  <section
+    class="mb-8 rounded-[var(--radius-md)] border border-[var(--color-neutral-200)] bg-[var(--surface-secondary)] p-6"
+  >
+    <h2 class="u-kicker-serif mb-3 text-[var(--color-neutral-500)]">
+      How Gavelhouse helps {audienceLabel}
+    </h2>
+    <p class="mb-4 text-sm leading-6 text-[var(--color-brand-text)]">
+      Gavelhouse gives {audienceLabel.toLowerCase()} one place for board money, decisions,
+      owner requests, and follow-up work.
+    </p>
+    <div class="grid gap-3 sm:grid-cols-3">
+      <p
+        class="rounded-[var(--radius-sm)] bg-[var(--surface-primary)] px-4 py-3 text-sm text-[var(--color-brand-text)] shadow-[var(--shadow-card)]"
+      >
+        <strong>Solves:</strong> scattered work.
+      </p>
+      <p
+        class="rounded-[var(--radius-sm)] bg-[var(--surface-primary)] px-4 py-3 text-sm text-[var(--color-brand-text)] shadow-[var(--shadow-card)]"
+      >
+        <strong>How:</strong> role paths tied to the same board record.
+      </p>
+      <p
+        class="rounded-[var(--radius-sm)] bg-[var(--surface-primary)] px-4 py-3 text-sm text-[var(--color-brand-text)] shadow-[var(--shadow-card)]"
+      >
+        <strong>For:</strong>
+        {solutionAudienceSummary}.
+      </p>
+    </div>
+  </section>
+
+  <section class="mb-8 grid gap-5 lg:grid-cols-2">
+    <div
+      class="rounded-[var(--radius-md)] border border-[var(--color-neutral-200)] bg-[var(--surface-secondary)] p-6"
+    >
+      <p class="u-kicker-serif mb-3 text-[var(--color-neutral-500)]">
+        Pain points for {audienceLabel}
+      </p>
+      <ul class="space-y-3">
+        {
+          painPoints.map((pain) => (
+            <li class="text-sm text-[var(--color-brand-text)]">{pain}</li>
+          ))
+        }
+      </ul>
+    </div>
+    <div
+      class="rounded-[var(--radius-md)] border border-[var(--color-neutral-200)] bg-[var(--surface-secondary)] p-6"
+    >
+      <p class="u-kicker-serif mb-3 text-[var(--color-neutral-500)]">
+        What success looks like
+      </p>
+      <ul class="space-y-3">
+        {
+          outcomes.map((outcome) => (
+            <li class="text-sm text-[var(--color-brand-text)]">{outcome}</li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Content />
+
+  {
+    tableData && (
+      <DataTableBlock
+        name={tableData.name}
+        description={tableData.description}
+        columns={tableData.columns}
+        rows={tableData.rows}
+      />
+    )
+  }
+
+  {answers?.map((a) => <AnswerBlock question={a.q} answer={a.a} />)}
+
+  <FaqSection
+    faqs={faqs}
+    emitSchema={false}
+    bottomCtaHeading={`Need a clearer path for ${audienceLabel.toLowerCase()}?`}
+    bottomCtaText="Start trial"
+    bottomCtaTarget={siteConfig.funnel.bofu.ctaTarget}
+  />
+
+  <FunnelCta
+    stage="bofu"
+    funnel={siteConfig.funnel}
+    heading={`See the path for ${audienceLabel.toLowerCase()}`}
+    subtitle={siteConfig.copy?.funnelCta?.subtitle}
+    benefitBullets={siteConfig.copy?.funnelCta?.benefitBullets}
+  />
+
+  {relatedLinks.length > 0 && <RelatedPages pages={relatedLinks} />}
+</ArticleLayout>

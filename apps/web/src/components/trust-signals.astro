@@ -1,0 +1,82 @@
+---
+import type { TrustSignal, TrustSignalCategory } from "../lib/types";
+import {
+  CATEGORY_STYLES,
+  CATEGORY_ICONS,
+  mergeCategoryStyles,
+  resolveIconColorPresentation,
+} from "../lib/trust-signal-styles";
+import type { CategoryStyle } from "../lib/trust-signal-styles";
+
+interface Props {
+  signals: TrustSignal[];
+  categoryColors?: Partial<Record<TrustSignalCategory, Partial<CategoryStyle>>>;
+}
+const { signals, categoryColors } = Astro.props;
+const resolvedStyles = categoryColors
+  ? mergeCategoryStyles(CATEGORY_STYLES, categoryColors)
+  : CATEGORY_STYLES;
+---
+
+<section
+  data-section="trust-signals"
+  class="trust-signals-section relative px-0 py-[var(--section-py-sm)]"
+  style="background: var(--section-highlight-bg)"
+>
+  <div
+    class="absolute left-0 right-0 top-0 h-px"
+    style="background: linear-gradient(to right, transparent, var(--color-accent-500), transparent)"
+  >
+  </div>
+  <div
+    class="absolute bottom-0 left-0 right-0 h-px"
+    style="background: linear-gradient(to right, transparent, var(--color-accent-300), transparent)"
+  >
+  </div>
+  <div
+    class="trust-signals-grid mx-auto grid max-w-5xl gap-3 px-4 sm:flex sm:flex-wrap sm:justify-center"
+  >
+    {
+      signals.map((signal) => {
+        const style = resolvedStyles[signal.category];
+        const iconPath = CATEGORY_ICONS[signal.category];
+        const iconPresentation = resolveIconColorPresentation(style.iconColor);
+        return (
+          <span
+            class:list={[
+              "trust-signal-item font-body inline-flex cursor-default items-center gap-2 rounded-full border px-4 py-2.5 text-[length:var(--text-body)] font-medium shadow-[var(--shadow-sm)] transition-[transform,box-shadow] duration-[var(--transition-fast)] hover:-translate-y-px hover:shadow-[var(--shadow-card)]",
+              style.textColor,
+              style.bgColor,
+              style.borderColor,
+            ]}
+          >
+            <svg
+              class:list={[
+                "mt-0.5 h-[var(--icon-md)] w-[var(--icon-md)] flex-shrink-0",
+                iconPresentation.className,
+              ]}
+              style={
+                iconPresentation.color
+                  ? `color: ${iconPresentation.color}`
+                  : undefined
+              }
+              viewBox="0 0 14 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d={iconPath}
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span class="leading-relaxed">{signal.text}</span>
+          </span>
+        );
+      })
+    }
+  </div>
+</section>

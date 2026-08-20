@@ -1,0 +1,217 @@
+---
+interface TrustSignal {
+  text: string;
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  trustSignals: TrustSignal[];
+  proofPoints: string[];
+  differentiators: string[];
+}
+
+const { eyebrow, title, intro, trustSignals, proofPoints, differentiators } =
+  Astro.props;
+---
+
+<div class="home-proof__shell">
+  <div class="paper-divider" aria-hidden="true"></div>
+
+  <div class="home-proof__header">
+    <div>
+      <p class="home-proof__eyebrow editorial-kicker">{eyebrow}</p>
+      <h2 class="home-proof__title">{title}</h2>
+    </div>
+    <p class="home-proof__intro">{intro}</p>
+  </div>
+
+  <ul class="home-proof__signals" aria-label="Trust signals">
+    {
+      trustSignals.map((signal) => (
+        <li class="home-proof__signal">{signal.text}</li>
+      ))
+    }
+  </ul>
+
+  <div class="home-proof__grid">
+    <aside class="home-proof__anchor" aria-label="Gavelhouse difference">
+      <p class="home-proof__anchor-label editorial-kicker">
+        Gavelhouse difference
+      </p>
+      <p class="paper-pullquote">
+        Built for volunteer boards, not property-management back offices.
+      </p>
+      <ul class="home-proof__diff-list">
+        {
+          differentiators.map((item) => (
+            <li class="home-proof__diff-item">{item}</li>
+          ))
+        }
+      </ul>
+    </aside>
+
+    <div class="home-proof__points">
+      {
+        proofPoints.map((item, index) => (
+          <article class="home-proof__point">
+            <p class="home-proof__point-step">0{index + 1}</p>
+            <p class="home-proof__point-copy">{item}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .home-proof__shell {
+    display: block;
+  }
+
+  .home-proof__header {
+    display: grid;
+    gap: 1rem;
+    align-items: end;
+  }
+
+  .home-proof__eyebrow,
+  .home-proof__anchor-label {
+    margin: 0;
+  }
+
+  .home-proof__title {
+    margin: 1rem 0 0;
+    max-width: 16ch;
+    font-family: var(--font-heading);
+    font-size: clamp(2.45rem, 4vw, 4.5rem);
+    line-height: 0.97;
+    letter-spacing: -0.05em;
+    color: var(--color-brand-text);
+  }
+
+  .home-proof__intro {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 1.04rem;
+    line-height: 1.78;
+    color: color-mix(
+      in srgb,
+      var(--color-brand-muted) 85%,
+      var(--color-primary-900)
+    );
+  }
+
+  .home-proof__signals {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+  }
+
+  .home-proof__signal {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: color-mix(
+      in srgb,
+      var(--color-brand-muted) 90%,
+      var(--color-primary-900)
+    );
+  }
+
+  .home-proof__signal + .home-proof__signal::before {
+    content: "\00b7";
+    margin-right: 2rem;
+    margin-left: -2rem;
+    color: color-mix(in srgb, var(--color-accent-500) 80%, transparent);
+  }
+
+  .home-proof__grid {
+    display: grid;
+    gap: clamp(2rem, 3vw, 3rem);
+    margin-top: 3rem;
+  }
+
+  .home-proof__anchor {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .home-proof__diff-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .home-proof__diff-item {
+    margin: 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-primary-900) 12%, transparent);
+    line-height: 1.68;
+    color: color-mix(
+      in srgb,
+      var(--color-brand-text) 88%,
+      var(--color-primary-900)
+    );
+  }
+
+  .home-proof__points {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .home-proof__point {
+    display: grid;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-primary-900) 12%, transparent);
+  }
+
+  .home-proof__point:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .home-proof__point-step {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0;
+    color: color-mix(in srgb, var(--color-accent-700) 84%, black);
+  }
+
+  .home-proof__point-copy {
+    margin: 0;
+    max-width: 30ch;
+    font-family: var(--font-heading);
+    font-size: clamp(1.2rem, 1.55vw, 1.55rem);
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    color: var(--color-brand-text);
+  }
+
+  @media (min-width: 68rem) {
+    .home-proof__header {
+      grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.8fr);
+    }
+
+    .home-proof__grid {
+      grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+      align-items: start;
+    }
+
+    .home-proof__points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem 2.5rem;
+    }
+  }
+</style>

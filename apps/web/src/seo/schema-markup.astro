@@ -1,0 +1,36 @@
+---
+import { sanitizeJsonLd } from "../lib/sanitize";
+
+interface Props {
+  schemas?: Record<string, unknown>[];
+  graph?: Record<string, unknown>;
+}
+const { schemas: rawSchemas, graph } = Astro.props;
+const schemas: Record<string, unknown>[] = rawSchemas ?? [];
+if (graph && schemas.length > 0) {
+  throw new Error("schema-markup: pass either graph or schemas, not both");
+}
+---
+
+<!--
+  Emits JSON-LD structured data.
+  - Pass `graph` to emit a single <script> with a @graph wrapper (preferred for multi-entity pages).
+  - Pass `schemas` to emit one <script> per schema object (legacy/backward-compat mode).
+  All values are sanitized with sanitizeJsonLd() to prevent </script> injection.
+-->{
+  graph ? (
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={sanitizeJsonLd(JSON.stringify(graph))}
+    />
+  ) : (
+    schemas.map((schema) => (
+      <script
+        is:inline
+        type="application/ld+json"
+        set:html={sanitizeJsonLd(JSON.stringify(schema))}
+      />
+    ))
+  )
+}

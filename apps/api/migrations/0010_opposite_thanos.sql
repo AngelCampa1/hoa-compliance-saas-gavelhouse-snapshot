@@ -1,0 +1,1 @@
+ALTER TABLE "communities" ADD COLUMN "stripe_price_id" text;

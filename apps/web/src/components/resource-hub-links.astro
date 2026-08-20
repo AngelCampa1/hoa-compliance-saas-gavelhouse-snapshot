@@ -1,0 +1,40 @@
+---
+import {
+  getResourceHubsForPath,
+  getResourceHubHref,
+} from "../lib/resource-hub-data";
+
+interface Props {
+  pathname: string;
+  heading?: string;
+}
+
+const { pathname, heading = "Explore this topic" } = Astro.props;
+const hubs = getResourceHubsForPath(pathname).slice(0, 3);
+---
+
+{
+  hubs.length > 0 && (
+    <section class="resource-hub-links mx-auto max-w-4xl px-4 py-8">
+      <p class="u-kicker-serif">Resource hub</p>
+      <h2 class="mt-2 font-heading text-xl font-bold text-[var(--color-brand-text)]">
+        {heading}
+      </h2>
+      <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {hubs.map((hub) => (
+          <a
+            href={getResourceHubHref(hub.slug)}
+            class="group block rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--color-neutral-300)_55%,transparent)] bg-[var(--surface-primary)] p-4 no-underline transition-[border-color,background-color,transform] duration-[var(--transition-base)] hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--color-brand-primary)_42%,var(--color-neutral-300))] hover:bg-[var(--surface-elevated)]"
+          >
+            <p class="font-heading font-semibold text-[var(--color-brand-primary)]">
+              {hub.menuLabel}
+            </p>
+            <p class="mt-2 text-[length:var(--text-caption)] leading-6 text-[var(--color-brand-muted)]">
+              {hub.menuDescription}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}

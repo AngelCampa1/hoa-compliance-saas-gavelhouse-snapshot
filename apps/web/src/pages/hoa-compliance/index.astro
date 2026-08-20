@@ -1,0 +1,188 @@
+---
+import "../../styles/global.css";
+import LandingLayout from "../../layouts/landing-layout.astro";
+import DocHeader from "../../components/doc-header.astro";
+import { siteConfig } from "../../config/site";
+import { getCollection } from "astro:content";
+
+const live = (await getCollection("state-pages"))
+  .map((entry) => ({
+    abbr: entry.data.stateCode,
+    name: entry.data.state,
+    slug: entry.slug,
+    title: entry.data.title,
+  }))
+  .sort(
+    (a, b) => a.name.localeCompare(b.name) || a.title.localeCompare(b.title),
+  );
+const liveStateCodes = new Set(live.map((entry) => entry.abbr));
+const atlas = [
+  "WA",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "ME",
+  "",
+  "OR",
+  "CA",
+  "NV",
+  "AZ",
+  "CO",
+  "TX",
+  "",
+  "IL",
+  "GA",
+  "FL",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "NC",
+  "VA",
+  "",
+];
+const signupUrl = siteConfig.funnel.bofu.ctaTarget;
+const coverageLabel = `${live.length} live`;
+---
+
+<LandingLayout
+  config={siteConfig}
+  canonicalPath="/hoa-compliance/"
+  title="HOA compliance by state"
+  description="State guides for reserve studies, fund separation, budgets, and audits."
+>
+  <section class="b1-section">
+    <div class="b1-container">
+      <DocHeader
+        kicker="STATE RULES"
+        re="Reserve and board rules differ by state."
+        meta={[{ label: "COVERAGE", value: coverageLabel, tone: "resolved" }]}
+      />
+      <div class="b1-grid-2">
+        <div>
+          <h1 class="b1-h1">Find your state's HOA reserve rules.</h1>
+          <p class="b1-body-lg">
+            Start with the published guides. Then use Gavelhouse to keep cleaner
+            board records.
+          </p>
+          <div class="hero-actions">
+            <a class="b1-button b1-button--primary" href={signupUrl}
+              >Start trial</a
+            ><a class="b1-button" href="/contact/">Request a state</a>
+          </div>
+        </div>
+        <div class="b1-card atlas-grid">
+          {
+            atlas.map((code) => (
+              <span
+                class:list={[
+                  "atlas-cell",
+                  liveStateCodes.has(code) && "is-live",
+                ]}
+              >
+                {code}
+              </span>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section b1-section--alt">
+    <div class="b1-container">
+      <p class="b1-eyebrow">Live guides</p>
+      <div class="b1-grid-3">
+        {
+          live.map((entry) => (
+            <a
+              class="b1-card state-card is-live"
+              href={`/hoa-compliance/${entry.slug}/`}
+            >
+              <>
+                <strong>{entry.abbr}</strong>
+                <h2 class="b1-h3">{entry.title}</h2>
+                <p class="b1-small">{entry.name}</p>
+                <span class="b1-badge b1-badge--acc">v2026.2</span>
+              </>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section">
+    <div class="b1-container">
+      <p class="b1-eyebrow">State requests</p>
+      <p class="b1-body-lg">
+        All published state pages are linked above. Email
+        {siteConfig.contactEmail} to request a deeper statute summary or local market
+        note.
+      </p>
+    </div>
+  </section>
+
+  <section class="b1-section b1-section--alt">
+    <div class="b1-container">
+      <p class="b1-eyebrow">Why states differ</p>
+      <div class="state-differences">
+        <p class="b1-body-lg">
+          Reserve studies, fund separation, disclosures, and audit thresholds
+          change by state. Use the guides for source-backed details.
+        </p>
+        <p class="b1-body">
+          Request a deeper summary if your state is not listed yet.
+        </p>
+        <div class="state-link-row" aria-label="Published state guides">
+          {
+            live.map((entry) => (
+              <a class="b1-button" href={`/hoa-compliance/${entry.slug}/`}>
+                {entry.abbr}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</LandingLayout>
+
+<style>
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .state-card {
+    color: var(--ink-0);
+    text-decoration: none;
+  }
+  .state-card.is-live {
+    border-color: var(--accent);
+  }
+  .state-card strong {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 22px;
+  }
+  .state-differences {
+    max-width: 760px;
+  }
+  .state-link-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+</style>

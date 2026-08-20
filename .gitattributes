@@ -1,0 +1,10 @@
+packages/shared/generated/knowledge/*.json text eol=lf
+
+# Files written by a generator and then byte-compared by a check script. Git's
+# core.autocrlf=true (the Windows default) would smudge these to CRLF on
+# checkout, while the generators emit LF via Prettier — so `pnpm run
+# metrics:check` would report them as permanently stale on a fresh Windows
+# clone, and `verify` would fail for a reader who had changed nothing.
+README.md text eol=lf
+portfolio/METRICS.md text eol=lf
+docs/screenshots/README.md text eol=lf

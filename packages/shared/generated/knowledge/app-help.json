@@ -1,0 +1,470 @@
+{
+  "schemaVersion": "2026-05-knowledge-v1",
+  "domain": "app",
+  "help": {
+    "version": "2026-04-help-v1",
+    "topics": [
+      {
+        "id": "first-day-setup",
+        "title": "First day setup",
+        "summary": "The safest order for setting up Gavelhouse when your board is new to the product.",
+        "category": "start",
+        "audience": "board",
+        "timeEstimate": "15 minutes",
+        "relatedRoutes": ["/dashboard", "/settings"],
+        "sections": [
+          {
+            "heading": "Start with the board basics",
+            "body": "Before adding financial details, make sure Gavelhouse knows the community name, state, and who on the board should help.",
+            "steps": [
+              "Open Settings.",
+              "Confirm the community name and two-letter state code.",
+              "Invite the treasurer, secretary, or another board member."
+            ]
+          },
+          {
+            "heading": "Use the dashboard checklist",
+            "body": "The dashboard is your home base. It shows the first important tasks and lets you mark them complete as the board finishes them.",
+            "steps": [
+              "Import the homeowner roster.",
+              "Add reserve fund information.",
+              "Review compliance requirements.",
+              "Create the first dues batch."
+            ]
+          }
+        ],
+        "glossaryTerms": ["CSV", "Reserve fund", "Assessment"]
+      },
+      {
+        "id": "opening-downloaded-files",
+        "title": "Opening downloaded files",
+        "summary": "How to find, open, and share PDF, ZIP, and CSV files after Gavelhouse downloads them.",
+        "category": "files",
+        "audience": "everyone",
+        "timeEstimate": "5 minutes",
+        "relatedRoutes": ["/reports/audit-pack", "/portal"],
+        "sections": [
+          {
+            "heading": "Where the file went",
+            "body": "Most browsers put downloaded files in a Downloads folder. If you do not see it, look near the top-right of the browser for a downloads arrow or open File Explorer and choose Downloads."
+          },
+          {
+            "heading": "What to do with each file type",
+            "body": "PDF files are for reading or printing. ZIP files hold several files in one package. CSV files open in spreadsheet apps like Excel or Google Sheets.",
+            "steps": [
+              "Double-click a PDF to read it.",
+              "Double-click a ZIP file, then open the files inside.",
+              "Open a CSV with Excel, Numbers, or Google Sheets."
+            ]
+          }
+        ],
+        "glossaryTerms": ["PDF", "ZIP", "CSV"]
+      },
+      {
+        "id": "homeowner-roster",
+        "title": "Add homeowners",
+        "summary": "Add or import homeowners so dues, owner portal links, and board records match real people.",
+        "category": "governance",
+        "audience": "board",
+        "timeEstimate": "10 minutes",
+        "relatedRoutes": ["/governance/homeowners", "/finance/dues"],
+        "sections": [
+          {
+            "heading": "Why this matters",
+            "body": "Homeowners are used for dues, owner portal links, architectural requests, and contact records. Add the roster before creating dues if possible."
+          },
+          {
+            "heading": "Import from a spreadsheet",
+            "body": "Paste CSV text with the column names Gavelhouse shows on the page. Start with a few rows if you are unsure.",
+            "steps": [
+              "Open Homeowner Directory.",
+              "Choose Import CSV.",
+              "Paste the spreadsheet text.",
+              "Review any row errors before moving on."
+            ]
+          }
+        ],
+        "glossaryTerms": ["CSV", "Assessment"]
+      },
+      {
+        "id": "reserve-study-import",
+        "title": "Import a reserve study",
+        "summary": "Bring in reserve fund components so the board can understand funding and compliance.",
+        "category": "finance",
+        "audience": "board",
+        "timeEstimate": "10 minutes",
+        "relatedRoutes": ["/finance/reserves"],
+        "sections": [
+          {
+            "heading": "What to import",
+            "body": "A reserve study usually lists major components, useful life, remaining life, replacement cost, and current reserve amount."
+          },
+          {
+            "heading": "If the import fails",
+            "body": "Gavelhouse will show which row needs attention. Fix the spreadsheet, export it again as CSV, and import again."
+          }
+        ],
+        "glossaryTerms": ["CSV", "Reserve fund"]
+      },
+      {
+        "id": "dues-and-assessments",
+        "title": "Create dues and assessments",
+        "summary": "Create the charges homeowners need to pay and track which ones are still open.",
+        "category": "finance",
+        "audience": "board",
+        "timeEstimate": "8 minutes",
+        "relatedRoutes": ["/finance/dues"],
+        "sections": [
+          {
+            "heading": "Before you start",
+            "body": "Add homeowners first. Then choose the month, amount, fund type, and due date for the assessment batch."
+          },
+          {
+            "heading": "Plain English example",
+            "body": "If each homeowner owes $150 for May dues, choose May, enter 150.00, pick the operating fund, and choose the due date."
+          }
+        ],
+        "glossaryTerms": ["Assessment"]
+      },
+      {
+        "id": "bank-statements",
+        "title": "Upload bank statements",
+        "summary": "Import bank statement rows so the treasurer can compare the bank to Gavelhouse.",
+        "category": "finance",
+        "audience": "board",
+        "timeEstimate": "10 minutes",
+        "relatedRoutes": ["/bank/statements", "/bank/reconcile"],
+        "sections": [
+          {
+            "heading": "What you need",
+            "body": "Choose the bank account, statement date, beginning balance, ending balance, and a CSV of statement lines."
+          },
+          {
+            "heading": "After uploading",
+            "body": "Open Reconcile to match statement lines to payments or journal entries. This is how the board confirms the books match the bank."
+          }
+        ],
+        "glossaryTerms": ["CSV", "Reconcile"]
+      },
+      {
+        "id": "audit-pack-download",
+        "title": "Download an audit pack",
+        "summary": "Create a ZIP file of financial reports for board records, an accountant, or an auditor.",
+        "category": "reports",
+        "audience": "board",
+        "timeEstimate": "3 minutes",
+        "relatedRoutes": ["/reports/audit-pack"],
+        "sections": [
+          {
+            "heading": "Pick the dates",
+            "body": "Choose the first and last date you want included. For a yearly board packet, use January 1 through December 31."
+          },
+          {
+            "heading": "Open the download",
+            "body": "The audit pack downloads as a ZIP file. Open the ZIP, then open the reports inside."
+          }
+        ],
+        "glossaryTerms": ["Audit pack", "ZIP", "PDF"]
+      },
+      {
+        "id": "owner-portal",
+        "title": "Use the owner portal",
+        "summary": "Help homeowners open their portal link and understand what they can see.",
+        "category": "owner-portal",
+        "audience": "homeowner",
+        "timeEstimate": "5 minutes",
+        "relatedRoutes": ["/portal", "/owner"],
+        "sections": [
+          {
+            "heading": "Use the link from your board",
+            "body": "Homeowners do not need the full board dashboard. They use the special portal link sent by the board."
+          },
+          {
+            "heading": "If the link does not work",
+            "body": "Portal links can expire. Ask your board to send a new link. Do not forward an old link to another homeowner."
+          }
+        ],
+        "glossaryTerms": ["Assessment"]
+      }
+    ],
+    "rolePaths": [
+      {
+        "id": "president",
+        "role": "President",
+        "summary": "Get the board organized, invite the right people, and keep a simple view of what still needs attention.",
+        "firstSteps": [
+          "Confirm the community name and state in Settings.",
+          "Invite your treasurer and secretary.",
+          "Review the dashboard checklist once a week."
+        ],
+        "href": "/help?role=president"
+      },
+      {
+        "id": "treasurer",
+        "role": "Treasurer",
+        "summary": "Set up the money side first: accounts, homeowners, dues, reserve study, bank statements, and reports.",
+        "firstSteps": [
+          "Check the chart of accounts before entering money.",
+          "Import homeowners so dues can be tied to real people.",
+          "Download an audit pack after the first month-end close."
+        ],
+        "href": "/help?role=treasurer"
+      },
+      {
+        "id": "secretary",
+        "role": "Secretary",
+        "summary": "Use Gavelhouse to keep meetings, requests, violations, and board handoffs easy to find.",
+        "firstSteps": [
+          "Add homeowners or confirm the roster is current.",
+          "Create the next board meeting.",
+          "Use transitions when a board role changes hands."
+        ],
+        "href": "/help?role=secretary"
+      },
+      {
+        "id": "homeowner",
+        "role": "Homeowner",
+        "summary": "Use the owner portal link from your board to see balances and architectural requests without a full board login.",
+        "firstSteps": [
+          "Open the link your board sent you.",
+          "Review assessments and due dates.",
+          "Ask the board for a new link if yours has expired."
+        ],
+        "href": "/help?role=homeowner"
+      },
+      {
+        "id": "plain-language",
+        "role": "Not comfortable with computers",
+        "summary": "Start with one small task at a time. Gavelhouse will tell you what each page is for and what to do next.",
+        "firstSteps": [
+          "Go one step at a time.",
+          "Use the Help button whenever a page feels unfamiliar.",
+          "When downloading a file, check your browser Downloads folder.",
+          "If a file will not open, ask someone to install a PDF reader or unzip tool."
+        ],
+        "href": "/help?role=plain-language"
+      }
+    ],
+    "pageHelp": [
+      {
+        "id": "dashboard",
+        "routes": ["/dashboard"],
+        "title": "Dashboard",
+        "purpose": "This is the board's home base. It shows the next important task so you can move through setup in a simple order.",
+        "nextStep": "Open the first unfinished item and complete it before moving on to the next page.",
+        "commonMistake": "Trying to finish every setup task at once instead of working through the checklist one step at a time.",
+        "href": "/help/first-day-setup"
+      },
+      {
+        "id": "setup",
+        "routes": ["/setup"],
+        "title": "Setup",
+        "purpose": "Use Setup to confirm the community name, state, and the first people who should have access to the board tools.",
+        "nextStep": "Check the legal community name and two-letter state code, then invite the right board members.",
+        "commonMistake": "Entering a nickname or a full state name instead of the exact information the board will rely on later.",
+        "href": "/help/first-day-setup"
+      },
+      {
+        "id": "settings",
+        "routes": ["/settings"],
+        "title": "Settings",
+        "purpose": "Settings stores the community basics Gavelhouse uses everywhere else, including the board name and board access.",
+        "nextStep": "Verify the community name, state, and board invitations before you start importing records.",
+        "commonMistake": "Leaving the defaults in place and assuming they will be correct for every board member later on.",
+        "href": "/help/first-day-setup"
+      },
+      {
+        "id": "homeowners",
+        "routes": ["/governance/homeowners"],
+        "title": "Homeowners",
+        "purpose": "This page keeps the owner roster in one place so dues, portal access, and contact records point to real people.",
+        "nextStep": "Import or add the homeowner list, then check the names, emails, and unit numbers for obvious mistakes.",
+        "commonMistake": "Skipping the roster and trying to create dues before Gavelhouse knows who the assessments belong to.",
+        "href": "/help/homeowner-roster"
+      },
+      {
+        "id": "dues",
+        "routes": ["/finance/dues"],
+        "title": "Dues",
+        "purpose": "Use this page to create regular assessments or special charges and keep track of what each homeowner owes.",
+        "nextStep": "Pick the assessment period, amount, and fund type, then review the preview before confirming anything.",
+        "commonMistake": "Creating dues before the homeowner list is ready or choosing the wrong fund type for the charge.",
+        "href": "/help/dues-and-assessments"
+      },
+      {
+        "id": "reserves",
+        "routes": ["/finance/reserves"],
+        "title": "Reserves",
+        "purpose": "This page helps the board review reserve study information and understand long-term savings for major repairs.",
+        "nextStep": "Import the reserve study details and check the major components before you depend on the numbers.",
+        "commonMistake": "Treating the reserve study like a one-time upload and not reviewing the dates or replacement amounts carefully.",
+        "href": "/help/reserve-study-import"
+      },
+      {
+        "id": "bank-statements",
+        "routes": ["/bank/statements"],
+        "title": "Bank statements",
+        "purpose": "Use this page to bring in bank activity so the treasurer can compare the bank records to Gavelhouse.",
+        "nextStep": "Choose the bank account, statement dates, balances, and statement CSV before uploading the file.",
+        "commonMistake": "Entering the wrong starting or ending balance and then wondering why the reconciliation does not match.",
+        "href": "/help/bank-statements"
+      },
+      {
+        "id": "reconcile",
+        "routes": ["/bank/reconcile"],
+        "title": "Reconcile",
+        "purpose": "Reconciliation is where the board checks that Gavelhouse matches the bank statement and explains any differences.",
+        "nextStep": "Match each statement line, review any unmatched items, and only finalize when everything makes sense.",
+        "commonMistake": "Finalizing too early before every bank line has been matched or explained.",
+        "href": "/help/bank-statements"
+      },
+      {
+        "id": "close-the-month",
+        "routes": ["/close"],
+        "title": "Close the month",
+        "purpose": "This page helps the board finish the month in a clean order so reports and records are ready to save.",
+        "nextStep": "Review the outstanding items, confirm the reports, and complete the close only when the books are ready.",
+        "commonMistake": "Closing the month before the bank, dues, and reports have been checked by the board.",
+        "href": "/help/audit-pack-download"
+      },
+      {
+        "id": "reports",
+        "routes": ["/reports"],
+        "title": "Reports",
+        "purpose": "Reports give the board a readable summary of what happened during the month or year without digging through every record.",
+        "nextStep": "Open the report you need, then choose the date range that matches the board meeting or filing deadline.",
+        "commonMistake": "Using the wrong date range and then sharing a report that does not match the period being discussed.",
+        "href": "/help/audit-pack-download"
+      },
+      {
+        "id": "audit-pack",
+        "routes": ["/reports/audit-pack"],
+        "title": "Audit pack",
+        "purpose": "The audit pack bundles the board's reports into one download that is easy to share with the board, accountant, or auditor.",
+        "nextStep": "Choose the date range, download the ZIP file, and open the files inside if you need to review them first.",
+        "commonMistake": "Thinking the download failed when the file actually went to the browser's Downloads folder.",
+        "href": "/help/audit-pack-download"
+      },
+      {
+        "id": "owner-portal",
+        "routes": ["/portal", "/owner"],
+        "title": "Owner portal",
+        "purpose": "The owner portal is the simple homeowner view for checking balances, requests, and board-shared information.",
+        "nextStep": "Use the latest portal link from the board and ask for a new link if the old one no longer works.",
+        "commonMistake": "Sharing an expired link or trying to use the full board dashboard instead of the homeowner portal.",
+        "href": "/help/owner-portal"
+      }
+    ],
+    "fieldHelp": [
+      {
+        "id": "community.name",
+        "label": "Community name",
+        "body": "Enter the HOA's legal name or the name everyone already recognizes so records, reports, and invitations stay consistent.",
+        "example": "Maple Ridge HOA"
+      },
+      {
+        "id": "community.state",
+        "label": "State",
+        "body": "Use the two-letter state code. Gavelhouse uses it to show the right compliance guidance and local settings.",
+        "example": "TX"
+      },
+      {
+        "id": "invite.role",
+        "label": "Board role",
+        "body": "Choose the job the person will do on the board so their access and guidance match their responsibilities.",
+        "example": "Treasurer"
+      },
+      {
+        "id": "homeowners.csv",
+        "label": "Homeowner CSV",
+        "body": "Upload a spreadsheet-style CSV file with the homeowner roster. Start with a small file first if you want to check the format.",
+        "example": "owners.csv"
+      },
+      {
+        "id": "homeowners.portalLink",
+        "label": "Portal link",
+        "body": "Email identifies owner records. Portal links can be emailed from Gavelhouse or copied and shared by the board. Share only the current link and ask for a new one if the old link expires."
+      },
+      {
+        "id": "dues.period",
+        "label": "Assessment period",
+        "body": "Choose the month or date range the charge belongs to so homeowners can tell exactly what the bill covers.",
+        "example": "May 2026"
+      },
+      {
+        "id": "dues.amount",
+        "label": "Assessment amount",
+        "body": "Enter the amount each homeowner owes before late fees or adjustments so the batch stays easy to review.",
+        "example": "150.00"
+      },
+      {
+        "id": "dues.fundType",
+        "label": "Fund type",
+        "body": "Choose operating for regular dues and reserve for long-term savings so the charge lands in the right bucket.",
+        "example": "Operating"
+      },
+      {
+        "id": "bank.beginningBalance",
+        "label": "Beginning balance",
+        "body": "Enter the balance shown at the start of the bank statement period so the reconciliation has the right starting point."
+      },
+      {
+        "id": "bank.endingBalance",
+        "label": "Ending balance",
+        "body": "Enter the balance shown at the end of the bank statement period so the books can be compared to the bank statement."
+      },
+      {
+        "id": "bank.statementCsv",
+        "label": "Statement CSV",
+        "body": "Upload the bank statement file with one row per transaction. If the file came from the bank, keep the format exactly as exported."
+      },
+      {
+        "id": "reconcile.finalize",
+        "label": "Finalize reconciliation",
+        "body": "Only finalize after every bank line has been matched or explained so the board can trust the completed month."
+      },
+      {
+        "id": "close.complete",
+        "label": "Complete close",
+        "body": "Use this when the month has been reviewed and the board is ready to save the finished reports and records."
+      }
+    ],
+    "glossary": [
+      {
+        "id": "assessment",
+        "term": "Assessment",
+        "meaning": "A charge the HOA asks homeowners to pay, such as monthly dues or a special one-time charge."
+      },
+      {
+        "id": "audit-pack",
+        "term": "Audit pack",
+        "meaning": "A downloaded ZIP file that contains board financial reports for a date range."
+      },
+      {
+        "id": "csv",
+        "term": "CSV",
+        "meaning": "A spreadsheet-style file. You can usually make one from Excel or Google Sheets by choosing Save as CSV."
+      },
+      {
+        "id": "pdf",
+        "term": "PDF",
+        "meaning": "A document file meant for reading or printing. If it does not open, install a PDF reader or open it in your browser."
+      },
+      {
+        "id": "reserve-fund",
+        "term": "Reserve fund",
+        "meaning": "Money saved for large future repairs, such as roofs, pavement, gates, elevators, or major equipment."
+      },
+      {
+        "id": "reconcile",
+        "term": "Reconcile",
+        "meaning": "Compare Gavelhouse records to the bank statement so the board knows the numbers match."
+      },
+      {
+        "id": "zip",
+        "term": "ZIP",
+        "meaning": "A folder of files packed into one download. Double-click it to open, then open the files inside."
+      }
+    ]
+  }
+}

@@ -1,0 +1,316 @@
+---
+import SchemaMarkup from "../seo/schema-markup.astro";
+import { buildComparisonTableSchema } from "../lib/ai-extractable";
+import { buildComparisonTableCaption } from "../lib/comparison-table-utils";
+
+interface ComparisonRow {
+  feature: string;
+  values: string[];
+}
+
+interface Props {
+  headers: string[];
+  rows: ComparisonRow[];
+  highlightColumn?: number;
+  caption?: string;
+  verdict?: string;
+  variant?: "default" | "editorial" | "compact";
+}
+
+const {
+  headers,
+  rows,
+  highlightColumn: highlightColumnRaw,
+  caption,
+  verdict,
+  variant = "default",
+} = Astro.props;
+
+const highlightColumn =
+  highlightColumnRaw !== undefined && highlightColumnRaw >= 1
+    ? highlightColumnRaw
+    : undefined;
+// effectiveCaption is used for schema only - caption prop controls visual rendering
+const effectiveCaption = caption ?? buildComparisonTableCaption(headers);
+const schema = buildComparisonTableSchema({
+  name: effectiveCaption,
+  description: verdict,
+});
+---
+
+<SchemaMarkup schemas={[schema]} />
+<div
+  class:list={[variant === "compact" ? "my-6" : "my-8"]}
+  itemscope
+  itemtype="https://schema.org/Table"
+>
+  {
+    caption && variant === "editorial" && (
+      <div class="mb-4 max-w-[var(--content-measure)]">
+        <p class="editorial-kicker">Comparison snapshot</p>
+        <p
+          class="mt-4 font-heading text-[length:var(--text-subheading)] font-bold text-brand-text"
+          itemprop="name"
+        >
+          {caption}
+        </p>
+      </div>
+    )
+  }
+
+  {/* Mobile stacked card view - shown by default, hidden on md+ */}
+  <div
+    class:list={[
+      "ct-cards md:hidden",
+      variant === "editorial" ? "editorial-panel" : "",
+    ]}
+    data-comparison-variant={variant}
+    aria-label={effectiveCaption}
+  >
+    {
+      rows.map((row, rowIndex) => (
+        <div
+          class:list={[
+            "ct-card",
+            rowIndex % 2 === 1
+              ? "bg-[var(--color-neutral-50)]"
+              : "bg-[var(--surface-primary)]",
+          ]}
+        >
+          <div class="ct-card__feature">{row.feature}</div>
+          <div class="ct-card__grid">
+            {row.values.map((v, i) => {
+              const colLabel = headers[i + 1] ?? "";
+              const isHighlight = i + 1 === highlightColumn;
+              const displayValue =
+                v === "✓" ? (
+                  <span
+                    role="img"
+                    aria-label="Supported"
+                    class="font-[family-name:var(--font-heading)] text-[var(--color-success-700)] font-bold"
+                  >
+                    ✓
+                  </span>
+                ) : v === "✗" ? (
+                  <span
+                    role="img"
+                    aria-label="Not supported"
+                    class="font-[family-name:var(--font-heading)] text-[var(--color-error-600)] font-bold"
+                  >
+                    --
+                  </span>
+                ) : (
+                  v
+                );
+              return (
+                <div
+                  class:list={[
+                    "ct-card__cell",
+                    isHighlight && "ct-card__cell--highlight",
+                  ]}
+                >
+                  <span class="ct-card__col-label">{colLabel}</span>
+                  <span class="ct-card__val">{displayValue}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  {/* Desktop scrollable table - hidden on mobile, shown on md+ */}
+  <div
+    class:list={[
+      "hidden md:block overflow-x-auto overflow-y-clip [scroll-snap-type:x_mandatory]",
+      variant === "editorial"
+        ? "editorial-panel"
+        : "bg-[var(--surface-primary)] rounded-[var(--radius-md)] shadow-[var(--shadow-sm)]",
+    ]}
+    data-comparison-variant={variant}
+  >
+    <table class="w-full border-collapse text-left">
+      {
+        caption && variant !== "editorial" && (
+          <caption
+            class="text-left font-bold text-brand-text px-4 py-3"
+            itemprop="name"
+          >
+            {caption}
+          </caption>
+        )
+      }
+      <thead>
+        <tr>
+          {
+            headers.map((h, i) => (
+              <th
+                scope="col"
+                class:list={[
+                  "px-4 py-3 font-heading text-[length:var(--text-caption)] uppercase tracking-wider",
+                  i === 0
+                    ? "sticky left-0 z-10 shadow-[2px_0_8px_var(--shadow-color)]"
+                    : "min-w-[120px] [scroll-snap-align:start]",
+                  i === highlightColumn
+                    ? "bg-[var(--color-accent-500)] text-[var(--color-neutral-50)]"
+                    : variant === "editorial"
+                      ? "bg-[var(--surface-secondary)] text-[var(--color-neutral-700)]"
+                      : "bg-[var(--color-neutral-100)] text-[var(--color-neutral-700)]",
+                ]}
+              >
+                {h}
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((row, rowIndex) => (
+            <tr
+              class:list={[
+                "group border-b border-[var(--color-neutral-100)] transition-colors hover:bg-[var(--color-neutral-100)]",
+                rowIndex % 2 === 1
+                  ? "bg-[var(--color-neutral-50)]"
+                  : "bg-[var(--surface-primary)]",
+              ]}
+            >
+              <th
+                scope="row"
+                class:list={[
+                  "px-4 py-3 font-medium text-brand-text sticky left-0 z-10 shadow-[2px_0_8px_var(--shadow-color)] transition-colors group-hover:bg-[var(--color-neutral-100)]",
+                  rowIndex % 2 === 1
+                    ? "bg-[var(--color-neutral-50)]"
+                    : "bg-[var(--surface-primary)]",
+                ]}
+              >
+                {row.feature}
+              </th>
+              {row.values.map((v, i) => (
+                <td
+                  data-column-label={headers[i + 1]}
+                  class:list={[
+                    "px-4 py-3 min-w-[120px] [scroll-snap-align:start]",
+                    i + 1 === highlightColumn
+                      ? "font-semibold bg-[var(--color-accent-50)]"
+                      : "text-brand-muted",
+                  ]}
+                >
+                  {v === "✓" ? (
+                    <span
+                      role="img"
+                      aria-label="Supported"
+                      class="font-[family-name:var(--font-heading)] text-[var(--color-success-700)] text-base font-bold"
+                    >
+                      ✓
+                    </span>
+                  ) : v === "✗" ? (
+                    <span
+                      role="img"
+                      aria-label="Not supported"
+                      class="font-[family-name:var(--font-heading)] text-[var(--color-error-600)] text-base font-bold"
+                    >
+                      --
+                    </span>
+                  ) : (
+                    v
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  {
+    verdict && (
+      <div
+        class:list={[
+          "mt-6 rounded-[var(--radius-md)] border",
+          variant === "compact"
+            ? "p-3 bg-[var(--surface-secondary)] border-[var(--color-neutral-200)]"
+            : "p-4 bg-[var(--color-accent-50)] border-[var(--color-accent-200)]",
+        ]}
+      >
+        <p
+          class:list={[
+            "inline-flex items-start gap-2 font-semibold",
+            variant === "compact"
+              ? "text-[length:var(--text-body-sm)] text-[var(--color-brand-text)]"
+              : "text-[length:var(--text-caption)] text-[var(--color-accent-900)]",
+          ]}
+        >
+          <span
+            class="flex-shrink-0 font-[family-name:var(--font-heading)] text-[var(--color-primary-700)]"
+            aria-hidden="true"
+          >
+            ▸
+          </span>
+          {verdict}
+        </p>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  /* Mobile stacked card layout (default - no media query needed) */
+  .ct-cards {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .ct-card {
+    border: 1px solid var(--color-neutral-200);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .ct-card__feature {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-family: var(--font-heading);
+    color: var(--color-brand-text);
+    background: color-mix(in srgb, var(--surface-secondary) 88%, white);
+    border-bottom: 1px solid var(--color-neutral-200);
+  }
+
+  .ct-card__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .ct-card__cell {
+    padding: 0.75rem 1rem;
+    border-right: 1px solid var(--color-neutral-100);
+    color: var(--color-brand-muted);
+  }
+
+  .ct-card__cell:last-child {
+    border-right: none;
+  }
+
+  .ct-card__cell--highlight {
+    background: var(--color-accent-50);
+    color: var(--color-accent-900);
+    font-weight: 600;
+  }
+
+  .ct-card__col-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-neutral-500);
+  }
+
+  .ct-card__val {
+    display: block;
+    font-size: 0.875rem;
+  }
+</style>

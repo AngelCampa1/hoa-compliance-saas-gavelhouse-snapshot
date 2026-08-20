@@ -1,0 +1,12 @@
+{
+  "uploadedAt": "2026-05-11T22:58:03.283Z",
+  "postizId": "cmp1syp6m04f7lj0y95cwb9uv",
+  "entry": {
+    "id": "2026-05-22-fri-10",
+    "scheduledAt": "2026-05-22T14:00:00-05:00",
+    "channel": "company",
+    "pillar": "board-ops",
+    "hook": "Skipping bank reconciliation for one month is a small risk. Skipping it for six months is how HOA fraud goes undetected.",
+    "file": "content/linkedin/posts/2026-05-22-fri-10-bank-reconciliation-why-it-matters.md"
+  }
+}

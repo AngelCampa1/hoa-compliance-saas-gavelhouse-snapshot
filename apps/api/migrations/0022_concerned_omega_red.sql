@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "board_transitions_active_role_unique" ON "board_transitions" USING btree ("community_id","role") WHERE "board_transitions"."status" <> 'complete';

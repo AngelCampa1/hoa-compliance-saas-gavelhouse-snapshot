@@ -1,0 +1,409 @@
+---
+import "../../styles/global.css";
+import { getCollection } from "astro:content";
+import LandingLayout from "../../layouts/landing-layout.astro";
+import PublicSignupCta from "../../components/public-signup-cta.astro";
+import SchemaMarkup from "../../seo/schema-markup.astro";
+import { siteConfig } from "../../config/site";
+import { buildItemListSchema } from "../../lib/schema-builders";
+import { FEATURE_PAGE_GROUPS } from "../../lib/product-feature-index";
+
+const productPages = await getCollection("product-pages");
+const pagesBySlug = new Map(productPages.map((entry) => [entry.slug, entry]));
+const featureGroups = FEATURE_PAGE_GROUPS.map((group) => ({
+  ...group,
+  pages: group.slugs.map((slug) => {
+    const entry = pagesBySlug.get(slug);
+    if (!entry) {
+      throw new Error(`Missing product feature page: ${slug}`);
+    }
+    return {
+      href: `/product/${entry.slug}/`,
+      title: entry.data.title,
+      description: entry.data.description,
+      category: entry.data.productCategory,
+      keyword: entry.data.primaryKeyword,
+      keyFeatures: entry.data.keyFeatures.slice(0, 2),
+    };
+  }),
+}));
+const allFeaturePages = featureGroups.flatMap((group) => group.pages);
+const siteUrl = `https://${siteConfig.domain}`;
+const itemListSchema = buildItemListSchema(
+  allFeaturePages.map((page) => ({
+    name: page.title,
+    description: page.description,
+    url: `${siteUrl}${page.href}`,
+  })),
+);
+---
+
+<LandingLayout
+  config={siteConfig}
+  canonicalPath="/features/"
+  title="Gavelhouse product features"
+  description="See how Gavelhouse helps HOA boards manage money, meetings, owners, websites, and work orders."
+  enableScrollReveal={false}
+>
+  <section class="feature-hero">
+    <div class="feature-shell feature-hero__grid">
+      <div class="feature-hero__copy">
+        <p class="feature-kicker">Product</p>
+        <h1>See what Gavelhouse helps your board do.</h1>
+        <p>
+          Start with the work your board does each month. Money. Meetings. Owner
+          questions. Handoffs. Gavelhouse keeps those pieces together.
+        </p>
+        <div class="feature-hero__actions">
+          <PublicSignupCta sourcePage="/features" buttonText="Start trial" />
+          <a class="feature-link-button" href="/product/"> See product hub </a>
+        </div>
+      </div>
+
+      <aside class="feature-brief" aria-label="Feature page summary">
+        <p class="feature-kicker">What the pages cover</p>
+        <dl>
+          <div>
+            <dt>{allFeaturePages.length}</dt>
+            <dd>feature pages</dd>
+          </div>
+          <div>
+            <dt>3</dt>
+            <dd>board risk areas</dd>
+          </div>
+          <div>
+            <dt>100%</dt>
+            <dd>linked from this hub</dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  <section
+    class="feature-shell feature-answer"
+    aria-labelledby="feature-answer-title"
+  >
+    <p class="feature-kicker">Answer</p>
+    <h2 id="feature-answer-title">What does Gavelhouse include?</h2>
+    <p>
+      Gavelhouse helps with money, meetings, owners, votes, rule notes, and work
+      orders. Pick a card below to see one board job in plain words.
+    </p>
+  </section>
+
+  {
+    featureGroups.map((group) => (
+      <section class="feature-shell feature-group">
+        <div class="feature-group__intro">
+          <p class="feature-kicker">{group.title}</p>
+          <div class="feature-problem-solution">
+            <div>
+              <h2>{group.title} problem</h2>
+              <p>{group.problem}</p>
+            </div>
+            <div>
+              <h2>{group.title} solution</h2>
+              <p>{group.solution}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-grid">
+          {group.pages.map((page) => (
+            <article class="feature-card">
+              <p class="feature-card__category">{page.category}</p>
+              <h3>
+                <a href={page.href}>{page.title}</a>
+              </h3>
+              <p>{page.description}</p>
+              <ul>
+                {page.keyFeatures.map((feature) => (
+                  <li>{feature}</li>
+                ))}
+              </ul>
+              <a class="feature-card__cta" href={page.href}>
+                Open feature
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+
+  <section
+    class="feature-shell feature-linking"
+    aria-labelledby="feature-linking-title"
+  >
+    <p class="feature-kicker">Start here</p>
+    <h2 id="feature-linking-title">Pick the job you need to fix.</h2>
+    <div class="feature-linking__grid">
+      <a href="/product/hoa-reserve-fund-compliance-software/">
+        Reserve compliance
+      </a>
+      <a href="/product/hoa-fund-accounting-software/">Fund accounting</a>
+      <a href="/product/hoa-board-meeting-software/">Board meetings</a>
+      <a href="/product/hoa-owner-portal-software/">Owner portal</a>
+      <a href="/solutions/hoa-treasurer-software/">Treasurer workflow</a>
+      <a href="/resources/guides/hoa-management-platform-guide/">
+        Platform evaluation guide
+      </a>
+    </div>
+  </section>
+
+  <SchemaMarkup schemas={[itemListSchema]} />
+</LandingLayout>
+
+<style>
+  .feature-shell {
+    width: min(100% - 2rem, 72rem);
+    margin-inline: auto;
+  }
+
+  .feature-hero {
+    padding: clamp(3rem, 7vw, 6rem) 0 clamp(2rem, 5vw, 4rem);
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--color-brand-primary) 12%, transparent),
+        transparent 44%
+      ),
+      var(--surface-secondary);
+  }
+
+  .feature-hero__grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .feature-hero__copy {
+    max-width: 48rem;
+  }
+
+  .feature-kicker,
+  .feature-card__category {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent-700);
+  }
+
+  .feature-hero h1 {
+    margin: 0.85rem 0 0;
+    max-width: 12ch;
+    font-family: var(--font-heading);
+    font-size: clamp(2.6rem, 9vw, 5.4rem);
+    line-height: 0.96;
+    color: var(--color-brand-text);
+  }
+
+  .feature-hero p:not(.feature-kicker) {
+    max-width: 42rem;
+    margin: 1.25rem 0 0;
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    line-height: 1.65;
+    color: var(--color-brand-muted);
+  }
+
+  .feature-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .feature-link-button,
+  .feature-card__cta,
+  .feature-linking a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    text-decoration: none;
+  }
+
+  .feature-link-button {
+    border: 1px solid
+      color-mix(in srgb, var(--color-brand-primary) 28%, transparent);
+    padding: 0.72rem 1.15rem;
+    font-weight: 700;
+    color: var(--color-brand-primary);
+    background: var(--surface-primary);
+  }
+
+  .feature-brief {
+    border: 1px solid
+      color-mix(in srgb, var(--color-brand-primary) 18%, transparent);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    background: color-mix(in srgb, var(--surface-primary) 88%, white);
+    box-shadow: var(--shadow-card);
+  }
+
+  .feature-brief dl {
+    display: grid;
+    gap: 1rem;
+    margin: 1rem 0 0;
+  }
+
+  .feature-brief div {
+    display: grid;
+    grid-template-columns: 5rem 1fr;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .feature-brief dt {
+    font-family: var(--font-heading);
+    font-size: 2.3rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-brand-primary);
+  }
+
+  .feature-brief dd {
+    margin: 0;
+    color: var(--color-brand-muted);
+  }
+
+  .feature-answer,
+  .feature-group,
+  .feature-linking {
+    padding-block: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .feature-answer {
+    max-width: 58rem;
+  }
+
+  .feature-answer h2,
+  .feature-problem-solution h2,
+  .feature-linking h2 {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    line-height: 1.08;
+    color: var(--color-brand-text);
+  }
+
+  .feature-answer p,
+  .feature-problem-solution p,
+  .feature-card p {
+    color: var(--color-brand-muted);
+    line-height: 1.7;
+  }
+
+  .feature-problem-solution {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .feature-problem-solution > div {
+    border: 1px solid
+      color-mix(in srgb, var(--color-neutral-300) 68%, transparent);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    background: var(--surface-primary);
+  }
+
+  .feature-problem-solution h2 {
+    font-size: clamp(1.35rem, 3vw, 2rem);
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+    margin-top: 1.25rem;
+  }
+
+  .feature-card {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    border: 1px solid
+      color-mix(in srgb, var(--color-neutral-300) 62%, transparent);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    background: color-mix(in srgb, var(--surface-primary) 92%, white);
+    box-shadow: var(--shadow-card);
+  }
+
+  .feature-card h3 {
+    margin: 0.5rem 0 0;
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    line-height: 1.15;
+  }
+
+  .feature-card h3 a {
+    color: var(--color-brand-text);
+    text-decoration: none;
+  }
+
+  .feature-card h3 a:hover {
+    color: var(--color-brand-primary);
+  }
+
+  .feature-card ul {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0.25rem 0 1.1rem;
+    padding-left: 1rem;
+    color: var(--color-brand-text);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .feature-card__cta {
+    margin-top: auto;
+    border: 1px solid
+      color-mix(in srgb, var(--color-accent-600) 48%, transparent);
+    padding: 0.68rem 1rem;
+    font-weight: 700;
+    color: var(--color-accent-700);
+    background: color-mix(
+      in srgb,
+      var(--color-accent-100) 42%,
+      var(--surface-primary)
+    );
+  }
+
+  .feature-linking {
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-neutral-300) 70%, transparent);
+  }
+
+  .feature-linking__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .feature-linking a {
+    border: 1px solid
+      color-mix(in srgb, var(--color-brand-primary) 20%, transparent);
+    padding: 0.7rem 1rem;
+    font-weight: 700;
+    color: var(--color-brand-primary);
+    background: var(--surface-primary);
+  }
+
+  @media (min-width: 760px) {
+    .feature-hero__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.42fr);
+      align-items: end;
+    }
+
+    .feature-problem-solution {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

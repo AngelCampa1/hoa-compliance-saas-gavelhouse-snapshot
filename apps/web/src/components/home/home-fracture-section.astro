@@ -1,0 +1,125 @@
+---
+interface FracturePoint {
+  step: string;
+  title: string;
+  body: string;
+  label?: string;
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  points: FracturePoint[];
+  closingStatement: string;
+}
+
+const { eyebrow, title, intro, points, closingStatement } = Astro.props;
+---
+
+<div class="home-fracture__grid">
+  <div class="home-fracture__intro">
+    <p class="home-fracture__eyebrow editorial-kicker">{eyebrow}</p>
+    <h2 class="home-fracture__title">{title}</h2>
+    <p class="home-fracture__text">{intro}</p>
+    <p class="home-fracture__statement">{closingStatement}</p>
+  </div>
+
+  <div class="home-fracture__stack">
+    {
+      points.map((point) => (
+        <article class="home-fracture__point">
+          <span class="u-ink-numeric">{point.step}</span>
+          <span class="u-ink-numeric-label">
+            {point.label ?? "Compliance fracture"}
+          </span>
+          <h3 class="home-fracture__point-title">{point.title}</h3>
+          <p class="home-fracture__point-body">{point.body}</p>
+        </article>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .home-fracture__grid {
+    display: grid;
+    gap: clamp(2rem, 4vw, 4rem);
+  }
+
+  .home-fracture__intro {
+    max-width: 34rem;
+  }
+
+  .home-fracture__title {
+    margin: 1rem 0 0;
+    font-family: var(--font-heading);
+    font-size: clamp(2.3rem, 4vw, 4.25rem);
+    line-height: 0.98;
+    letter-spacing: -0.05em;
+    text-wrap: balance;
+  }
+
+  .home-fracture__text {
+    margin: 1.25rem 0 0;
+    max-width: 35rem;
+    font-size: 1.02rem;
+    line-height: 1.75;
+  }
+
+  .home-fracture__statement {
+    margin: 2rem 0 0;
+    max-width: 28rem;
+    font-family: var(--font-heading);
+    font-size: clamp(1.45rem, 2vw, 1.9rem);
+    line-height: 1.22;
+    letter-spacing: -0.03em;
+    font-style: italic;
+  }
+
+  .home-fracture__stack {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .home-fracture__point {
+    display: grid;
+    gap: 0.65rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-accent-400) 28%, transparent);
+  }
+
+  .home-fracture__point:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .home-fracture__point-title {
+    margin: 0.35rem 0 0;
+    max-width: 28ch;
+    font-family: var(--font-heading);
+    font-size: clamp(1.35rem, 1.7vw, 1.8rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  .home-fracture__point-body {
+    margin: 0;
+    max-width: 46ch;
+    font-size: 1.02rem;
+    line-height: 1.75;
+  }
+
+  @media (min-width: 64rem) {
+    .home-fracture__grid {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      align-items: start;
+    }
+
+    .home-fracture__intro {
+      position: sticky;
+      top: 7rem;
+    }
+  }
+</style>

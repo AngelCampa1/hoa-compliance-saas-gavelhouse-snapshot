@@ -1,0 +1,51 @@
+{
+  "name": "@boardstack/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8060 --var SENTRY_ENVIRONMENT:development",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "deploy": "node ../../scripts/run-deploy-sequence.mjs api",
+    "deploy:upload": "wrangler deploy",
+    "lint": "pnpm exec eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "seed:dev": "tsx scripts/seed-dev.ts",
+    "seed:demo": "tsx scripts/seed-demo.ts"
+  },
+  "dependencies": {
+    "@boardstack/shared": "workspace:*",
+    "@hono/zod-validator": "^0.7.6",
+    "@react-email/components": "^0.0.32",
+    "@react-email/render": "^1.0.5",
+    "@sentry/cloudflare": "^10.48.0",
+    "better-auth": "^1.6.3",
+    "client-zip": "^2.5.0",
+    "drizzle-orm": "^0.41.0",
+    "hono": "^4",
+    "nanoid": "^5.1.7",
+    "pdf-lib": "^1.17.1",
+    "posthog-node": "^4.18.0",
+    "postgres": "^3.4.9",
+    "react": "^19",
+    "react-dom": "^19",
+    "resend": "^6.11.0",
+    "stripe": "^22.0.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.3",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^5.7",
+    "vitest": "^4.1.3",
+    "wrangler": "^4.81.0"
+  }
+}

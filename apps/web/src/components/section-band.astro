@@ -1,0 +1,29 @@
+---
+interface Props {
+  surface?:
+    | "parchment"
+    | "parchment-gradient"
+    | "parchment-gradient-b"
+    | "paper"
+    | "ink";
+  as?: "section" | "div" | "article" | "aside";
+  id?: string;
+  class?: string;
+}
+
+const {
+  surface = "parchment",
+  as: Tag = "section",
+  id,
+  class: className,
+} = Astro.props as Props;
+
+const surfaceClass = `section-band--${surface}`;
+const composedClass = `section-band ${surfaceClass}${className ? ` ${className}` : ""}`;
+---
+
+<Tag id={id} class={composedClass}>
+  <div class="section-band__inner">
+    <slot />
+  </div>
+</Tag>

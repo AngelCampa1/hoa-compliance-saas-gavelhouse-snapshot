@@ -1,0 +1,3 @@
+ALTER TABLE "journal_lines" ADD COLUMN "community_id" text NOT NULL;--> statement-breakpoint
+ALTER TABLE "journal_lines" ADD CONSTRAINT "journal_lines_community_id_communities_id_fk" FOREIGN KEY ("community_id") REFERENCES "public"."communities"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE UNIQUE INDEX "payments_stripe_pi_unique" ON "payments" USING btree ("stripe_payment_intent_id") WHERE "payments"."stripe_payment_intent_id" IS NOT NULL;

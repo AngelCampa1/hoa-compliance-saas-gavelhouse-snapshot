@@ -1,0 +1,69 @@
+---
+import SectionBand from "../section-band.astro";
+import GeneratedProductMockup from "../generated-product-mockup.astro";
+import { resolveCompareProductVisualPreset } from "../../lib/generated-product-visuals";
+import { getAnnualPricingRangeLabel } from "@boardstack/shared";
+
+interface Lane {
+  title: string;
+  description: string;
+  href: string;
+  count: number;
+}
+
+interface Props {
+  lanes: Lane[];
+}
+
+const { lanes } = Astro.props as Props;
+const productVisual = resolveCompareProductVisualPreset({ type: "hub" });
+const pricingRange = getAnnualPricingRangeLabel(["starter", "scale"]);
+---
+
+<SectionBand surface="paper">
+  <p class="u-kicker-serif">-- comparisons</p>
+
+  <p class="paper-pullquote compare-hero-pullquote mt-6">
+    Property-manager software costs $3-$8 per door. Your volunteer board pays
+    for features built for someone else.
+  </p>
+
+  <p class="u-lede mt-6" style="max-width: var(--content-measure-wide);">
+    Gavelhouse is flat {pricingRange} by community size. These comparisons show what
+    the other platforms actually charge, what they omit for self-managed boards, and
+    where the compliance gaps are.
+  </p>
+
+  <div class="mt-8 max-w-[44rem]">
+    <GeneratedProductMockup {...productVisual} compact />
+  </div>
+
+  <div class="compare-lane-list">
+    {
+      lanes.map((lane) => (
+        <a class="compare-lane" href={lane.href}>
+          <span class="compare-lane__title">
+            {lane.title}
+            <span
+              class="u-inline-metadata ml-2"
+              aria-label={`${lane.count} entries`}
+            >
+              {lane.count}
+            </span>
+          </span>
+          <span class="compare-lane__desc">{lane.description}</span>
+          <span class="compare-lane__arrow" aria-hidden="true">
+            -&gt;
+          </span>
+        </a>
+      ))
+    }
+  </div>
+</SectionBand>
+
+<style>
+  /* Raise the pullquote floor to 2.25rem on narrow phones */
+  .compare-hero-pullquote {
+    font-size: clamp(2.25rem, 4vw, 2.8rem);
+  }
+</style>

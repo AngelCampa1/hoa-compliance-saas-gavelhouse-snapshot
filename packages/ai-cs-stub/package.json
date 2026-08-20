@@ -1,0 +1,9 @@
+{
+  "name": "@ventora/ai-cs",
+  "version": "0.0.0-stub",
+  "private": true,
+  "description": "Local stand-in for the private @ventora/ai-cs package so this repo installs without registry credentials.",
+  "exports": {
+    "./react": "./src/react.tsx"
+  }
+}

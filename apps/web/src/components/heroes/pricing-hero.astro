@@ -1,0 +1,108 @@
+---
+import SectionBand from "../section-band.astro";
+import GeneratedProductMockup from "../generated-product-mockup.astro";
+import { resolveCompareProductVisualPreset } from "../../lib/generated-product-visuals";
+import {
+  getAnnualPricingRangeLabel,
+  getDiscountedDisplayPrice,
+} from "@boardstack/shared";
+
+interface CostRow {
+  label: string;
+  price: number;
+  display: string;
+  accent?: boolean;
+}
+
+const gavelhouseCost = getDiscountedDisplayPrice("growth", "annual");
+const gavelhouseCostNumber = Number(gavelhouseCost.replace(/[^0-9.]/g, ""));
+const pricingRange = getAnnualPricingRangeLabel(["starter", "scale"]);
+
+const rows: readonly CostRow[] = [
+  {
+    label: "Gavelhouse",
+    price: gavelhouseCostNumber,
+    display: gavelhouseCost.replace(/\/mo$/, ""),
+    accent: true,
+  },
+  {
+    label: "PayHOA",
+    price: 99,
+    display: "~$99",
+  },
+  {
+    label: "Buildium",
+    price: 225,
+    display: "~$225",
+  },
+  {
+    label: "CINC",
+    price: 274,
+    display: "~$274",
+  },
+  {
+    label: "AppFolio",
+    price: 1040,
+    display: "~$1,040",
+  },
+];
+
+const maxPrice = Math.max(...rows.map((r) => r.price));
+const productVisual = resolveCompareProductVisualPreset({ type: "pricing" });
+---
+
+<SectionBand surface="ink">
+  <p class="u-kicker-serif">-- pricing breakdowns</p>
+
+  <h1
+    class="mt-5 font-heading font-bold leading-[1.05]"
+    style="font-size: clamp(2.25rem, 5.2vw, 4.8rem); letter-spacing: -0.01em;"
+  >
+    Flat {pricingRange}. No per-unit fees.
+  </h1>
+
+  <p class="u-lede mt-6">
+    See what HOA software really costs at 100 units. Per-door pricing is built
+    for property managers, not volunteer boards.
+  </p>
+
+  <div class="mt-8 max-w-[44rem]">
+    <GeneratedProductMockup {...productVisual} compact />
+  </div>
+
+  <div
+    class="pricing-cost-bars"
+    role="img"
+    aria-label="Estimated monthly cost comparison for a 100-unit community"
+  >
+    {
+      rows.map((row) => {
+        const widthPct = Math.max(4, Math.round((row.price / maxPrice) * 100));
+        return (
+          <div class="pricing-cost-row">
+            <span>{row.label}</span>
+            <span class="pricing-cost-bar-track">
+              <span
+                class:list={[
+                  "pricing-cost-bar-fill",
+                  row.accent ? "pricing-cost-bar-fill--accent" : "",
+                ]}
+                style={`width: ${widthPct}%;`}
+              />
+            </span>
+            <span class="pricing-cost-amount">{row.display}</span>
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <p class="pricing-cost-note">
+    Estimated monthly cost for a 100-unit community. Competitor prices reflect
+    their publicly listed pricing at that size as of 2026.
+  </p>
+
+  <p class="u-statute-citation mt-4">
+    Prices reflect best-known publicly listed pricing. Confirm with each vendor.
+  </p>
+</SectionBand>

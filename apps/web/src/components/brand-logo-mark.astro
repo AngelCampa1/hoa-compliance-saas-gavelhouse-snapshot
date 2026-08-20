@@ -1,0 +1,67 @@
+---
+interface Props {
+  size?: "sm" | "md";
+}
+
+const { size = "md" } = Astro.props;
+---
+
+<svg
+  class:list={["brand-logo-mark", `brand-logo-mark--${size}`]}
+  viewBox="0 0 64 64"
+  role="img"
+  aria-label="Gavelhouse logo mark"
+>
+  <path
+    class="brand-logo-mark__gold"
+    d="M10 41.5 25.8 32a8.4 8.4 0 0 1 8.4 0L54 43.9a3.8 3.8 0 0 1 0 6.5L36.6 60.9a9.1 9.1 0 0 1-9.2 0L10 50.4a5.2 5.2 0 0 1 0-8.9Z"
+  ></path>
+  <path
+    class="brand-logo-mark__blue-soft"
+    d="M9.6 25.9 25.7 16a8.5 8.5 0 0 1 8.6 0l20.1 12.2a3.8 3.8 0 0 1 0 6.5L36.8 45.4a9.4 9.4 0 0 1-9.6 0L9.6 34.7a5.2 5.2 0 0 1 0-8.8Z"
+  ></path>
+  <path
+    class="brand-logo-mark__blue"
+    d="M9.6 10.1 25.7.6a8.7 8.7 0 0 1 8.8 0l19.8 11.9a3.8 3.8 0 0 1 0 6.5L36.8 29.6a9.4 9.4 0 0 1-9.6 0L9.6 19a5.2 5.2 0 0 1 0-8.9Z"
+  ></path>
+  <path
+    class="brand-logo-mark__check"
+    d="M23.8 18.9 31.2 25.1 48.7 6.8"
+    fill="none"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="7"></path>
+</svg>
+
+<style>
+  .brand-logo-mark {
+    display: block;
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+
+  .brand-logo-mark--sm {
+    width: 34px;
+    height: 34px;
+    /* min touch area provided by parent link wrapper */
+  }
+
+  .brand-logo-mark--md {
+    width: 44px;
+    height: 44px;
+  }
+
+  .brand-logo-mark__blue {
+    fill: #12375c;
+  }
+
+  .brand-logo-mark__blue-soft {
+    fill: #2c4f72;
+  }
+
+  .brand-logo-mark__gold,
+  .brand-logo-mark__check {
+    fill: #d99a19;
+    stroke: #d99a19;
+  }
+</style>

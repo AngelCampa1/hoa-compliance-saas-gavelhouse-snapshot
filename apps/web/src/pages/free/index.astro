@@ -1,0 +1,164 @@
+---
+import "../../styles/global.css";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import type { ContentItem, FaqItem } from "../../lib/types";
+import { resolveCanonicalUrl } from "../../lib/collections";
+import { buildCollectionPageSchema } from "../../lib/schema-builders";
+import { buildGraph, withId } from "../../lib/schema-graph";
+import BaseLayout from "../../layouts/base-layout.astro";
+import SiteHeader from "../../components/site-header.astro";
+import SiteFooter from "../../components/site-footer.astro";
+import BreadcrumbNav from "../../components/breadcrumb-nav.astro";
+import ContentCard from "../../components/content-card.astro";
+import FaqSection from "../../components/faq-section.astro";
+import PublicSignupCta from "../../components/public-signup-cta.astro";
+import SchemaMarkup from "../../seo/schema-markup.astro";
+import { siteConfig } from "../../config/site";
+
+const entries = (await getCollection(
+  "lead-magnets",
+)) as CollectionEntry<"lead-magnets">[];
+
+const sorted = [...entries].sort(
+  (a, b) =>
+    new Date(b.data.updatedAt).getTime() - new Date(a.data.updatedAt).getTime(),
+);
+
+const items: ContentItem[] = sorted.map((entry) => ({
+  title: entry.data.title,
+  description: entry.data.description,
+  href: `/free/${entry.slug}/`,
+  buyerStage: entry.data.buyerStage,
+  publishedAt: entry.data.publishedAt,
+  updatedAt: entry.data.updatedAt,
+  relatedPages: entry.data.relatedPages.map((href) => ({
+    href,
+    title: href,
+  })),
+}));
+
+const title = "Free tools for self-managed HOA boards.";
+const description =
+  "Checklists, calculators, and templates for volunteer boards. No sales call.";
+
+const canonicalUrl = resolveCanonicalUrl(siteConfig.domain, "/free", 1);
+const siteUrl = `https://${siteConfig.domain}`;
+
+const collectionSchema = buildCollectionPageSchema({
+  name: title,
+  description,
+  url: canonicalUrl,
+  items: items.map((item) => ({
+    name: item.title,
+    description: item.description,
+    url: `${siteUrl}${item.href}`,
+  })),
+});
+const graph = buildGraph([
+  withId(collectionSchema, `${canonicalUrl}#collection`),
+]);
+
+const breadcrumbs = [
+  { label: "Home", href: "/" },
+  { label: "Free resources", href: "/free/" },
+];
+
+const faqs: FaqItem[] = [];
+---
+
+<BaseLayout
+  title={`${title} | ${siteConfig.name}`}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  siteName={siteConfig.name}
+  ogType="website"
+  themeColor={siteConfig.theme.primary}
+  theme={siteConfig.theme}
+  fonts={siteConfig.theme.fonts}
+  appleTouchIcon={siteConfig.appleTouchIcon}
+>
+  <SiteHeader
+    slot="header"
+    siteName={siteConfig.name}
+    navItems={siteConfig.nav?.items}
+    ctaText={siteConfig.funnel.bofu.ctaText}
+    ctaHref={siteConfig.funnel.bofu.ctaTarget}
+  />
+
+  <div class="hub-shell mx-auto max-w-6xl px-4 py-[var(--section-py-sm)]">
+    <div class="hub-intro mb-10">
+      <BreadcrumbNav
+        items={breadcrumbs}
+        siteUrl={`https://${siteConfig.domain}`}
+      />
+
+      <header
+        class="mt-4 overflow-hidden rounded-[calc(var(--radius-xl)+4px)] border border-[color-mix(in_srgb,var(--color-neutral-300)_34%,transparent)] bg-[linear-gradient(145deg,color-mix(in_srgb,var(--surface-primary)_95%,white),color-mix(in_srgb,var(--surface-secondary)_74%,var(--surface-primary)))] px-6 py-7 shadow-[var(--shadow-lg)] lg:px-8"
+      >
+        <p class="u-kicker-serif">Free resources</p>
+        <h1
+          class="mt-4 font-heading text-[length:var(--text-editorial-title)] font-bold leading-[1.04] text-[var(--color-brand-text)]"
+        >
+          {title}
+        </h1>
+        <p class="mt-4 u-lede">{description}</p>
+      </header>
+    </div>
+
+    {
+      items.length > 0 ? (
+        <section aria-label="Free resources listing">
+          <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((item) => (
+              <ContentCard item={item} />
+            ))}
+          </div>
+        </section>
+      ) : (
+        <div class="rounded-[calc(var(--radius-xl)+2px)] border border-[color-mix(in_srgb,var(--color-neutral-300)_40%,transparent)] bg-[linear-gradient(145deg,color-mix(in_srgb,var(--surface-primary)_88%,white),color-mix(in_srgb,var(--surface-secondary)_72%,var(--surface-primary)))] py-16 text-center text-[var(--color-brand-muted)] shadow-[var(--shadow-card)]">
+          <p class="mb-2 text-[length:var(--text-body-lg)] font-medium">
+            More free resources coming soon.
+          </p>
+          <p class="text-[length:var(--text-caption)]">
+            Subscribe below and we'll let you know when we publish new ones.
+          </p>
+        </div>
+      )
+    }
+
+    <section
+      class="mt-12 border-t border-[var(--color-neutral-100)] py-10 text-center"
+    >
+      <h2 class="mb-2 text-2xl font-bold text-[var(--color-brand-text)]">
+        Ready to keep the work in one place?
+      </h2>
+      <p class="mx-auto mb-6 max-w-2xl text-[var(--color-brand-muted)]">
+        {siteConfig.name} is {siteConfig.product.price} flat by community size. Try
+        it first. Pick a plan later.
+      </p>
+      <PublicSignupCta sourcePage="/free" buttonText="Start trial" />
+    </section>
+
+    {
+      faqs.length > 0 && (
+        <FaqSection
+          faqs={faqs}
+          emitSchema={true}
+          showBottomCta={false}
+          ctaVariant="compact"
+        />
+      )
+    }
+  </div>
+
+  <SiteFooter
+    slot="footer"
+    siteName={siteConfig.name}
+    tagline={siteConfig.tagline}
+    linkGroups={siteConfig.footer?.linkGroups}
+    legalLinks={siteConfig.footer?.legalLinks}
+    captureVariant="compact"
+  />
+  <SchemaMarkup graph={graph} />
+</BaseLayout>

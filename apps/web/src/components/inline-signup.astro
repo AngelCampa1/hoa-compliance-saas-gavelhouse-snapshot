@@ -1,0 +1,265 @@
+---
+import { EmailCapture } from "./email-capture";
+import { LeadMagnetCapture } from "./lead-magnet-capture";
+import { resolveInlineSignupKicker } from "../lib/inline-signup-utils";
+import {
+  resolvePublicSignupCta,
+  sanitizePublicSignupMessage,
+} from "../lib/public-signup-cta";
+import type {
+  ResolvedLeadMagnetOffer,
+  ReferralReward,
+  SurveyQualificationConfig,
+  SurveyQuestion,
+} from "../lib/types";
+
+interface Props {
+  mode?: "cta" | "capture";
+  heading: string;
+  subtext?: string;
+  appointmentPrepNote?: string;
+  ctaText?: string;
+  ctaTarget?: string;
+  apiUrl?: string;
+  sourcePage: string;
+  signupFlowConfigUrl?: string;
+  surveyQuestions?: SurveyQuestion[];
+  qualification?: SurveyQualificationConfig;
+  discoveryCallUrl?: string;
+  buttonText?: string;
+  privacyNote?: string;
+  errorInvalidEmail?: string;
+  errorDuplicate?: string;
+  errorGeneric?: string;
+  successMessage?: string;
+  surveyPreview?: string;
+  subtitle?: string;
+  whatHappensNext?: string;
+  referralRewards?: ReferralReward[];
+  productName?: string;
+  productDomain?: string;
+  qualifiedHeading?: string;
+  qualifiedBody?: string;
+  qualifiedCtaText?: string;
+  qualifiedDismissText?: string;
+  unqualifiedHeading?: string;
+  unqualifiedBody?: string;
+  unqualifiedCtaText?: string;
+  unqualifiedCtaTarget?: string;
+  unqualifiedDismissText?: string;
+  loadingText?: string;
+  kickerText?: string;
+  variant?: "default" | "editorial" | "compact";
+  offer?: ResolvedLeadMagnetOffer;
+  secondaryCtaText?: string;
+  secondaryCtaTarget?: string;
+}
+
+const {
+  heading,
+  subtext,
+  appointmentPrepNote,
+  mode = "cta",
+  ctaText,
+  ctaTarget,
+  apiUrl,
+  sourcePage,
+  signupFlowConfigUrl,
+  surveyQuestions,
+  qualification,
+  discoveryCallUrl,
+  buttonText = "Start trial",
+  privacyNote,
+  errorInvalidEmail,
+  errorDuplicate,
+  errorGeneric,
+  successMessage,
+  surveyPreview,
+  subtitle,
+  whatHappensNext,
+  referralRewards,
+  productName,
+  productDomain,
+  qualifiedHeading,
+  qualifiedBody,
+  qualifiedCtaText,
+  qualifiedDismissText,
+  unqualifiedHeading,
+  unqualifiedBody,
+  unqualifiedCtaText,
+  unqualifiedCtaTarget,
+  unqualifiedDismissText,
+  loadingText,
+  kickerText,
+  variant = "default",
+  offer,
+  secondaryCtaText,
+  secondaryCtaTarget,
+} = Astro.props;
+
+const resolvedKickerText = resolveInlineSignupKicker(kickerText);
+const resolvedCta = resolvePublicSignupCta({
+  sourcePage,
+  explicitTarget: ctaTarget,
+  explicitText: ctaText ?? buttonText,
+});
+const visibleSubtext =
+  mode === "cta" ? sanitizePublicSignupMessage(subtext) : subtext;
+---
+
+<div
+  data-section="inline-signup"
+  class:list={[
+    "my-[var(--section-py-sm)]",
+    variant === "editorial"
+      ? "editorial-panel p-6 md:p-7"
+      : variant === "compact"
+        ? "editorial-panel editorial-panel--soft p-5"
+        : "p-[var(--component-gap)] rounded-[var(--radius-md)] bg-[var(--surface-secondary)] border border-[var(--color-accent-200)] flex flex-col gap-[var(--component-gap-sm)]",
+  ]}
+>
+  {
+    variant === "editorial" ? (
+      <div class="md:flex md:items-start md:justify-between md:gap-8">
+        <div class="max-w-[28rem]">
+          {resolvedKickerText && (
+            <p class="editorial-kicker">{resolvedKickerText}</p>
+          )}
+          <p class="mt-4 font-heading text-[length:var(--text-subheading)] font-bold text-[var(--color-brand-text)]">
+            {heading}
+          </p>
+          {visibleSubtext && (
+            <p class="mt-3 text-[length:var(--text-caption)] leading-6 text-[var(--color-brand-muted)]">
+              {visibleSubtext}
+            </p>
+          )}
+          {appointmentPrepNote && (
+            <p class="mt-3 text-[length:var(--text-caption)] leading-6 text-[var(--color-brand-muted)]/90">
+              {appointmentPrepNote}
+            </p>
+          )}
+        </div>
+        <div class="mt-5 md:mt-0 md:min-w-[20rem] md:flex-1">
+          {mode === "cta" ? (
+            <a
+              href={resolvedCta.target}
+              class="btn-primary btn-shimmer inline-flex min-w-[16rem] items-center justify-center"
+            >
+              {resolvedCta.text}
+            </a>
+          ) : offer ? (
+            <LeadMagnetCapture
+              client:visible
+              apiUrl={apiUrl ?? ""}
+              offer={offer}
+              sourcePage={sourcePage}
+              placement="inline"
+              privacyNote={privacyNote}
+              secondaryCtaText={secondaryCtaText}
+              secondaryCtaTarget={secondaryCtaTarget}
+            />
+          ) : (
+            <EmailCapture
+              client:visible
+              apiUrl={apiUrl ?? ""}
+              sourcePage={sourcePage}
+              signupFlowConfigUrl={signupFlowConfigUrl}
+              surveyQuestions={surveyQuestions}
+              qualification={qualification}
+              discoveryCallUrl={discoveryCallUrl}
+              buttonText={buttonText}
+              privacyNote={privacyNote}
+              errorInvalidEmail={errorInvalidEmail}
+              errorDuplicate={errorDuplicate}
+              errorGeneric={errorGeneric}
+              successMessage={successMessage}
+              surveyPreview={surveyPreview}
+              subtitle={subtitle}
+              whatHappensNext={whatHappensNext}
+              referralRewards={referralRewards}
+              productName={productName}
+              productDomain={productDomain}
+              qualifiedHeading={qualifiedHeading}
+              qualifiedBody={qualifiedBody}
+              qualifiedCtaText={qualifiedCtaText}
+              qualifiedDismissText={qualifiedDismissText}
+              unqualifiedHeading={unqualifiedHeading}
+              unqualifiedBody={unqualifiedBody}
+              unqualifiedCtaText={unqualifiedCtaText}
+              unqualifiedCtaTarget={unqualifiedCtaTarget}
+              unqualifiedDismissText={unqualifiedDismissText}
+              loadingText={loadingText}
+            />
+          )}
+        </div>
+      </div>
+    ) : (
+      <>
+        <p class="font-heading text-[length:var(--text-body-lg)] font-bold text-[var(--color-brand-text)]">
+          {heading}
+        </p>
+        {visibleSubtext && (
+          <p class="text-[length:var(--text-caption)] text-[var(--color-brand-muted)]">
+            {visibleSubtext}
+          </p>
+        )}
+        {appointmentPrepNote && (
+          <p class="text-[length:var(--text-caption)] text-[var(--color-brand-muted)]/90">
+            {appointmentPrepNote}
+          </p>
+        )}
+        {mode === "cta" ? (
+          <a
+            href={resolvedCta.target}
+            class="btn-primary btn-shimmer inline-flex items-center justify-center self-start"
+          >
+            {resolvedCta.text}
+          </a>
+        ) : offer ? (
+          <LeadMagnetCapture
+            client:visible
+            apiUrl={apiUrl ?? ""}
+            offer={offer}
+            sourcePage={sourcePage}
+            placement="inline"
+            privacyNote={privacyNote}
+            secondaryCtaText={secondaryCtaText}
+            secondaryCtaTarget={secondaryCtaTarget}
+          />
+        ) : (
+          <EmailCapture
+            client:visible
+            apiUrl={apiUrl ?? ""}
+            sourcePage={sourcePage}
+            signupFlowConfigUrl={signupFlowConfigUrl}
+            surveyQuestions={surveyQuestions}
+            qualification={qualification}
+            discoveryCallUrl={discoveryCallUrl}
+            buttonText={buttonText}
+            privacyNote={privacyNote}
+            errorInvalidEmail={errorInvalidEmail}
+            errorDuplicate={errorDuplicate}
+            errorGeneric={errorGeneric}
+            successMessage={successMessage}
+            surveyPreview={surveyPreview}
+            subtitle={subtitle}
+            whatHappensNext={whatHappensNext}
+            referralRewards={referralRewards}
+            productName={productName}
+            productDomain={productDomain}
+            qualifiedHeading={qualifiedHeading}
+            qualifiedBody={qualifiedBody}
+            qualifiedCtaText={qualifiedCtaText}
+            qualifiedDismissText={qualifiedDismissText}
+            unqualifiedHeading={unqualifiedHeading}
+            unqualifiedBody={unqualifiedBody}
+            unqualifiedCtaText={unqualifiedCtaText}
+            unqualifiedCtaTarget={unqualifiedCtaTarget}
+            unqualifiedDismissText={unqualifiedDismissText}
+            loadingText={loadingText}
+          />
+        )}
+      </>
+    )
+  }
+</div>

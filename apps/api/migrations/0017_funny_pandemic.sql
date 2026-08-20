@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "nurture_sequence_enrollments_lead_magnet_unique" ON "nurture_sequence_enrollments" USING btree ("lead_id","magnet_slug");

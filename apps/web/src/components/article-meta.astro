@@ -1,0 +1,60 @@
+---
+import { formatArticleDate, normalizeDateInput } from "../lib/dates";
+
+interface Props {
+  publishedAt?: string | Date;
+  updatedAt: string | Date;
+  reviewedAt?: string | Date;
+  authorName?: string;
+  authorTitle?: string;
+  authorUrl?: string;
+}
+const {
+  publishedAt,
+  updatedAt,
+  reviewedAt,
+  authorName,
+  authorTitle,
+  authorUrl,
+} = Astro.props;
+const bylineText = authorName
+  ? `By ${authorName}${authorTitle ? `, ${authorTitle}` : ""}`
+  : undefined;
+---
+
+<div data-article-meta class="mb-8 flex flex-wrap items-center gap-2">
+  {
+    authorName &&
+      (authorUrl ? (
+        <a
+          href={authorUrl}
+          class="u-inline-metadata inline-flex min-h-11 items-center rounded-full border border-[color-mix(in_srgb,var(--color-brand-primary)_24%,var(--color-neutral-300))] bg-[color-mix(in_srgb,var(--surface-secondary)_82%,white)] px-3 py-2.5 text-[var(--color-brand-text)] no-underline transition-colors hover:text-[var(--color-brand-primary)]"
+        >
+          {bylineText}
+        </a>
+      ) : (
+        <span class="u-inline-metadata rounded-full border border-[color-mix(in_srgb,var(--color-brand-primary)_24%,var(--color-neutral-300))] bg-[color-mix(in_srgb,var(--surface-secondary)_82%,white)] px-3 py-1">
+          {bylineText}
+        </span>
+      ))
+  }
+  {
+    publishedAt && (
+      <span class="u-inline-metadata rounded-full border border-[color-mix(in_srgb,var(--color-neutral-300)_40%,transparent)] px-3 py-1">
+        Published {formatArticleDate(normalizeDateInput(publishedAt))}
+      </span>
+    )
+  }
+  <span
+    class="u-inline-metadata rounded-full border border-[color-mix(in_srgb,var(--color-neutral-300)_40%,transparent)] px-3 py-1"
+  >
+    Updated {formatArticleDate(normalizeDateInput(updatedAt))}
+  </span>
+  {
+    reviewedAt && (
+      <span class="u-inline-metadata rounded-full border border-[color-mix(in_srgb,var(--color-brand-primary)_24%,var(--color-neutral-300))] bg-[color-mix(in_srgb,var(--surface-secondary)_82%,white)] px-3 py-1">
+        Reviewed {formatArticleDate(normalizeDateInput(reviewedAt))}
+      </span>
+    )
+  }
+</div>

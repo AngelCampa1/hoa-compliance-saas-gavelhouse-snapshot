@@ -1,0 +1,56 @@
+---
+import "../../styles/global.css";
+import { getCollection } from "astro:content";
+import CategoryHub from "../../hubs/category-hub.astro";
+import PublicSignupCta from "../../components/public-signup-cta.astro";
+import { siteConfig } from "../../config/site";
+import { hubFaqs } from "../../config/hub-faqs";
+import { mapToContentItems, sortByUpdatedAtDesc } from "../../lib/collections";
+import type { GetStaticPathsOptions } from "astro";
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const entries = await getCollection("solutions");
+  const sorted = sortByUpdatedAtDesc(entries);
+  const items = mapToContentItems(
+    sorted,
+    (entry) => `/solutions/${entry.slug}/`,
+    (entry) => ({
+      audience: entry.data.audienceLabel,
+      type: entry.data.solutionCategory,
+    }),
+  );
+  return paginate(items, { pageSize: 12 });
+}
+
+const { page } = Astro.props;
+---
+
+<CategoryHub
+  config={siteConfig}
+  title="Clear paths for each board role."
+  description="Gavelhouse helps HOA and condo boards keep finance, meetings, owners, and records in one place. Start with your role or community type."
+  items={page.data}
+  page={page}
+  basePath="/solutions"
+  breadcrumbs={[
+    { label: "Home", href: "/" },
+    { label: "Solutions", href: "/solutions/" },
+  ]}
+  faqs={hubFaqs["/solutions"]}
+  eyebrow="Role and segment pages"
+  variant="editorial"
+>
+  <section
+    slot="cta"
+    class="mt-10 border-t border-[var(--color-neutral-100)] py-10 text-center"
+  >
+    <h2 class="mb-2 text-2xl font-bold text-[var(--color-brand-text)]">
+      Need a path for your board role?
+    </h2>
+    <p class="mx-auto mb-6 max-w-2xl text-[var(--color-brand-muted)]">
+      Start with your role. Then see how money, meetings, owners, and records
+      fit together.
+    </p>
+    <PublicSignupCta sourcePage="/solutions" buttonText="Start trial" />
+  </section>
+</CategoryHub>

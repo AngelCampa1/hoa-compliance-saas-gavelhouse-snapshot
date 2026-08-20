@@ -1,0 +1,132 @@
+---
+import SchemaMarkup from "./schema-markup.astro";
+import { buildTableSchema } from "../lib/ai-extractable";
+
+interface Props {
+  name: string;
+  description?: string;
+  columns: string[];
+  rows: string[][];
+  emitSchema?: boolean;
+}
+const { name, description, columns, rows, emitSchema = true } = Astro.props;
+
+const schema = buildTableSchema({ name, description, columns, rows });
+---
+
+<div class="table-scroll-wrapper mb-8">
+  <div
+    class="table-scroll-container overflow-x-auto shadow-[var(--shadow-sm)] rounded-[var(--radius-md)]"
+    itemscope
+    itemtype="https://schema.org/Table"
+  >
+    <table class="w-full border-collapse text-[length:var(--text-caption)]">
+      <caption
+        class="text-left font-bold text-brand-text mb-2"
+        itemprop="about"
+      >
+        {name}
+        {
+          description && (
+            <p class="text-brand-muted text-[length:var(--text-caption)] font-normal mt-1">
+              {description}
+            </p>
+          )
+        }
+      </caption>
+      <thead>
+        <tr
+          class="bg-[var(--color-neutral-50)] border-b-2 border-[var(--color-neutral-200)]"
+        >
+          {
+            columns.map((col) => (
+              <th
+                scope="col"
+                class="u-kicker-serif px-4 py-3 text-left text-[var(--color-neutral-700)]"
+              >
+                {col}
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((row) => (
+            <tr class="border-b border-[var(--color-neutral-100)] hover:bg-[var(--color-neutral-50)] transition-colors">
+              {row.map((cell) => (
+                <td class="px-4 py-3 text-brand-text">{cell}</td>
+              ))}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+{
+  columns.length > 0 && rows.length > 0 && emitSchema && (
+    <SchemaMarkup schemas={[schema]} />
+  )
+}
+
+<style>
+  :global(.table-scroll-wrapper) {
+    position: relative;
+  }
+
+  :global(.table-scroll-wrapper::after) {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 3rem;
+    background: linear-gradient(to right, transparent, var(--surface-primary));
+    pointer-events: none;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+
+  :global(.table-scroll-wrapper--faded::after) {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  function initTableScrollFade(wrapper: Element): void {
+    const scroller = wrapper.querySelector<HTMLElement>(
+      ".table-scroll-container",
+    );
+    if (!scroller) return;
+    const scrollEl = scroller;
+
+    function update(): void {
+      const scrollable = scrollEl.scrollWidth > scrollEl.clientWidth;
+      const atEnd =
+        scrollEl.scrollLeft + scrollEl.clientWidth >= scrollEl.scrollWidth - 1;
+      if (scrollable && !atEnd) {
+        wrapper.classList.add("table-scroll-wrapper--faded");
+      } else {
+        wrapper.classList.remove("table-scroll-wrapper--faded");
+      }
+    }
+
+    update();
+    scrollEl.addEventListener("scroll", update, { passive: true });
+
+    const ro = new ResizeObserver(() => {
+      if (!wrapper.isConnected) {
+        ro.disconnect();
+        return;
+      }
+      update();
+    });
+    ro.observe(scrollEl);
+  }
+
+  document
+    .querySelectorAll<HTMLElement>(".table-scroll-wrapper")
+    .forEach(initTableScrollFade);
+</script>

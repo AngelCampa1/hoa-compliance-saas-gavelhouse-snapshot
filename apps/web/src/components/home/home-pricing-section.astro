@@ -1,0 +1,121 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  assurances: string[];
+}
+
+const { eyebrow, title, intro, assurances } = Astro.props;
+---
+
+<div class="home-pricing__shell">
+  <div class="home-pricing__header">
+    <div>
+      <p class="home-pricing__eyebrow editorial-kicker">{eyebrow}</p>
+      <h2 class="home-pricing__title">{title}</h2>
+    </div>
+    <p class="home-pricing__intro">{intro}</p>
+  </div>
+
+  <ul class="home-pricing__assurances" aria-label="Plan assurances">
+    {
+      assurances.map((item) => (
+        <li class="home-pricing__assurance">
+          <span class="home-pricing__assurance-mark" aria-hidden="true" />
+          <span>{item}</span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="home-pricing__stage">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .home-pricing__shell {
+    display: block;
+  }
+
+  .home-pricing__header {
+    display: grid;
+    gap: 1rem;
+    align-items: end;
+  }
+
+  .home-pricing__title {
+    margin: 1rem 0 0;
+    max-width: 14ch;
+    font-family: var(--font-heading);
+    font-size: clamp(2.4rem, 4vw, 4.3rem);
+    line-height: 0.98;
+    letter-spacing: -0.05em;
+    color: var(--color-brand-text);
+  }
+
+  .home-pricing__intro {
+    margin: 0;
+    max-width: 35rem;
+    font-size: 1.04rem;
+    line-height: 1.78;
+    color: color-mix(
+      in srgb,
+      var(--color-brand-muted) 84%,
+      var(--color-primary-900)
+    );
+  }
+
+  .home-pricing__assurances {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 0;
+    display: grid;
+    gap: 0.65rem;
+    max-width: 48rem;
+  }
+
+  .home-pricing__assurance {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    align-items: start;
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: color-mix(
+      in srgb,
+      var(--color-brand-text) 88%,
+      var(--color-primary-900)
+    );
+  }
+
+  .home-pricing__assurance-mark {
+    width: 0.4rem;
+    height: 0.4rem;
+    margin-top: 0.55rem;
+    border-radius: 999px;
+    background: var(--color-accent-500);
+  }
+
+  .home-pricing__stage {
+    margin-top: 2.25rem;
+  }
+
+  :global(.home-pricing__stage [data-fake-door-pricing]) {
+    padding-inline: 0;
+    padding-top: 1.1rem;
+    padding-bottom: 0.2rem;
+    background: transparent !important;
+  }
+
+  :global(.home-pricing__stage [data-fake-door-pricing] > div) {
+    max-width: 100%;
+  }
+
+  @media (min-width: 68rem) {
+    .home-pricing__header {
+      grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.8fr);
+    }
+  }
+</style>

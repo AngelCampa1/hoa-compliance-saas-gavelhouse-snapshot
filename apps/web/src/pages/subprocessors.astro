@@ -1,0 +1,132 @@
+---
+import "../styles/global.css";
+import BaseLayout from "../layouts/base-layout.astro";
+import SiteHeader from "../components/site-header.astro";
+import SiteFooter from "../components/site-footer.astro";
+import { siteConfig } from "../config/site";
+
+const subprocessors = [
+  {
+    name: "Cloudflare",
+    purpose: "Pages hosting, Workers runtime, CDN, DNS, and edge security",
+    data: "Site traffic, app requests, cached assets, security logs",
+  },
+  {
+    name: "Neon",
+    purpose: "Managed Postgres database hosting",
+    data: "Account, community, billing, governance, and accounting records",
+  },
+  {
+    name: "Stripe",
+    purpose: "Subscription billing and payment processing",
+    data: "Customer profile, subscription state, invoices, payment metadata",
+  },
+  {
+    name: "Resend",
+    purpose: "Transactional email delivery",
+    data: "Recipient email address, email content, delivery metadata",
+  },
+  {
+    name: "PostHog",
+    purpose: "Product analytics on marketing and app surfaces",
+    data: "Pageviews, event telemetry, distinct IDs, device metadata",
+  },
+  {
+    name: "Sentry",
+    purpose: "Error monitoring and debugging",
+    data: "Error payloads, request context, client environment metadata",
+  },
+  {
+    name: "Google",
+    purpose: "OAuth identity provider for Google sign-in",
+    data: "Name, email address, Google account identifier",
+  },
+  {
+    name: "Apollo",
+    purpose: "Launch CRM and waitlist operations",
+    data: "Lead email, attribution, qualification metadata",
+  },
+  {
+    name: "Ventora AI Customer Support",
+    purpose: "In-app AI support assistant (backed by an AI/LLM provider)",
+    data: "Account email, support message content",
+  },
+];
+---
+
+<BaseLayout
+  title={`Subprocessors | ${siteConfig.name}`}
+  description={`Current subprocessors used by ${siteConfig.name}.`}
+  canonicalUrl={`https://${siteConfig.domain}/subprocessors/`}
+  siteName={siteConfig.name}
+  themeColor={siteConfig.theme.primary}
+>
+  <SiteHeader
+    slot="header"
+    siteName={siteConfig.name}
+    navItems={siteConfig.nav?.items}
+    ctaText={siteConfig.funnel.bofu.ctaText}
+    ctaHref={siteConfig.funnel.bofu.ctaTarget}
+  />
+
+  <div class="mx-auto max-w-4xl px-4 py-16">
+    <h1 class="mb-2 text-3xl font-bold text-[var(--color-brand-text)]">
+      Subprocessors
+    </h1>
+    <p class="mb-8 text-sm text-[var(--color-brand-muted)]">
+      Last updated: April 20, 2026
+    </p>
+    <p class="mb-8 max-w-2xl text-[var(--color-brand-muted)]">
+      Gavelhouse is operated by {siteConfig.legalEntity}. This page lists the
+      third-party subprocessors used to run the service.
+    </p>
+
+    <div
+      class="overflow-x-auto rounded-2xl border border-[var(--color-neutral-200)]"
+    >
+      <table
+        class="min-w-full border-collapse bg-white text-left text-sm"
+        style="font-size: 1rem;"
+      >
+        <thead class="bg-[var(--color-neutral-50)]">
+          <tr>
+            <th class="px-4 py-3 font-semibold text-[var(--color-brand-text)]">
+              Vendor
+            </th>
+            <th class="px-4 py-3 font-semibold text-[var(--color-brand-text)]">
+              Purpose
+            </th>
+            <th class="px-4 py-3 font-semibold text-[var(--color-brand-text)]">
+              Data Categories
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            subprocessors.map((row) => (
+              <tr class="border-t border-[var(--color-neutral-200)]">
+                <td class="px-4 py-3 font-medium text-[var(--color-brand-text)]">
+                  {row.name}
+                </td>
+                <td class="px-4 py-3 text-[var(--color-brand-muted)]">
+                  {row.purpose}
+                </td>
+                <td class="px-4 py-3 text-[var(--color-brand-muted)]">
+                  {row.data}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <SiteFooter
+    slot="footer"
+    siteName={siteConfig.name}
+    tagline={siteConfig.tagline}
+    linkGroups={siteConfig.footer?.linkGroups}
+    legalLinks={siteConfig.footer?.legalLinks}
+  />
+</BaseLayout>

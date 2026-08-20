@@ -1,0 +1,44 @@
+---
+interface MetaItem {
+  label: string;
+  value: string;
+  tone?: "action" | "resolved";
+}
+
+interface Props {
+  kicker: string;
+  re: string;
+  meta?: MetaItem[];
+}
+
+const { kicker, re, meta = [] } = Astro.props;
+---
+
+<header class="b1-doc-header">
+  <div>
+    <span class="kicker">{kicker}</span>
+    <p class="re">RE: {re}</p>
+  </div>
+  {
+    meta.length > 0 && (
+      <dl class="doc-meta">
+        {meta.map((item) => (
+          <>
+            <dt>{item.label}</dt>
+            <dd>
+              <b
+                data-doc-meta={item.label.toLowerCase()}
+                class:list={[
+                  item.tone === "action" && "is-action",
+                  item.tone === "resolved" && "is-resolved",
+                ]}
+              >
+                {item.value}
+              </b>
+            </dd>
+          </>
+        ))}
+      </dl>
+    )
+  }
+</header>

@@ -1,0 +1,137 @@
+---
+import "../../styles/global.css";
+import BaseLayout from "../../layouts/base-layout.astro";
+import SiteHeader from "../../components/site-header.astro";
+import SiteFooter from "../../components/site-footer.astro";
+import { siteConfig } from "../../config/site";
+import {
+  PRODUCT_GLOSSARY,
+  PRODUCT_HELP_TOPICS,
+  PRODUCT_ROLE_PATHS,
+} from "@boardstack/shared";
+---
+
+<BaseLayout
+  title={`Help Center | ${siteConfig.name}`}
+  description="Plain-language Gavelhouse help for volunteer HOA boards, homeowners, and anyone who needs step-by-step guidance."
+  canonicalUrl={`https://${siteConfig.domain}/help`}
+  siteName={siteConfig.name}
+  themeColor={siteConfig.theme.primary}
+  theme={siteConfig.theme}
+  fonts={siteConfig.theme.fonts}
+  enableScrollReveal={false}
+>
+  <SiteHeader
+    slot="header"
+    siteName={siteConfig.name}
+    navItems={siteConfig.nav?.items}
+    ctaText={siteConfig.funnel.bofu.ctaText}
+    ctaHref={siteConfig.funnel.bofu.ctaTarget}
+  />
+
+  <div class="mx-auto max-w-6xl px-4 py-16">
+    <section class="max-w-3xl">
+      <p
+        class="text-sm font-semibold uppercase text-[var(--color-brand-primary)]"
+      >
+        Gavelhouse help
+      </p>
+      <h1
+        class="mt-3 font-heading text-4xl font-bold leading-tight text-[var(--color-brand-text)]"
+      >
+        Help for board members who do not want to decode software.
+      </h1>
+      <p class="mt-4 text-lg leading-8 text-[var(--color-brand-muted)]">
+        Start with one task, use plain English, and come back whenever a file,
+        report, charge, or portal link feels unfamiliar.
+      </p>
+    </section>
+
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-[var(--color-brand-text)]">
+        Start by role
+      </h2>
+      <div class="mt-4 grid gap-4 md:grid-cols-2">
+        {
+          PRODUCT_ROLE_PATHS.map((path) => (
+            <article class="rounded-[var(--radius-md)] border border-[var(--color-neutral-200)] bg-[var(--surface-secondary)] p-5">
+              <h3 class="font-semibold text-[var(--color-brand-text)]">
+                {path.role}
+              </h3>
+              <p class="mt-2 text-sm leading-6 text-[var(--color-brand-muted)]">
+                {path.summary}
+              </p>
+              <ol class="mt-4 list-decimal space-y-2 pl-5 text-sm text-[var(--color-brand-muted)]">
+                {path.firstSteps.map((step) => (
+                  <li>{step}</li>
+                ))}
+              </ol>
+              <a
+                href={path.href}
+                class="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-[var(--color-brand-primary)] hover:underline"
+              >
+                Open role guide
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-[var(--color-brand-text)]">
+        Task guides
+      </h2>
+      <div class="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {
+          PRODUCT_HELP_TOPICS.map((topic) => (
+            <a
+              href={`/help/${topic.slug}/`}
+              class="block rounded-[var(--radius-md)] border border-[var(--color-neutral-200)] bg-[var(--surface-primary)] p-5 transition-colors hover:border-[var(--color-accent-300)] hover:bg-[var(--surface-elevated)]"
+            >
+              <p class="text-xs font-semibold uppercase text-[var(--color-brand-primary)]">
+                {topic.timeEstimate}
+              </p>
+              <h3 class="mt-2 font-semibold text-[var(--color-brand-text)]">
+                {topic.title}
+              </h3>
+              <p class="mt-2 text-sm leading-6 text-[var(--color-brand-muted)]">
+                {topic.summary}
+              </p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section
+      class="mt-12 rounded-[var(--radius-lg)] border border-[var(--color-neutral-200)] bg-[var(--surface-secondary)] p-6"
+    >
+      <h2 class="text-xl font-bold text-[var(--color-brand-text)]">
+        Plain-language glossary
+      </h2>
+      <div class="mt-4 grid gap-4 md:grid-cols-2">
+        {
+          PRODUCT_GLOSSARY.map((entry) => (
+            <div>
+              <h3 class="font-semibold text-[var(--color-brand-text)]">
+                {entry.term}
+              </h3>
+              <p class="mt-1 text-sm leading-6 text-[var(--color-brand-muted)]">
+                {entry.meaning}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+
+  <SiteFooter
+    slot="footer"
+    siteName={siteConfig.name}
+    tagline={siteConfig.tagline}
+    linkGroups={siteConfig.footer?.linkGroups}
+    legalLinks={siteConfig.footer?.legalLinks}
+  />
+</BaseLayout>

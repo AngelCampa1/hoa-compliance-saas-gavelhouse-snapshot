@@ -1,0 +1,245 @@
+---
+import "../../../styles/global.css";
+import { getCollection } from "astro:content";
+import PricingBreakdownLayout from "../../../layouts/pricing-breakdown-layout.astro";
+import ComparisonTable from "../../../components/comparison-table.astro";
+import FaqSection from "../../../components/faq-section.astro";
+import FunnelCta from "../../../components/funnel-cta.astro";
+import RelatedPages from "../../../components/related-pages.astro";
+import InlineSignup from "../../../components/inline-signup.astro";
+import DataTableBlock from "../../../seo/data-table-block.astro";
+import StatisticCitation from "../../../seo/statistic-citation.astro";
+import AnswerBlock from "../../../seo/answer-block.astro";
+import { siteConfig } from "../../../config/site";
+import { buildPricingBreadcrumbs } from "@/lib/breadcrumbs";
+import { buildPricingComparisonRows } from "@/lib/comparison-rows";
+import { buildContentMap } from "@/lib/page-helpers";
+import { resolveRelatedPageLinks } from "../../../lib/related-page-resolver";
+import { resolveCompareProductVisualPreset } from "../../../lib/generated-product-visuals";
+import { resolveMagnetForPage } from "@/lib/resolve-lead-magnet";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("pricing-breakdowns");
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const {
+  title,
+  description,
+  bluf,
+  buyerStage,
+  publishedAt,
+  updatedAt,
+  reviewedAt,
+  competitor,
+  tiers,
+  hiddenCosts,
+  faqs,
+  relatedPages,
+  tableData,
+  pricingStats,
+  answers,
+  sources,
+} = entry.data;
+const canonicalPath = `/compare/pricing/${entry.slug}`;
+
+const breadcrumbs = buildPricingBreadcrumbs(competitor.name, canonicalPath);
+const pricingComparisonRows = buildPricingComparisonRows(
+  competitor.pricing,
+  siteConfig.product.price,
+);
+const productVisual = resolveCompareProductVisualPreset({
+  type: "pricing",
+  competitorName: competitor.name,
+  competitorPricing: competitor.pricing,
+});
+
+const [
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+] = await Promise.all([
+  getCollection("alternatives"),
+  getCollection("comparisons"),
+  getCollection("pricing-breakdowns"),
+  getCollection("listicles"),
+  getCollection("guides"),
+  getCollection("state-pages"),
+  getCollection("lead-magnets"),
+  getCollection("product-pages"),
+  getCollection("solutions"),
+]);
+const contentMap = buildContentMap({
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+});
+const relatedLinks = resolveRelatedPageLinks(relatedPages, contentMap);
+const leadMagnetOverride = await resolveMagnetForPage({
+  explicitSlug: entry.data.magnetSlug,
+  primaryKeyword: title,
+  tags: entry.data.tags,
+  path: canonicalPath,
+});
+---
+
+<PricingBreakdownLayout
+  title={title}
+  description={description}
+  bluf={bluf}
+  buyerStage={buyerStage}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  reviewedAt={reviewedAt}
+  canonicalPath={canonicalPath}
+  config={siteConfig}
+  breadcrumbs={breadcrumbs}
+  answers={answers?.map((a) => ({ question: a.q, answer: a.a }))}
+  faqs={faqs}
+  sources={sources}
+  productVisual={productVisual}
+  leadMagnetOverride={leadMagnetOverride}
+>
+  <div
+    class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-10 py-8 rounded-[var(--radius-md)] bg-[var(--surface-secondary)] border border-[var(--color-neutral-200)]"
+  >
+    <div class="text-center">
+      <p class="u-kicker-serif text-[var(--color-neutral-500)] mb-1">
+        {competitor.name}
+      </p>
+      <span
+        class="font-[family-name:var(--font-mono)] font-bold text-[var(--color-primary-700)]"
+        style="font-size: clamp(1.75rem, 6vw, 2.5rem);"
+        >{competitor.pricing}</span
+      >
+      <p class="text-xs text-[var(--color-neutral-500)] mt-1">per month</p>
+    </div>
+    <div
+      class="font-heading italic text-2xl font-bold text-[var(--color-neutral-400)]"
+    >
+      vs
+    </div>
+    <div class="text-center">
+      <p class="u-kicker-serif text-[var(--color-neutral-500)] mb-1">
+        {siteConfig.name}
+      </p>
+      <span
+        class="font-[family-name:var(--font-mono)] font-bold text-[var(--color-accent-600)]"
+        style="font-size: clamp(1.75rem, 6vw, 2.5rem);"
+        >{siteConfig.product.price}</span
+      >
+      <p class="text-xs text-[var(--color-neutral-500)] mt-1">
+        per month, no setup fee
+      </p>
+    </div>
+  </div>
+
+  <h2 class="text-2xl font-bold mb-6">{competitor.name} pricing</h2>
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full border-collapse text-left">
+      <thead>
+        <tr>
+          <th class="px-4 py-3 text-sm font-semibold border-b-2">Tier</th>
+          <th class="px-4 py-3 text-sm font-semibold border-b-2">Price</th>
+          <th class="px-4 py-3 text-sm font-semibold border-b-2">Includes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          tiers.map((tier) => (
+            <tr class="border-b">
+              <td class="px-4 py-3 font-medium">{tier.name}</td>
+              <td class="px-4 py-3">{tier.price}</td>
+              <td class="px-4 py-3 text-sm text-[var(--color-brand-muted)]">
+                {tier.features.join(",")}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="text-2xl font-bold mb-4">Costs that can be easy to miss</h2>
+  <ul class="space-y-3 mb-8">
+    {
+      hiddenCosts.map((cost) => (
+        <li class="flex items-start gap-3">
+          <span class="mt-1" style="color: var(--color-error-600);">
+            &#9888;
+          </span>
+          <span>{cost}</span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <InlineSignup
+    heading="See Gavelhouse pricing without the noise"
+    subtext="Try Scale features first. Pick a plan later."
+    sourcePage={Astro.url.pathname}
+  />
+
+  <Content />
+
+  <ComparisonTable
+    headers={["", competitor.name, siteConfig.name]}
+    rows={pricingComparisonRows}
+    highlightColumn={2}
+  />
+
+  {
+    tableData && (
+      <DataTableBlock
+        name={tableData.name}
+        description={tableData.description}
+        columns={tableData.columns}
+        rows={tableData.rows}
+      />
+    )
+  }
+
+  {
+    pricingStats?.map((s) => (
+      <StatisticCitation
+        stat={s.stat}
+        source={s.source}
+        sourceUrl={s.sourceUrl}
+      />
+    ))
+  }
+
+  {answers?.map((a) => <AnswerBlock question={a.q} answer={a.a} />)}
+
+  <FaqSection
+    faqs={faqs}
+    bottomCtaHeading={siteConfig.copy?.faq?.bottomCtaHeading}
+    bottomCtaText={siteConfig.copy?.faq?.bottomCtaText}
+    bottomCtaTarget={siteConfig.copy?.faq?.bottomCtaTarget}
+  />
+  <FunnelCta
+    stage="mofu"
+    funnel={siteConfig.funnel}
+    heading="Ready for flat pricing?"
+    benefitBullets={siteConfig.copy?.funnelCta?.benefitBullets}
+  />
+
+  {relatedLinks.length > 0 && <RelatedPages pages={relatedLinks} />}
+</PricingBreakdownLayout>

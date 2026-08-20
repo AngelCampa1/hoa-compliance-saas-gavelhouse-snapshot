@@ -1,0 +1,61 @@
+---
+import "../../../styles/global.css";
+import { getCollection } from "astro:content";
+import CategoryHub from "../../../hubs/category-hub.astro";
+import PublicSignupCta from "../../../components/public-signup-cta.astro";
+import PricingHero from "../../../components/heroes/pricing-hero.astro";
+import SectionBand from "../../../components/section-band.astro";
+import { siteConfig } from "../../../config/site";
+import { hubFaqs } from "../../../config/hub-faqs";
+import {
+  sortByUpdatedAtDesc,
+  mapToContentItems,
+} from "../../../lib/collections";
+import type { GetStaticPathsOptions } from "astro";
+import { getAnnualPricingRangeLabel } from "@boardstack/shared";
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const entries = await getCollection("pricing-breakdowns");
+  const sorted = sortByUpdatedAtDesc(entries);
+  const items = mapToContentItems(
+    sorted,
+    (e) => `/compare/pricing/${e.slug}/`,
+    (e) => ({ competitor: e.data.competitor.name }),
+  );
+  return paginate(items, { pageSize: 12 }).filter(
+    (path) => path.params.page !== undefined,
+  );
+}
+
+const { page } = Astro.props;
+const pricingRange = getAnnualPricingRangeLabel(["starter", "scale"]);
+---
+
+<CategoryHub
+  config={siteConfig}
+  title={`Flat ${pricingRange}. No per-unit fees.`}
+  description="What HOA management software actually costs at 100 units, and why the per-door pricing model is built for property managers, not volunteer boards."
+  items={page.data}
+  page={page}
+  basePath="/compare/pricing"
+  breadcrumbs={[
+    { label: "Home", href: "/" },
+    { label: "Compare", href: "/compare/" },
+    { label: "Pricing", href: "/compare/pricing/" },
+  ]}
+  faqs={hubFaqs["/compare/pricing"]}
+  eyebrow="Pricing breakdowns"
+  variant="editorial"
+>
+  <PricingHero slot="custom-hero" />
+  <SectionBand slot="cta" surface="ink">
+    <section class="py-2 text-center" id="signup">
+      <h2 class="text-2xl font-bold mb-2">Tired of surprise fees?</h2>
+      <p class="mb-6 max-w-2xl mx-auto">
+        {siteConfig.name} is {siteConfig.product.price} flat by community size. Try
+        it first. Pick a plan later.
+      </p>
+      <PublicSignupCta sourcePage="/compare/pricing" buttonText="Start trial" />
+    </section>
+  </SectionBand>
+</CategoryHub>

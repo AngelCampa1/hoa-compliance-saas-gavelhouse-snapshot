@@ -1,0 +1,604 @@
+{
+  "posts": [
+    {
+      "id": "2026-06-10-wed-01",
+      "scheduledAt": "2026-06-10T06:30:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Florida reserve planning changed when SIRS became a budget problem.",
+      "file": "content/linkedin/posts/2026-06-10-wed-01-fl-sirs-budget-reset.md"
+    },
+    {
+      "id": "2026-06-10-wed-02",
+      "scheduledAt": "2026-06-10T07:00:00-05:00",
+      "channel": "company",
+      "pillar": "fannie-mae",
+      "hook": "Fannie Mae's 2027 reserve floor is going to show up as a budget line.",
+      "file": "content/linkedin/posts/2026-06-10-wed-02-fannie-mae-budget-line.md"
+    },
+    {
+      "id": "2026-06-10-wed-03",
+      "scheduledAt": "2026-06-10T07:30:00-05:00",
+      "channel": "company",
+      "pillar": "reserve-mechanics",
+      "hook": "Operating money and reserve money need different treatment from day one.",
+      "file": "content/linkedin/posts/2026-06-10-wed-03-operating-reserve-two-ledgers.md"
+    },
+    {
+      "id": "2026-06-10-wed-04",
+      "scheduledAt": "2026-06-10T08:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-ops",
+      "hook": "A treasurer handoff starts with bank access, not a spreadsheet.",
+      "file": "content/linkedin/posts/2026-06-10-wed-04-treasurer-handoff-bank-access.md"
+    },
+    {
+      "id": "2026-06-10-wed-05",
+      "scheduledAt": "2026-06-10T09:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "California reserve work has an annual rhythm.",
+      "file": "content/linkedin/posts/2026-06-10-wed-05-ca-annual-disclosure-board-rhythm.md"
+    },
+    {
+      "id": "2026-06-10-wed-06",
+      "scheduledAt": "2026-06-10T10:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-liability",
+      "hook": "The board needs a paper trail before there is a dispute.",
+      "file": "content/linkedin/posts/2026-06-10-wed-06-board-liability-paper-trail.md"
+    },
+    {
+      "id": "2026-06-10-wed-07",
+      "scheduledAt": "2026-06-10T11:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Maryland reserve compliance starts with separate accounts.",
+      "file": "content/linkedin/posts/2026-06-10-wed-07-md-separate-accounts.md"
+    },
+    {
+      "id": "2026-06-10-wed-08",
+      "scheduledAt": "2026-06-10T12:00:00-05:00",
+      "channel": "company",
+      "pillar": "builder-pov",
+      "hook": "We built fund separation into the product because reminders are too weak.",
+      "file": "content/linkedin/posts/2026-06-10-wed-08-fund-accounting-design.md"
+    },
+    {
+      "id": "2026-06-10-wed-09",
+      "scheduledAt": "2026-06-10T13:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "New Jersey's reserve rule is operational, not abstract.",
+      "file": "content/linkedin/posts/2026-06-10-wed-09-nj-never-below-zero-operational.md"
+    },
+    {
+      "id": "2026-06-10-wed-10",
+      "scheduledAt": "2026-06-10T14:00:00-05:00",
+      "channel": "company",
+      "pillar": "fannie-mae",
+      "hook": "Boards in permissive states still have a Fannie Mae problem to solve.",
+      "file": "content/linkedin/posts/2026-06-10-wed-10-fannie-mae-all-states-board-note.md"
+    },
+    {
+      "id": "2026-06-10-wed-11",
+      "scheduledAt": "2026-06-10T15:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-ops",
+      "hook": "A month-end close is a board control, not an accounting ritual.",
+      "file": "content/linkedin/posts/2026-06-10-wed-11-month-end-close-attestation.md"
+    },
+    {
+      "id": "2026-06-10-wed-12",
+      "scheduledAt": "2026-06-10T16:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Washington reserve work has to look 30 years out.",
+      "file": "content/linkedin/posts/2026-06-10-wed-12-wa-30-year-plan.md"
+    },
+    {
+      "id": "2026-06-10-wed-13",
+      "scheduledAt": "2026-06-10T17:00:00-05:00",
+      "channel": "company",
+      "pillar": "anti-quickbooks",
+      "hook": "QuickBooks can track categories. It cannot make your HOA compliant by itself.",
+      "file": "content/linkedin/posts/2026-06-10-wed-13-quickbooks-commingling-risk.md"
+    },
+    {
+      "id": "2026-06-10-wed-14",
+      "scheduledAt": "2026-06-10T18:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-liability",
+      "hook": "Silent reserve statutes do not mean silent board duties.",
+      "file": "content/linkedin/posts/2026-06-10-wed-14-fiduciary-duty-silent-states.md"
+    },
+    {
+      "id": "2026-06-10-wed-15",
+      "scheduledAt": "2026-06-10T20:00:00-05:00",
+      "channel": "company",
+      "pillar": "lead-magnet",
+      "hook": "Reserve rules are local until Fannie Mae enters the conversation.",
+      "file": "content/linkedin/posts/2026-06-10-wed-15-guide-one-reference.md"
+    },
+    {
+      "id": "2026-06-11-thu-01",
+      "scheduledAt": "2026-06-11T06:30:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "California commingling is not a bookkeeping nit.",
+      "file": "content/linkedin/posts/2026-06-11-thu-01-ca-commingling-not-bookkeeping.md"
+    },
+    {
+      "id": "2026-06-11-thu-02",
+      "scheduledAt": "2026-06-11T07:00:00-05:00",
+      "channel": "company",
+      "pillar": "fannie-mae",
+      "hook": "The phrase Full Review should be on every HOA board's radar.",
+      "file": "content/linkedin/posts/2026-06-11-thu-02-fannie-mae-full-review-plain.md"
+    },
+    {
+      "id": "2026-06-11-thu-03",
+      "scheduledAt": "2026-06-11T07:30:00-05:00",
+      "channel": "company",
+      "pillar": "reserve-mechanics",
+      "hook": "A reserve study is not the same thing as a reserve budget.",
+      "file": "content/linkedin/posts/2026-06-11-thu-03-reserve-study-not-budget.md"
+    },
+    {
+      "id": "2026-06-11-thu-04",
+      "scheduledAt": "2026-06-11T08:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-liability",
+      "hook": "New directors inherit the reserve record they did not create.",
+      "file": "content/linkedin/posts/2026-06-11-thu-04-board-liability-new-director.md"
+    },
+    {
+      "id": "2026-06-11-thu-05",
+      "scheduledAt": "2026-06-11T09:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Florida's reserve fund penalty is large enough to change behavior.",
+      "file": "content/linkedin/posts/2026-06-11-thu-05-fl-5000-violation-context.md"
+    },
+    {
+      "id": "2026-06-11-thu-06",
+      "scheduledAt": "2026-06-11T10:00:00-05:00",
+      "channel": "company",
+      "pillar": "builder-pov",
+      "hook": "Gavelhouse is built for self-managed boards, not management companies.",
+      "file": "content/linkedin/posts/2026-06-11-thu-06-gavelhouse-self-managed-focus.md"
+    },
+    {
+      "id": "2026-06-11-thu-07",
+      "scheduledAt": "2026-06-11T11:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "New Jersey boards need to think about project timing before approving spend.",
+      "file": "content/linkedin/posts/2026-06-11-thu-07-nj-project-timing.md"
+    },
+    {
+      "id": "2026-06-11-thu-08",
+      "scheduledAt": "2026-06-11T12:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-ops",
+      "hook": "An audit packet should prove the board was paying attention.",
+      "file": "content/linkedin/posts/2026-06-11-thu-08-audit-packet-what-it-proves.md"
+    },
+    {
+      "id": "2026-06-11-thu-09",
+      "scheduledAt": "2026-06-11T13:00:00-05:00",
+      "channel": "company",
+      "pillar": "fannie-mae",
+      "hook": "A silent state reserve statute will not silence a lender review.",
+      "file": "content/linkedin/posts/2026-06-11-thu-09-silent-state-fannie-mae.md"
+    },
+    {
+      "id": "2026-06-11-thu-10",
+      "scheduledAt": "2026-06-11T14:00:00-05:00",
+      "channel": "company",
+      "pillar": "anti-quickbooks",
+      "hook": "The QuickBooks risk shows up when the treasurer leaves.",
+      "file": "content/linkedin/posts/2026-06-11-thu-10-quickbooks-handoff-risk.md"
+    },
+    {
+      "id": "2026-06-11-thu-11",
+      "scheduledAt": "2026-06-11T15:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Virginia reserve planning requires component analysis and a funding plan.",
+      "file": "content/linkedin/posts/2026-06-11-thu-11-va-component-analysis.md"
+    },
+    {
+      "id": "2026-06-11-thu-12",
+      "scheduledAt": "2026-06-11T16:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-ops",
+      "hook": "Owner visibility is easier when the board record is already clean.",
+      "file": "content/linkedin/posts/2026-06-11-thu-12-owner-visibility-records.md"
+    },
+    {
+      "id": "2026-06-11-thu-13",
+      "scheduledAt": "2026-06-11T17:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Hawaii's reserve requirement is not vague.",
+      "file": "content/linkedin/posts/2026-06-11-thu-13-hi-50-percent-funded.md"
+    },
+    {
+      "id": "2026-06-11-thu-14",
+      "scheduledAt": "2026-06-11T18:00:00-05:00",
+      "channel": "company",
+      "pillar": "faq",
+      "hook": "FAQ: Does Gavelhouse replace a CPA, attorney, or reserve specialist?",
+      "file": "content/linkedin/posts/2026-06-11-thu-14-faq-why-gavelhouse-not-cpa.md"
+    },
+    {
+      "id": "2026-06-11-thu-15",
+      "scheduledAt": "2026-06-11T20:00:00-05:00",
+      "channel": "company",
+      "pillar": "lead-magnet",
+      "hook": "Budget season is the wrong time to discover your reserve rule.",
+      "file": "content/linkedin/posts/2026-06-11-thu-15-guide-before-budget-season.md"
+    },
+    {
+      "id": "2026-06-12-fri-01",
+      "scheduledAt": "2026-06-12T06:30:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Florida milestone inspections and reserve planning belong in the same board conversation.",
+      "file": "content/linkedin/posts/2026-06-12-fri-01-fl-milestone-reserve-link.md"
+    },
+    {
+      "id": "2026-06-12-fri-02",
+      "scheduledAt": "2026-06-12T07:00:00-05:00",
+      "channel": "company",
+      "pillar": "fannie-mae",
+      "hook": "Reserve underfunding can become a homeowner mortgage problem.",
+      "file": "content/linkedin/posts/2026-06-12-fri-02-fannie-mae-homeowner-impact.md"
+    },
+    {
+      "id": "2026-06-12-fri-03",
+      "scheduledAt": "2026-06-12T07:30:00-05:00",
+      "channel": "company",
+      "pillar": "reserve-mechanics",
+      "hook": "Percent funded is a board question, not just a reserve study term.",
+      "file": "content/linkedin/posts/2026-06-12-fri-03-reserve-percent-funded-question.md"
+    },
+    {
+      "id": "2026-06-12-fri-04",
+      "scheduledAt": "2026-06-12T08:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-liability",
+      "hook": "Minutes should show the board reviewed reserve funding before approving the budget.",
+      "file": "content/linkedin/posts/2026-06-12-fri-04-board-liability-minutes.md"
+    },
+    {
+      "id": "2026-06-12-fri-05",
+      "scheduledAt": "2026-06-12T09:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Colorado reserve disclosures need more than a bank balance.",
+      "file": "content/linkedin/posts/2026-06-12-fri-05-co-disclosure-percent-funded.md"
+    },
+    {
+      "id": "2026-06-12-fri-06",
+      "scheduledAt": "2026-06-12T10:00:00-05:00",
+      "channel": "company",
+      "pillar": "builder-pov",
+      "hook": "Gavelhouse does not have a native mobile app yet, and that is intentional for now.",
+      "file": "content/linkedin/posts/2026-06-12-fri-06-builder-pov-no-mobile-yet.md"
+    },
+    {
+      "id": "2026-06-12-fri-07",
+      "scheduledAt": "2026-06-12T11:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Washington requires separate reserve accounts.",
+      "file": "content/linkedin/posts/2026-06-12-fri-07-wa-separate-reserve-accounts.md"
+    },
+    {
+      "id": "2026-06-12-fri-08",
+      "scheduledAt": "2026-06-12T12:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-ops",
+      "hook": "The reserve study should be part of every treasurer handoff.",
+      "file": "content/linkedin/posts/2026-06-12-fri-08-treasurer-handoff-reserve-study.md"
+    },
+    {
+      "id": "2026-06-12-fri-09",
+      "scheduledAt": "2026-06-12T13:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Delaware reserve studies have to include a funding plan.",
+      "file": "content/linkedin/posts/2026-06-12-fri-09-de-funding-plan.md"
+    },
+    {
+      "id": "2026-06-12-fri-10",
+      "scheduledAt": "2026-06-12T14:00:00-05:00",
+      "channel": "company",
+      "pillar": "anti-quickbooks",
+      "hook": "The spreadsheet beside QuickBooks is usually where the real reserve logic lives.",
+      "file": "content/linkedin/posts/2026-06-12-fri-10-quickbooks-spreadsheet-sidecar.md"
+    },
+    {
+      "id": "2026-06-12-fri-11",
+      "scheduledAt": "2026-06-12T15:00:00-05:00",
+      "channel": "company",
+      "pillar": "fannie-mae",
+      "hook": "The 2027 Fannie Mae deadline belongs on the 2026 budget calendar.",
+      "file": "content/linkedin/posts/2026-06-12-fri-11-fannie-mae-budget-calendar.md"
+    },
+    {
+      "id": "2026-06-12-fri-12",
+      "scheduledAt": "2026-06-12T16:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-ops",
+      "hook": "Owner requests need an audit trail, especially when money is involved.",
+      "file": "content/linkedin/posts/2026-06-12-fri-12-owner-request-audit-trail.md"
+    },
+    {
+      "id": "2026-06-12-fri-13",
+      "scheduledAt": "2026-06-12T17:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Nevada boards should know their five-year reserve study date.",
+      "file": "content/linkedin/posts/2026-06-12-fri-13-nv-five-year-study.md"
+    },
+    {
+      "id": "2026-06-12-fri-14",
+      "scheduledAt": "2026-06-12T18:00:00-05:00",
+      "channel": "company",
+      "pillar": "faq",
+      "hook": "FAQ: Why lead with compliance instead of community features?",
+      "file": "content/linkedin/posts/2026-06-12-fri-14-faq-why-compliance-first.md"
+    },
+    {
+      "id": "2026-06-12-fri-15",
+      "scheduledAt": "2026-06-12T20:00:00-05:00",
+      "channel": "company",
+      "pillar": "lead-magnet",
+      "hook": "A useful weekend board task: check your state reserve rule.",
+      "file": "content/linkedin/posts/2026-06-12-fri-15-guide-weekend-review.md"
+    },
+    {
+      "id": "2026-06-13-sat-01",
+      "scheduledAt": "2026-06-13T06:30:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "A $10,000 reserve penalty should not depend on board memory.",
+      "file": "content/linkedin/posts/2026-06-13-sat-01-md-penalty-board-memory.md"
+    },
+    {
+      "id": "2026-06-13-sat-02",
+      "scheduledAt": "2026-06-13T07:00:00-05:00",
+      "channel": "company",
+      "pillar": "fannie-mae",
+      "hook": "An owner may ask about Fannie Mae before the board is ready.",
+      "file": "content/linkedin/posts/2026-06-13-sat-02-fannie-mae-owner-question.md"
+    },
+    {
+      "id": "2026-06-13-sat-03",
+      "scheduledAt": "2026-06-13T07:30:00-05:00",
+      "channel": "company",
+      "pillar": "reserve-mechanics",
+      "hook": "A reserve balance by itself does not tell you reserve health.",
+      "file": "content/linkedin/posts/2026-06-13-sat-03-reserve-balance-is-not-health.md"
+    },
+    {
+      "id": "2026-06-13-sat-04",
+      "scheduledAt": "2026-06-13T08:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-liability",
+      "hook": "Volunteer status does not remove fiduciary responsibility.",
+      "file": "content/linkedin/posts/2026-06-13-sat-04-volunteer-board-liability.md"
+    },
+    {
+      "id": "2026-06-13-sat-05",
+      "scheduledAt": "2026-06-13T09:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "California, Florida, and Washington point to the same fund control.",
+      "file": "content/linkedin/posts/2026-06-13-sat-05-fl-wa-ca-separation-pattern.md"
+    },
+    {
+      "id": "2026-06-13-sat-06",
+      "scheduledAt": "2026-06-13T10:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-ops",
+      "hook": "Reserve status deserves a standing agenda item.",
+      "file": "content/linkedin/posts/2026-06-13-sat-06-board-ops-agenda-item.md"
+    },
+    {
+      "id": "2026-06-13-sat-07",
+      "scheduledAt": "2026-06-13T11:00:00-05:00",
+      "channel": "company",
+      "pillar": "anti-quickbooks",
+      "hook": "A QuickBooks file is not a reserve policy.",
+      "file": "content/linkedin/posts/2026-06-13-sat-07-quickbooks-not-policy.md"
+    },
+    {
+      "id": "2026-06-13-sat-08",
+      "scheduledAt": "2026-06-13T12:00:00-05:00",
+      "channel": "company",
+      "pillar": "fannie-mae",
+      "hook": "Fannie Mae's 15% floor is a floor, not a reserve strategy.",
+      "file": "content/linkedin/posts/2026-06-13-sat-08-fannie-mae-15-percent-not-goal.md"
+    },
+    {
+      "id": "2026-06-13-sat-09",
+      "scheduledAt": "2026-06-13T13:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Utah boards need a reserve study at least every 6 years.",
+      "file": "content/linkedin/posts/2026-06-13-sat-09-ut-six-year-study.md"
+    },
+    {
+      "id": "2026-06-13-sat-10",
+      "scheduledAt": "2026-06-13T14:00:00-05:00",
+      "channel": "company",
+      "pillar": "builder-pov",
+      "hook": "Board software pricing should be easy for a volunteer board to approve.",
+      "file": "content/linkedin/posts/2026-06-13-sat-10-gavelhouse-flat-pricing-approval.md"
+    },
+    {
+      "id": "2026-06-13-sat-11",
+      "scheduledAt": "2026-06-13T15:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Oregon reserve studies have to connect to a funding plan.",
+      "file": "content/linkedin/posts/2026-06-13-sat-11-oregon-funding-plan.md"
+    },
+    {
+      "id": "2026-06-13-sat-12",
+      "scheduledAt": "2026-06-13T16:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-ops",
+      "hook": "Owner visibility works better when the board sees the same source of truth.",
+      "file": "content/linkedin/posts/2026-06-13-sat-12-owner-portal-board-control.md"
+    },
+    {
+      "id": "2026-06-13-sat-13",
+      "scheduledAt": "2026-06-13T17:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Connecticut boards still have reserve disclosure work to do.",
+      "file": "content/linkedin/posts/2026-06-13-sat-13-ct-disclosure-current-only.md"
+    },
+    {
+      "id": "2026-06-13-sat-14",
+      "scheduledAt": "2026-06-13T18:00:00-05:00",
+      "channel": "company",
+      "pillar": "faq",
+      "hook": "FAQ: Who is Gavelhouse actually for?",
+      "file": "content/linkedin/posts/2026-06-13-sat-14-faq-self-managed-fit.md"
+    },
+    {
+      "id": "2026-06-13-sat-15",
+      "scheduledAt": "2026-06-13T20:00:00-05:00",
+      "channel": "company",
+      "pillar": "lead-magnet",
+      "hook": "One reserve check can tell a board where the gaps are.",
+      "file": "content/linkedin/posts/2026-06-13-sat-15-guide-checklist.md"
+    },
+    {
+      "id": "2026-06-14-sun-01",
+      "scheduledAt": "2026-06-14T06:30:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "New Jersey reserve compliance is about account structure and funding discipline.",
+      "file": "content/linkedin/posts/2026-06-14-sun-01-nj-separate-accounts.md"
+    },
+    {
+      "id": "2026-06-14-sun-02",
+      "scheduledAt": "2026-06-14T07:00:00-05:00",
+      "channel": "company",
+      "pillar": "fannie-mae",
+      "hook": "The first person to feel a reserve problem may be a seller.",
+      "file": "content/linkedin/posts/2026-06-14-sun-02-fannie-mae-seller-surprise.md"
+    },
+    {
+      "id": "2026-06-14-sun-03",
+      "scheduledAt": "2026-06-14T07:30:00-05:00",
+      "channel": "company",
+      "pillar": "reserve-mechanics",
+      "hook": "A reserve study PDF is not a reserve process.",
+      "file": "content/linkedin/posts/2026-06-14-sun-03-reserve-study-pdf-risk.md"
+    },
+    {
+      "id": "2026-06-14-sun-04",
+      "scheduledAt": "2026-06-14T08:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-liability",
+      "hook": "Document the why, not only the vote.",
+      "file": "content/linkedin/posts/2026-06-14-sun-04-board-liability-document-why.md"
+    },
+    {
+      "id": "2026-06-14-sun-05",
+      "scheduledAt": "2026-06-14T09:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "California's 30-year funding plan is an owner communication tool.",
+      "file": "content/linkedin/posts/2026-06-14-sun-05-ca-30-year-plan-owner-story.md"
+    },
+    {
+      "id": "2026-06-14-sun-06",
+      "scheduledAt": "2026-06-14T10:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-ops",
+      "hook": "A Sunday board file check can save a painful Monday meeting.",
+      "file": "content/linkedin/posts/2026-06-14-sun-06-board-ops-sunday-file-check.md"
+    },
+    {
+      "id": "2026-06-14-sun-07",
+      "scheduledAt": "2026-06-14T11:00:00-05:00",
+      "channel": "company",
+      "pillar": "anti-quickbooks",
+      "hook": "Categories are not the same thing as controls.",
+      "file": "content/linkedin/posts/2026-06-14-sun-07-quickbooks-categories-not-controls.md"
+    },
+    {
+      "id": "2026-06-14-sun-08",
+      "scheduledAt": "2026-06-14T12:00:00-05:00",
+      "channel": "company",
+      "pillar": "fannie-mae",
+      "hook": "The Fannie Mae deadline is close enough for board calendars.",
+      "file": "content/linkedin/posts/2026-06-14-sun-08-fannie-mae-less-than-year.md"
+    },
+    {
+      "id": "2026-06-14-sun-09",
+      "scheduledAt": "2026-06-14T13:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Tennessee shows why boards cannot rely only on strong statutory funding rules.",
+      "file": "content/linkedin/posts/2026-06-14-sun-09-tn-weakest-reform.md"
+    },
+    {
+      "id": "2026-06-14-sun-10",
+      "scheduledAt": "2026-06-14T14:00:00-05:00",
+      "channel": "company",
+      "pillar": "builder-pov",
+      "hook": "Good product positioning includes saying who should not buy.",
+      "file": "content/linkedin/posts/2026-06-14-sun-10-builder-pov-honest-cons.md"
+    },
+    {
+      "id": "2026-06-14-sun-11",
+      "scheduledAt": "2026-06-14T15:00:00-05:00",
+      "channel": "company",
+      "pillar": "state-compliance",
+      "hook": "Pennsylvania reserve information still belongs in the board record.",
+      "file": "content/linkedin/posts/2026-06-14-sun-11-pa-public-offering-reserve-info.md"
+    },
+    {
+      "id": "2026-06-14-sun-12",
+      "scheduledAt": "2026-06-14T16:00:00-05:00",
+      "channel": "company",
+      "pillar": "board-ops",
+      "hook": "Close the books before asking owners to trust the reserve disclosure.",
+      "file": "content/linkedin/posts/2026-06-14-sun-12-board-ops-close-before-disclosure.md"
+    },
+    {
+      "id": "2026-06-14-sun-13",
+      "scheduledAt": "2026-06-14T17:00:00-05:00",
+      "channel": "company",
+      "pillar": "fannie-mae",
+      "hook": "There is no state-law exemption from the Fannie Mae reserve floor.",
+      "file": "content/linkedin/posts/2026-06-14-sun-13-fannie-mae-not-state-exemption.md"
+    },
+    {
+      "id": "2026-06-14-sun-14",
+      "scheduledAt": "2026-06-14T18:00:00-05:00",
+      "channel": "company",
+      "pillar": "faq",
+      "hook": "FAQ: What should a self-managed board clean up first?",
+      "file": "content/linkedin/posts/2026-06-14-sun-14-faq-what-records-first.md"
+    },
+    {
+      "id": "2026-06-14-sun-15",
+      "scheduledAt": "2026-06-14T20:00:00-05:00",
+      "channel": "company",
+      "pillar": "lead-magnet",
+      "hook": "Before Monday's board email thread starts, check the reserve rule.",
+      "file": "content/linkedin/posts/2026-06-14-sun-15-guide-monday-ready.md"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+# Add URL redirects here
+# Format: /old-path  /new-path  301
+/sitemap.xml /sitemap-index.xml 301
+
+# Cannibalization consolidation (R3) — suffix variants 301 to canonical parent.
+/compare/alternatives/condo-control-alternative-small-hoas/ /compare/alternatives/condo-control/ 301
+/compare/alternatives/hoalife-alternative-treasurers/ /compare/alternatives/hoalife/ 301
+/compare/alternatives/payhoa-alternative-treasurers/ /compare/alternatives/payhoa/ 301
+/compare/alternatives/townsq-alternative-volunteer-boards/ /compare/alternatives/townsq/ 301
+/compare/versus/payhoa-vs-hoalife-for-treasurers/ /compare/versus/payhoa-vs-hoalife/ 301
+/compare/versus/townsq-vs-payhoa-volunteer-boards/ /compare/versus/townsq-vs-payhoa/ 301
+/compare/pricing/appfolio-hoa-pricing/ /compare/pricing/appfolio/ 301
+/compare/pricing/cinc-systems-pricing/ /compare/pricing/cinc/ 301
+/compare/pricing/condo-control-pricing-for-treasurers/ /compare/pricing/condo-control/ 301
+/compare/pricing/hoalife-pricing-for-volunteer-boards/ /compare/pricing/hoalife/ 301
+/compare/pricing/payhoa-pricing-for-small-hoas/ /compare/pricing/payhoa/ 301
+/compare/pricing/townsq-pricing/ /compare/pricing/townsq/ 301
+
+# Historical non-trailing-slash inbound links
+/hoa-compliance/florida /hoa-compliance/florida/ 301
+/compare/alternatives/moneyminder /compare/alternatives/moneyminder/ 301
+/compare/versus/hoalife-vs-moneyminder /compare/versus/hoalife-vs-moneyminder/ 301
+/hoa-compliance/georgia /hoa-compliance/georgia/ 301
+
+# Duplicate-slash inbound URLs found in GSC/live SEO checks
+/resources/guides/hoa-board-liability-guide// /resources/guides/hoa-board-liability-guide/ 301
+/free/reserve-compliance-checklist// /free/reserve-compliance-checklist/ 301

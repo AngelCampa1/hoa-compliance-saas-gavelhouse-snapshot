@@ -1,0 +1,49 @@
+---
+import SectionBand from "../section-band.astro";
+import StateReserveLawMap from "../data-viz/state-reserve-law-map.astro";
+import { STATE_RESERVE_REQUIREMENTS } from "@boardstack/shared";
+
+const rules = Object.values(STATE_RESERVE_REQUIREMENTS);
+const mandateCount = rules.filter((r) => r.reserveStudyRequired).length;
+const commingleCount = rules.filter((r) => r.commingleProhibited).length;
+const statuteCount = rules.filter((r) => r.statuteCitation !== null).length;
+---
+
+<SectionBand surface="ink">
+  <div class="compliance-hero-grid">
+    <div>
+      <p class="u-kicker-serif">-- a compliance library</p>
+      <h1
+        class="mt-5 font-heading font-bold leading-[1.05]"
+        style="font-size: clamp(2.4rem, 4.2vw, 4rem); letter-spacing: -0.01em;"
+      >
+        Most treasurers don't know they're personally liable for this.
+      </h1>
+      <p class="u-lede mt-6">
+        {mandateCount} states mandate reserve studies on specific schedules.
+        {commingleCount} states explicitly prohibit commingling reserve and operating
+        funds. Penalties run from $100/day to $10,000 per violation - and 2027 Fannie
+        Mae disclosure rules tighten the screws further.
+      </p>
+      <div class="compliance-hero-stats">
+        <div>
+          <span class="u-ink-numeric">{mandateCount}</span>
+          <span class="u-ink-numeric-label">States mandate reserve studies</span
+          >
+        </div>
+        <div>
+          <span class="u-ink-numeric">{commingleCount}</span>
+          <span class="u-ink-numeric-label">States ban commingling</span>
+        </div>
+        <div>
+          <span class="u-ink-numeric">{statuteCount}</span>
+          <span class="u-ink-numeric-label">Statutes covered</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <StateReserveLawMap variant="ink" />
+    </div>
+  </div>
+</SectionBand>

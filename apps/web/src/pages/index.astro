@@ -1,0 +1,349 @@
+---
+import "../styles/global.css";
+import LandingLayout from "../layouts/landing-layout.astro";
+import DocHeader from "../components/doc-header.astro";
+import { siteConfig } from "../config/site";
+
+const findings = [
+  ["F-01", "Commingled operating and reserve cash", "No enforceable split"],
+  ["F-02", "Reserve tracking lives in a side spreadsheet", "No audit trail"],
+  ["F-03", "State rules drift after board handoff", "Deadline risk"],
+];
+
+const remediations = [
+  ["F-01", "Two-bucket ledger", "Resolved", "CA Section 5550 / FL 720.303(7)"],
+  ["F-02", "Reserve study tracking", "Resolved", "NV NRS 116.31152"],
+  ["F-03", "State rule pack", "Resolved", "CA / FL / NV / TX"],
+  ["F-04", "Audit pack exports", "Resolved", "Board-ready evidence"],
+];
+
+const tiers = siteConfig.pricingTiers ?? [];
+const signupUrl = siteConfig.funnel.bofu.ctaTarget;
+---
+
+<LandingLayout
+  config={siteConfig}
+  title="Gavelhouse reserve compliance software"
+  description="HOA and condo software for self-managed boards that need clean money records, clear meetings, and simple owner work."
+>
+  <section class="b1-section">
+    <div class="b1-container">
+      <DocHeader
+        kicker="GAVELHOUSE"
+        re="For self-managed HOA and condo boards."
+        meta={[
+          { label: "TO", value: "Volunteer boards" },
+          { label: "STATUS", value: "Action required", tone: "action" },
+        ]}
+      />
+      <div class="b1-grid-2">
+        <div>
+          <h1 class="b1-h1">Run your HOA without the spreadsheet mess.</h1>
+          <p class="b1-body-lg">
+            Gavelhouse keeps money, meetings, owners, and records in one place.
+            Your next board can see what happened and what to do next.
+          </p>
+          <div class="hero-actions">
+            <a class="b1-button b1-button--primary" href={signupUrl}>
+              Start trial
+            </a>
+            <a
+              class="b1-button"
+              href="/free/50-state-reserve-fund-requirements/"
+            >
+              Get the reserve guide
+            </a>
+          </div>
+          <p class="b1-small">
+            30-day trial. No credit card. Flat annual pricing.
+          </p>
+        </div>
+        <div class="b1-card executive-card">
+          <div class="card-heading">
+            <span>What gets messy</span>
+            <span class="b1-badge b1-badge--bad">3 risks</span>
+          </div>
+          <div class="finding-list">
+            {
+              findings.map(([id, title, note]) => (
+                <div class="finding-row">
+                  <span>{id}</span>
+                  <strong>{title}</strong>
+                  <em>{note}</em>
+                </div>
+              ))
+            }
+          </div>
+          <span class="b1-stamp">For review</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section b1-section--alt">
+    <div class="b1-container">
+      <p class="b1-eyebrow">Fix the basics</p>
+      <h2 class="b1-h2">Keep the board record clear.</h2>
+      <div
+        class="b1-table-wrap section-table"
+        tabindex="0"
+        role="region"
+        aria-label="Findings and controls table"
+      >
+        <table class="b1-table">
+          <thead>
+            <tr
+              ><th>Finding</th><th>Control</th><th>Status</th><th>Reference</th
+              ></tr
+            >
+          </thead>
+          <tbody>
+            {
+              remediations.map(([id, control, status, ref]) => (
+                <tr>
+                  <td>
+                    <span class="f-id">{id}</span>
+                  </td>
+                  <td>{control}</td>
+                  <td>
+                    <span class="b1-badge b1-badge--good">{status}</span>
+                  </td>
+                  <td>{ref}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section">
+    <div class="b1-container">
+      <p class="b1-eyebrow">What you can see</p>
+      <div class="b1-grid-3">
+        <article class="b1-card exhibit-card">
+          <span>Exhibit A</span>
+          <h3 class="b1-h3">Two-bucket ledger</h3>
+          <div class="ledger-bars">
+            <i style="--w: 74%">Operating</i>
+            <i style="--w: 48%">Reserve</i>
+          </div>
+        </article>
+        <article class="b1-card exhibit-card">
+          <span>Exhibit B</span>
+          <h3 class="b1-h3">Audit pack manifest</h3>
+          <pre>balance-sheet.pdf
+reserve-ledger.pdf
+board-minutes.pdf
+owner-roster.csv</pre>
+        </article>
+        <article class="b1-card exhibit-card">
+          <span>Exhibit C</span>
+          <h3 class="b1-h3">State rule pack</h3>
+          <p class="b1-body">
+            CA v2026.2 / FL v2026.2 / NV v2026.1 / TX v2026.1
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section b1-section--deep">
+    <div class="b1-container">
+      <p class="b1-eyebrow">Why it exists</p>
+      <div class="b1-grid-2">
+        <article class="b1-card b1-card--ink">
+          <h2 class="b1-h2">QuickBooks tracks money.</h2>
+          <p>
+            It does not know your board rules. It will not stop a bad fund
+            split.
+          </p>
+        </article>
+        <article class="b1-card">
+          <h2 class="b1-h2">Gavelhouse tracks board work.</h2>
+          <p>Funds, decisions, owner work, and notes stay tied together.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section">
+    <div class="b1-container">
+      <p class="b1-eyebrow">Pricing</p>
+      <h2 class="b1-h2">Pick the plan by community size.</h2>
+      <div class="b1-grid-4">
+        {
+          tiers.map((tier) => (
+            <article
+              class:list={["b1-card", tier.highlighted && "b1-card--hi"]}
+            >
+              {tier.highlighted && (
+                <span class="b1-badge b1-badge--acc">Most common</span>
+              )}
+              <h3 class="b1-h3">{tier.name}</h3>
+              <p class="tier-who-its-for">{tier.whoItsFor}</p>
+              <strong class="price">{tier.price}</strong>
+              <p class="b1-small">{tier.description}. Billed annually.</p>
+              <a class="b1-button b1-button--primary" href={signupUrl}>
+                Start trial
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section b1-section--alt">
+    <div class="b1-container b1-grid-2">
+      <div>
+        <p class="b1-eyebrow">Start</p>
+        <h2 class="b1-h2">Give the next board a cleaner handoff.</h2>
+        <p class="b1-body-lg">
+          Start with cleaner funds. Keep decisions easy to find. Leave less
+          cleanup for the next treasurer.
+        </p>
+        <div class="hero-actions">
+          <a class="b1-button b1-button--primary" href={signupUrl}
+            >Start trial</a
+          >
+          <a class="b1-button" href="/contact/">Contact Angel</a>
+        </div>
+      </div>
+      <div class="b1-card signature-card">
+        <p>Angel Campa</p>
+        <span>Builder · {siteConfig.contactEmail}</span>
+        <span class="b1-stamp b1-stamp--good">Independent</span>
+      </div>
+    </div>
+  </section>
+</LandingLayout>
+
+<style>
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 26px 0 12px;
+  }
+
+  .executive-card {
+    min-height: 360px;
+  }
+
+  .card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .finding-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .finding-row {
+    display: grid;
+    gap: 3px;
+    border: 1px solid var(--rule);
+    border-radius: var(--r-md);
+    padding: 14px;
+  }
+
+  .finding-row span,
+  .f-id {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .finding-row em {
+    color: var(--ink-2);
+    font-size: 13px;
+  }
+
+  .executive-card .b1-stamp {
+    position: absolute;
+    right: 22px;
+    bottom: 22px;
+  }
+
+  .section-table {
+    margin-top: 24px;
+  }
+
+  .exhibit-card > span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: var(--r-lg) 0 var(--r-sm) 0;
+    background: var(--ink-0);
+    color: #fff;
+    padding: 5px 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .exhibit-card h3 {
+    margin-top: 22px;
+  }
+
+  .ledger-bars {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .ledger-bars i {
+    display: block;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      var(--accent) var(--w),
+      var(--paper-2) var(--w)
+    );
+    padding: 8px 10px;
+    color: var(--ink-0);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-style: normal;
+  }
+
+  pre {
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .tier-who-its-for {
+    margin: 4px 0 0;
+    color: var(--ink-2);
+    font-size: 13px;
+  }
+
+  .price {
+    display: block;
+    margin: 14px 0 4px;
+    font-family: var(--serif);
+    font-size: 44px;
+    line-height: 1;
+  }
+
+  .signature-card p {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 34px;
+    font-style: italic;
+  }
+</style>

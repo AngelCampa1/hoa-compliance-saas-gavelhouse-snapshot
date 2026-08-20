@@ -1,0 +1,44 @@
+# Copy to apps/api/.dev.vars for local development.
+# Wrangler merges these over the [vars] block in wrangler.toml.
+
+# Local Postgres started by `pnpm run dev:bootstrap` (see docker-compose.yml).
+DATABASE_URL=postgres://postgres:postgres@127.0.0.1:55460/boardstack_dev
+
+# Any random string works locally. Generate one with: openssl rand -base64 32
+BETTER_AUTH_SECRET=local-development-secret-change-me
+BETTER_AUTH_URL=http://localhost:8060
+APP_URL=http://localhost:3060
+
+# wrangler.toml pins this to "true" so the retired production Worker stays
+# closed. Local dev must override it to false or every route returns 410.
+GAVELHOUSE_SHUTDOWN=false
+
+# Required by the signup confirmation email builder, which refuses to send
+# without a real postal address (CAN-SPAM). Any concrete address works locally.
+COMPANY_POSTAL_ADDRESS=123 Example Street, Suite 100, Austin, TX 78701
+
+# Optional locally. Leave blank to skip real email sends; set a real key only if
+# you want to exercise the Resend delivery path.
+RESEND_API_KEY=
+
+# Optional locally. Blank keys mean billing screens render but checkout is inert.
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_STARTER_MONTHLY=
+STRIPE_PRICE_STARTER_ANNUAL=
+STRIPE_PRICE_GROWTH_MONTHLY=
+STRIPE_PRICE_GROWTH_ANNUAL=
+STRIPE_PRICE_SCALE_MONTHLY=
+STRIPE_PRICE_SCALE_ANNUAL=
+# Portfolio is custom and has no Stripe price ID.
+
+# Optional locally. Blank disables Google sign-in; email/password still works.
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Optional locally. Blank disables error tracking and analytics.
+SENTRY_DSN=
+SENTRY_ENVIRONMENT=development
+SENTRY_RELEASE=
+POSTHOG_KEY=
+POSTHOG_HOST=https://us.i.posthog.com

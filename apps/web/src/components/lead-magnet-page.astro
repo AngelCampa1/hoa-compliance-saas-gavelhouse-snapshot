@@ -1,0 +1,377 @@
+---
+import BaseLayout from "../layouts/base-layout.astro";
+import BreadcrumbNav from "./breadcrumb-nav.astro";
+import BlufBlock from "../seo/bluf-block.astro";
+import SiteHeader from "./site-header.astro";
+import SiteFooter from "./site-footer.astro";
+import { ExitIntentPopup } from "./exit-intent-popup";
+import { GatedContent } from "./gated-content";
+import { resolveExitPopupProps } from "../lib/exit-popup-props";
+import { buildFooterEmailCaptureProps } from "../lib/footer-utils";
+import { buildContentMap } from "../lib/page-helpers";
+import { buildLeadMagnetBreadcrumbs } from "../lib/lead-magnet-breadcrumbs";
+import { splitContentAtGate } from "../lib/lead-magnet-utils";
+import { ensureTrailingSlash } from "../lib/meta";
+import { resolvePublicApiUrl } from "../lib/public-runtime-urls";
+import type { SiteConfig } from "../lib/types";
+import { LEAD_MAGNET_SLUGS, type LeadMagnetSlug } from "@boardstack/shared";
+import { getCollection } from "astro:content";
+import AnswerBlock from "../seo/answer-block.astro";
+import DefinitionBlock from "../seo/definition-block.astro";
+import FaqSection from "./faq-section.astro";
+import RelatedPages from "./related-pages.astro";
+import ResourceHubLinks from "./resource-hub-links.astro";
+import SchemaMarkup from "../seo/schema-markup.astro";
+import { buildArticleSchema, mergeFaqSources } from "../lib/schema-builders";
+import { buildGraph, withId } from "../lib/schema-graph";
+import SourcesSection from "./sources-section.astro";
+import ArticleMeta from "./article-meta.astro";
+import { resolveRelatedPageLinks } from "../lib/related-page-resolver";
+
+interface LeadMagnetData {
+  title: string;
+  description: string;
+  publishedAt: string;
+  updatedAt: string;
+  reviewedAt?: string;
+  bluf: string;
+  primaryKeyword: string;
+  searchIntent:
+    | "informational"
+    | "commercial"
+    | "transactional"
+    | "navigational";
+  sources: {
+    title: string;
+    source: string;
+    url: string;
+    lastChecked: string;
+  }[];
+  freePreviewSections: number;
+  ogImage?: string;
+  tags?: string[];
+  relatedPages: string[];
+  noindex?: boolean;
+  faqs?: { q: string; a: string }[];
+  answers?: { q: string; a: string }[];
+  definitions: { term: string; definition: string }[];
+}
+
+interface Props {
+  entry: { data: LeadMagnetData; slug: string };
+  config: SiteConfig;
+  headings?: { depth: number; slug: string; text: string }[];
+  hubLabel?: string;
+  hubHref?: string;
+}
+
+const { entry, config, hubLabel, hubHref } = Astro.props;
+const { data } = entry;
+const { answers, definitions } = data;
+
+const renderedHtml = await Astro.slots.render("default");
+const { teaser, gated } = splitContentAtGate(
+  renderedHtml,
+  data.freePreviewSections,
+);
+
+const canonicalPath = `/free/${entry.slug}`;
+const canonicalUrl = ensureTrailingSlash(
+  `https://${config.domain}${canonicalPath}`,
+);
+
+const breadcrumbs = buildLeadMagnetBreadcrumbs({
+  title: data.title,
+  canonicalPath,
+  hubLabel,
+  hubHref,
+});
+
+const exitPopupProps =
+  config.exitPopup?.enabled !== false
+    ? resolveExitPopupProps(config)
+    : undefined;
+const footerEmailCapture = buildFooterEmailCaptureProps(
+  config,
+  resolvePublicApiUrl(import.meta.env.PUBLIC_API_URL),
+);
+
+const ctaText = config.leadMagnet?.ctaText ?? "Get the Free Guide";
+const description = config.leadMagnet?.teaser ?? data.description;
+
+const knownSlugs = LEAD_MAGNET_SLUGS as readonly string[];
+if (import.meta.env.DEV && !knownSlugs.includes(entry.slug)) {
+  console.warn(
+    `[lead-magnet-page] entry slug "${entry.slug}" is not in LEAD_MAGNET_SLUGS - subscribe POST will 400.`,
+  );
+}
+const magnetSlug = entry.slug as LeadMagnetSlug;
+const canonicalArticleSchema = buildArticleSchema({
+  headline: data.title,
+  description: data.description,
+  datePublished: data.publishedAt,
+  dateModified: data.updatedAt,
+  lastReviewed: data.reviewedAt ?? data.updatedAt,
+  publisher: { "@id": `https://${config.domain}/#organization` },
+  author: config.author,
+  image: data.ogImage
+    ? `https://${config.domain}${data.ogImage}`
+    : `https://${config.domain}${config.defaultOgImage}`,
+  mainEntityOfPage: canonicalUrl,
+  speakableCssSelectors: [".bluf-block", ".faq-answer", ".answer-block-answer"],
+});
+const faqSchema = mergeFaqSources(
+  data.faqs ?? [],
+  (answers ?? []).map((item) => ({
+    question: item.q,
+    answer: item.a,
+  })),
+);
+const graph = buildGraph([
+  withId(canonicalArticleSchema, `${canonicalUrl}#article`),
+  ...(faqSchema ? [faqSchema] : []),
+]);
+const [
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+] = await Promise.all([
+  getCollection("alternatives"),
+  getCollection("comparisons"),
+  getCollection("pricing-breakdowns"),
+  getCollection("listicles"),
+  getCollection("guides"),
+  getCollection("state-pages"),
+  getCollection("lead-magnets"),
+  getCollection("product-pages"),
+  getCollection("solutions"),
+]);
+const contentMap = buildContentMap({
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+});
+const relatedLinks = resolveRelatedPageLinks(data.relatedPages, contentMap);
+
+// Build-time assertion: PUBLIC_API_URL must be set so the subscribe POST
+// goes to the API worker (api.gavelhouse.app), not the marketing origin.
+const apiUrl = resolvePublicApiUrl(import.meta.env.PUBLIC_API_URL);
+if (!apiUrl) {
+  throw new Error(
+    "PUBLIC_API_URL is not set - lead magnet subscribe form cannot reach the API. Set PUBLIC_API_URL in the marketing site environment (see apps/web/.env.example).",
+  );
+}
+
+// Production-only assertion: PUBLIC_TURNSTILE_SITE_KEY must be set so public
+// forms have bot/spam protection. Dev and preview builds work without it (the
+// API bypasses Turnstile outside production).
+if (import.meta.env.PROD && !import.meta.env.PUBLIC_TURNSTILE_SITE_KEY) {
+  throw new Error(
+    "PUBLIC_TURNSTILE_SITE_KEY is not set - public forms will ship without bot protection. Set PUBLIC_TURNSTILE_SITE_KEY in the marketing site environment (see apps/web/.env.example).",
+  );
+}
+---
+
+<BaseLayout
+  title={`${data.title} | ${config.name}`}
+  description={data.description}
+  canonicalUrl={canonicalUrl}
+  siteName={config.name}
+  publishedAt={data.publishedAt}
+  updatedAt={data.updatedAt}
+  articleAuthor={config.author?.name}
+  twitterSite={config.social?.twitterHandle}
+  themeColor={config.theme.primary}
+  theme={config.theme}
+  fonts={config.theme.fonts}
+  appleTouchIcon={config.appleTouchIcon}
+  ogImage={data.ogImage}
+  ogType="article"
+  noindex={data.noindex}
+  siteUrl={`https://${config.domain}`}
+  analyticsEnabled={config.analytics?.enabled ?? true}
+  articleTags={data.tags}
+  rssUrl="/rss.xml"
+>
+  <Fragment slot="head">
+    <style>
+      [data-signed-up] .lead-magnet-gate {
+        display: none;
+      }
+    </style>
+  </Fragment>
+  <SiteHeader
+    slot="header"
+    siteName={config.name}
+    navItems={config.nav?.items}
+    ctaText={config.funnel.bofu.ctaText}
+    ctaHref={config.funnel.bofu.ctaTarget}
+    ctaVariant="primary"
+  />
+  <BreadcrumbNav items={breadcrumbs} siteUrl={`https://${config.domain}`} />
+  <div class="px-4 py-[var(--section-py)] max-w-6xl mx-auto">
+    <div class="b1-grid-2">
+      <div>
+        <h1 class="b1-h1 mb-4">{data.title}</h1>
+        <ArticleMeta
+          authorName={config.author?.name}
+          authorTitle={config.author?.title}
+          authorUrl={config.author?.url}
+          publishedAt={data.publishedAt}
+          updatedAt={data.updatedAt}
+          reviewedAt={data.reviewedAt}
+        />
+        <BlufBlock text={data.bluf} />
+        <div class="document-preview b1-card">
+          <div class="doc-cover">
+            <span>Gavelhouse · Free template</span>
+            <strong>{data.title}</strong>
+          </div>
+          <div class="doc-thumbs">
+            <span>Sheet 1</span><span>Sheet 2</span><span>Sheet 3</span>
+          </div>
+        </div>
+      </div>
+      <aside class="gated-form b1-card">
+        <span class="b1-stamp b1-stamp--good">Free</span>
+        <h2 class="b1-h3">Get the file</h2>
+        <p class="b1-body">{description}</p>
+      </aside>
+    </div>
+    <script is:inline>
+      (function () {
+        try {
+          if (localStorage.getItem("exit-popup-signed-up") === "true") {
+            document.currentScript.parentElement.setAttribute(
+              "data-signed-up",
+              "",
+            );
+          }
+        } catch (_e) {
+          /* localStorage unavailable in some contexts */
+        }
+      })();
+    </script>
+    <GatedContent
+      client:load
+      apiUrl={apiUrl}
+      leadMagnetTitle={data.title}
+      magnetSlug={magnetSlug}
+      description={description}
+      ctaText={ctaText}
+      teaserHtml={teaser}
+      gatedHtml={gated}
+      sourcePage={canonicalUrl}
+    />
+    {
+      data.faqs && data.faqs.length > 0 && (
+        <FaqSection
+          faqs={data.faqs}
+          heading="Frequently asked questions about this template"
+        />
+      )
+    }
+    {
+      definitions &&
+        definitions.map((d) => (
+          <DefinitionBlock term={d.term} definition={d.definition} />
+        ))
+    }
+    {
+      answers &&
+        answers.map((a) => (
+          <AnswerBlock question={a.q} answer={a.a} emitSchema={false} />
+        ))
+    }
+    <SourcesSection sources={data.sources} />
+    {relatedLinks.length > 0 && <RelatedPages pages={relatedLinks} />}
+  </div>
+  <ResourceHubLinks pathname={canonicalPath} />
+  <SchemaMarkup graph={graph} />
+  {
+    exitPopupProps && (
+      <ExitIntentPopup
+        client:load
+        apiUrl={apiUrl}
+        siteName={config.name}
+        leadMagnet={config.leadMagnet}
+        {...exitPopupProps}
+      />
+    )
+  }
+  <SiteFooter
+    slot="footer"
+    siteName={config.name}
+    tagline={config.tagline}
+    linkGroups={config.footer?.linkGroups}
+    legalLinks={config.footer?.legalLinks}
+    emailCapture={footerEmailCapture}
+  />
+</BaseLayout>
+
+<style>
+  .document-preview {
+    margin-top: 1.5rem;
+  }
+
+  .doc-cover {
+    display: grid;
+    min-height: 220px;
+    align-content: end;
+    gap: 12px;
+    border-radius: var(--r-md);
+    background: var(--ink-0);
+    color: #f0ead8;
+    padding: 22px;
+  }
+
+  .doc-cover span {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .doc-cover strong {
+    font-family: var(--serif);
+    font-size: 30px;
+    line-height: 1.1;
+  }
+
+  .doc-thumbs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .doc-thumbs span {
+    display: grid;
+    aspect-ratio: 3 / 4;
+    place-items: center;
+    border: 1px solid var(--hairline);
+    border-radius: 5px;
+    background: var(--paper-0);
+    color: var(--ink-2);
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .gated-form {
+    border-color: var(--accent);
+    border-width: 1.5px;
+    height: fit-content;
+  }
+</style>

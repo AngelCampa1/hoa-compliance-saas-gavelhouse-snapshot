@@ -1,0 +1,44 @@
+name = "boardstack-web"
+main = "worker.ts"
+compatibility_date = "2025-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "dist"
+binding = "ASSETS"
+run_worker_first = true
+
+[[routes]]
+pattern = "gavelhouse.app"
+zone_name = "gavelhouse.app"
+custom_domain = true
+
+[[routes]]
+pattern = "www.gavelhouse.app"
+zone_name = "gavelhouse.app"
+custom_domain = true
+
+# Retired boardstack.app domain: bound as Worker routes (not custom domains) so
+# the wrapper can 301-redirect it to gavelhouse.app while coexisting with the
+# zone's existing DNS records. It is redirected, never served, so it does not
+# mirror the marketing site.
+[[routes]]
+pattern = "boardstack.app/*"
+zone_name = "boardstack.app"
+
+[[routes]]
+pattern = "www.boardstack.app/*"
+zone_name = "boardstack.app"
+
+[vars]
+PRODUCT_NAME = "Gavelhouse"
+PRODUCT_DOMAIN = "gavelhouse.app"
+PUBLIC_POSTHOG_KEY = "REPLACE_WITH_POSTHOG_PROJECT_KEY"
+PUBLIC_POSTHOG_HOST = "https://us.i.posthog.com"
+GAVELHOUSE_SHUTDOWN = "true"
+# AI-SDR same-origin BFF. The HMAC secrets (AI_SDR_CLIENT_ASSERTION_SECRET,
+# AI_SDR_CONTEXT_SECRET) are set via `wrangler secret put` on boardstack-web and
+# never live in source. AI_SDR_PRODUCT_ID is informational; the allowed origins
+# are hardcoded in src/lib/ai-sdr/handlers.ts.
+AI_SDR_WORKER_URL = "https://ventora-ai-sdr-worker.REPLACE_WITH_WORKERS_DEV_SUBDOMAIN.workers.dev"
+AI_SDR_PRODUCT_ID = "gavelhouse"

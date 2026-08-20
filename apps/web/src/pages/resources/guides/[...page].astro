@@ -1,0 +1,55 @@
+---
+import "../../../styles/global.css";
+import { getCollection } from "astro:content";
+import CategoryHub from "../../../hubs/category-hub.astro";
+import PublicSignupCta from "../../../components/public-signup-cta.astro";
+import { siteConfig } from "../../../config/site";
+import { hubFaqs } from "../../../config/hub-faqs";
+import {
+  sortByUpdatedAtDesc,
+  mapToContentItems,
+} from "../../../lib/collections";
+import type { GetStaticPathsOptions } from "astro";
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const entries = await getCollection("guides");
+  const sorted = sortByUpdatedAtDesc(entries);
+  const items = mapToContentItems(
+    sorted,
+    (e) => `/resources/guides/${e.slug}/`,
+  );
+  return paginate(items, { pageSize: 12 });
+}
+
+const { page } = Astro.props;
+---
+
+<CategoryHub
+  config={siteConfig}
+  title="HOA guides"
+  description="Plain guides for reserve funds, reports, meetings, and board work."
+  items={page.data}
+  page={page}
+  basePath="/resources/guides"
+  breadcrumbs={[
+    { label: "Home", href: "/" },
+    { label: "Resources", href: "/resources/" },
+    { label: "HOA Compliance Guides", href: "/resources/guides/" },
+  ]}
+  faqs={hubFaqs["/resources/guides"]}
+>
+  <section
+    slot="cta"
+    class="mt-8 border-t border-[var(--color-neutral-100)] py-10 text-center"
+    id="signup"
+  >
+    <h2 class="mb-2 text-2xl font-bold text-[var(--color-brand-text)]">
+      Want cleaner board records?
+    </h2>
+    <p class="mx-auto mb-6 max-w-2xl text-[var(--color-brand-muted)]">
+      Gavelhouse keeps funds, reports, meetings, and owner work in one place.
+      Try it first. Pick a plan later.
+    </p>
+    <PublicSignupCta sourcePage="/resources/guides" buttonText="Start trial" />
+  </section>
+</CategoryHub>

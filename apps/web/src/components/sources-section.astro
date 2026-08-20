@@ -1,0 +1,51 @@
+---
+import { formatArticleDate, normalizeDateInput } from "../lib/dates";
+import type { ContentSource } from "../lib/types";
+
+interface Props {
+  sources: ContentSource[];
+  heading?: string;
+}
+
+const { sources, heading = "Sources and Review Notes" } = Astro.props;
+---
+
+{
+  sources.length > 0 && (
+    <section
+      data-sources-section
+      class="mt-10 rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-neutral-300)_34%,transparent)] bg-[color-mix(in_srgb,var(--surface-secondary)_86%,white)] p-5 shadow-[var(--shadow-card)]"
+      aria-labelledby="sources-heading"
+    >
+      <h2
+        id="sources-heading"
+        class="font-heading text-xl font-semibold text-[var(--color-brand-text)]"
+      >
+        {heading}
+      </h2>
+      <p class="mt-2 max-w-[var(--content-measure)] text-sm text-[var(--color-brand-muted)]">
+        Gavelhouse cites the sources used for this page and records the last
+        review date for each reference.
+      </p>
+      <ul class="mt-5 space-y-3">
+        {sources.map((item) => (
+          <li class="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--color-neutral-300)_28%,transparent)] bg-[color-mix(in_srgb,var(--surface-primary)_92%,white)] px-4 py-3">
+            <a
+              href={item.url}
+              class="inline-flex min-h-11 items-center font-medium text-[var(--color-brand-text)] underline decoration-[color-mix(in_srgb,var(--color-brand-primary)_45%,transparent)] underline-offset-4"
+            >
+              {item.title}
+            </a>
+            <p class="mt-1 text-sm text-[var(--color-brand-muted)]">
+              {item.source}
+            </p>
+            <p class="u-inline-metadata mt-1 text-[var(--color-neutral-500)]">
+              Last checked{" "}
+              {formatArticleDate(normalizeDateInput(item.lastChecked))}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

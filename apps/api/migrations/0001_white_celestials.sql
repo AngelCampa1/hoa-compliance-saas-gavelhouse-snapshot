@@ -1,0 +1,1 @@
+ALTER TABLE "communities" ALTER COLUMN "state" DROP NOT NULL;

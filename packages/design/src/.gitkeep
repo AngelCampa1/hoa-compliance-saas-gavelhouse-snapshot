@@ -1,0 +1,9 @@
+{
+  "name": "@boardstack/design",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    "./tokens.css": "./src/tokens.css",
+    "./app-theme.css": "./src/app-theme.css"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "uploadedAt": "2026-05-11T20:21:03.887Z",
+  "postizId": "cmp1ncszv03lmqf0yhwktfic8",
+  "entry": {
+    "id": "2026-05-18-mon-03",
+    "scheduledAt": "2026-05-18T07:30:00-05:00",
+    "channel": "company",
+    "pillar": "builder-pov",
+    "hook": "We enforce fund separation at the database layer. Not in the UI. Here's why that matters.",
+    "file": "content/linkedin/posts/2026-05-18-mon-03-why-db-layer-separation.md"
+  }
+}

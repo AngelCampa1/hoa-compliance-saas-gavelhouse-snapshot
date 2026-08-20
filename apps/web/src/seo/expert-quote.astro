@@ -1,0 +1,49 @@
+---
+import SchemaMarkup from "./schema-markup.astro";
+import { buildExpertQuoteSchema } from "../lib/ai-extractable";
+
+interface Props {
+  quote: string;
+  personName: string;
+  jobTitle?: string;
+  organization?: string;
+  personUrl?: string;
+  personSameAs?: string[];
+  emitSchema?: boolean;
+}
+const {
+  quote,
+  personName,
+  jobTitle,
+  organization,
+  personUrl,
+  personSameAs,
+  emitSchema = true,
+} = Astro.props;
+const schema = buildExpertQuoteSchema({
+  quote,
+  person: {
+    name: personName,
+    jobTitle,
+    organization,
+    url: personUrl,
+    sameAs: personSameAs,
+  },
+});
+---
+
+<figure
+  class="rounded-[var(--radius-md)] border-l-4 border-[var(--color-brand-primary)] bg-[var(--color-primary-50)] px-6 py-4 mb-8"
+>
+  <blockquote
+    class="text-[length:var(--text-body-lg)] italic leading-relaxed text-brand-text"
+  >
+    &ldquo;{quote}&rdquo;
+  </blockquote>
+  <figcaption class="mt-3 text-[length:var(--text-caption)] text-brand-muted">
+    <strong>{personName}</strong>
+    {jobTitle && <span>, {jobTitle}</span>}
+    {organization && <span> at {organization}</span>}
+  </figcaption>
+</figure>
+{quote && emitSchema && <SchemaMarkup schemas={[schema]} />}

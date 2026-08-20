@@ -1,0 +1,150 @@
+---
+import "../../../styles/global.css";
+import LandingLayout from "../../../layouts/landing-layout.astro";
+import DocHeader from "../../../components/doc-header.astro";
+import { siteConfig } from "../../../config/site";
+
+const lists = [
+  ["PayHOA alternatives", "/compare/alternatives/payhoa/"],
+  ["Buildium alternatives", "/compare/alternatives/buildium/"],
+  ["AppFolio alternatives", "/compare/alternatives/appfolio/"],
+];
+
+const rows = [
+  [
+    "QuickBooks",
+    "Accounting file, not board record",
+    "Fund separation",
+    "Familiar bookkeeping",
+    "/compare/versus/quickbooks-vs-gavelhouse/",
+  ],
+  [
+    "PayHOA",
+    "HOA operations suite",
+    "Reserve controls",
+    "Established portal",
+    "/compare/versus/payhoa-vs-gavelhouse/",
+  ],
+  [
+    "Excel",
+    "Flexible but fragile",
+    "Audit trail",
+    "Free-form modeling",
+    "/resources/guides/hoa-accounting-guide/",
+  ],
+  [
+    "CINC",
+    "Enterprise association platform",
+    "Self-managed fit",
+    "Large operator workflows",
+    "/compare/versus/cinc-systems-vs-gavelhouse/",
+  ],
+  [
+    "Buildium",
+    "Property-manager first",
+    "Board-specific compliance",
+    "Rental/property breadth",
+    "/compare/versus/buildium-vs-gavelhouse/",
+  ],
+];
+---
+
+<LandingLayout
+  config={siteConfig}
+  canonicalPath="/compare/alternatives/"
+  title="Gavelhouse alternatives"
+  description="Alternatives hub for HOA software comparisons and pricing breakdowns."
+>
+  <section class="b1-section">
+    <div class="b1-container">
+      <DocHeader
+        kicker="ALTERNATIVES INDEX · 2026"
+        re="Alternatives, direct comparisons, and pricing breakdowns."
+        meta={[{ label: "TYPE", value: "Index" }]}
+      />
+      <h1 class="b1-h1">
+        Alternatives when the board needs more than a ledger.
+      </h1>
+      <p class="b1-body-lg">
+        Start with the list, then open the direct comparison where the board
+        needs evidence.
+      </p>
+    </div>
+  </section>
+
+  <section class="b1-section b1-section--alt">
+    <div class="b1-container">
+      <p class="b1-eyebrow">§ 1 · Alternatives lists</p>
+      <div class="b1-grid-3">
+        {
+          lists.map(([title, href]) => (
+            <a class="b1-card hub-card" href={href}>
+              <>
+                <h2 class="b1-h3">{title}</h2>
+                <span>Open list →</span>
+              </>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section">
+    <div class="b1-container">
+      <p class="b1-eyebrow">§ 2 · Direct comparisons</p>
+      <div
+        class="b1-table-wrap"
+        tabindex="0"
+        role="region"
+        aria-label="Direct comparison table"
+      >
+        <table class="b1-table">
+          <thead
+            ><tr
+              ><th>Comparison</th><th>Key difference</th><th
+                >Gavelhouse wins on</th
+              ><th>They win on</th><th>Link</th></tr
+            ></thead
+          >
+          <tbody
+            >{
+              rows.map(([name, diff, win, they, href]) => (
+                <tr>
+                  <>
+                    <td>{name}</td>
+                    <td>{diff}</td>
+                    <td>{win}</td>
+                    <td>{they}</td>
+                    <td>
+                      <a href={href}>Open →</a>
+                    </td>
+                  </>
+                </tr>
+              ))
+            }</tbody
+          >
+        </table>
+      </div>
+    </div>
+  </section>
+</LandingLayout>
+
+<style>
+  .hub-card {
+    color: var(--ink-0);
+    text-decoration: none;
+  }
+  .hub-card span {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .b1-table td a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: none;
+    color: var(--accent);
+  }
+</style>

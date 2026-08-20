@@ -1,0 +1,93 @@
+---
+import {
+  buildProsConsData,
+  buildProsConsReviewSchema,
+} from "../lib/ai-extractable";
+import { CheckIconHidden, CrossIconHidden } from "../lib/icons";
+import type { PersonSchemaOpts } from "../lib/schema-types";
+import SchemaMarkup from "./schema-markup.astro";
+
+interface Props {
+  subject: string;
+  pros: string[];
+  cons: string[];
+  prosLabel?: string;
+  consLabel?: string;
+  sectionLabel?: string;
+  emitSchema?: boolean;
+  reviewer?: PersonSchemaOpts;
+}
+const {
+  subject,
+  pros,
+  cons,
+  prosLabel = "Pros",
+  consLabel = "Cons",
+  sectionLabel = "PROS & CONS",
+  emitSchema = true,
+  reviewer,
+} = Astro.props;
+const data = buildProsConsData({ subject, pros, cons });
+const schema = buildProsConsReviewSchema({ subject, pros, cons, reviewer });
+---
+
+<div
+  class="rounded-[var(--radius-md)] border border-[var(--color-neutral-200)] bg-[var(--surface-primary)] shadow-[var(--shadow-sm)] mb-8 overflow-hidden"
+  aria-label={`Pros and cons of ${subject}`}
+>
+  <div
+    class="px-6 py-3 bg-[var(--color-neutral-50)] border-b border-[var(--color-neutral-200)]"
+  >
+    <p class="u-kicker-serif text-[var(--color-neutral-500)]">
+      {sectionLabel}
+    </p>
+    <p class="font-bold text-brand-text">{subject}</p>
+  </div>
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--color-neutral-200)]"
+  >
+    <div class="px-6 py-4">
+      <p
+        class="font-semibold text-[var(--color-success-700)] text-[length:var(--text-body)] mb-3"
+      >
+        {prosLabel}
+      </p>
+      <ul class="space-y-[var(--component-gap-sm)]">
+        {
+          data.positiveNotes.map((note) => (
+            <li class="flex items-start gap-2 text-[length:var(--text-caption)] text-brand-text">
+              <span
+                class="text-[var(--color-success-600)] mt-0.5 flex-shrink-0 w-[var(--icon-md)] h-[var(--icon-md)]"
+                aria-hidden="true"
+                set:html={CheckIconHidden}
+              />
+              {note}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="px-6 py-4">
+      <p
+        class="font-semibold text-[var(--color-error-700)] text-[length:var(--text-body)] mb-3"
+      >
+        {consLabel}
+      </p>
+      <ul class="space-y-[var(--component-gap-sm)]">
+        {
+          data.negativeNotes.map((note) => (
+            <li class="flex items-start gap-2 text-[length:var(--text-caption)] text-brand-text">
+              <span
+                class="text-[var(--color-error-600)] mt-0.5 flex-shrink-0 w-[var(--icon-md)] h-[var(--icon-md)]"
+                aria-hidden="true"
+                set:html={CrossIconHidden}
+              />
+              {note}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</div>
+{emitSchema && <SchemaMarkup schemas={[schema]} />}

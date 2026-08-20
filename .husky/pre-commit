@@ -1,0 +1,3 @@
+#!/bin/sh
+pnpm exec lint-staged --concurrent false
+pnpm tsx scripts/run-affected-checks.ts

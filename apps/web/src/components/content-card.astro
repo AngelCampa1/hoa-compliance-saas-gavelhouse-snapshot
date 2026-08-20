@@ -1,0 +1,172 @@
+---
+import type { ContentItem } from "../lib/types";
+import {
+  STAGE_BADGES,
+  formatContentDate,
+  filterMetadata,
+} from "../lib/content-helpers";
+
+interface Props {
+  item: ContentItem;
+  featuredBadgeText?: string;
+  datePrefixText?: string;
+  variant?: "lead" | "secondary" | "tight";
+}
+
+const {
+  item,
+  featuredBadgeText = "Editor's pick",
+  datePrefixText = "Updated",
+  variant = "lead",
+} = Astro.props;
+
+const badge = STAGE_BADGES[item.buyerStage];
+const formattedDate = formatContentDate(item.updatedAt);
+const readTime = item.metadata?.readTime;
+const metadataEntries = filterMetadata(item.metadata, ["readTime"]);
+const isFeatured = item.featured === true;
+const isBofuOnly = item.buyerStage === "bofu" && !isFeatured;
+
+// Map badge labels to inline editorial metadata strings.
+// tofu -> Guide -> "A compliance guide"
+// mofu -> Compare -> "A head-to-head"
+// bofu -> Alternative -> "An alternatives review"
+// Pricing breakdowns surface via metadata.competitor/category; fall back by label.
+const INLINE_METADATA_BY_LABEL: Record<string, string> = {
+  Guide: "A compliance guide",
+  Compare: "A head-to-head",
+  Alternative: "An alternatives review",
+  Pricing: "A pricing breakdown",
+};
+const inlineMetadata = INLINE_METADATA_BY_LABEL[badge.label] ?? badge.label;
+
+const metadataSuffix = readTime
+  ? `${inlineMetadata}, ${readTime}`
+  : inlineMetadata;
+---
+
+{
+  variant === "lead" && (
+    <a
+      href={item.href}
+      class:list={[
+        "content-card group relative block h-full overflow-hidden rounded-[calc(var(--radius-lg)+2px)] border border-[color-mix(in_srgb,var(--color-neutral-300)_44%,transparent)] bg-[var(--surface-primary)] p-5 shadow-[var(--shadow-card)] no-underline transition-[transform,box-shadow,border-color,background-color] duration-[var(--transition-base)] hover:border-[color-mix(in_srgb,var(--color-brand-primary)_42%,var(--color-neutral-300))] hover:-translate-y-[var(--card-hover-lift)] hover:scale-[var(--card-hover-scale)] hover:bg-[var(--surface-elevated)] hover:shadow-[var(--shadow-lg)]",
+        isFeatured && "content-card-featured",
+        isBofuOnly && "content-card-bofu",
+      ]}
+    >
+      <div class="relative z-[1] mb-3">
+        <p class="u-inline-metadata">
+          <span>{inlineMetadata}</span>
+          {isFeatured && <span>{` ${featuredBadgeText}`}</span>}
+        </p>
+        <h3 class="mt-1 text-[length:var(--text-subheading)] font-bold font-heading leading-snug text-[var(--color-brand-text)] transition-colors group-hover:text-[var(--color-brand-primary)]">
+          {item.title}
+        </h3>
+      </div>
+
+      <p class="relative z-[1] line-clamp-3 text-[length:var(--text-body)] leading-7 text-[var(--color-brand-muted)]">
+        {item.description}
+      </p>
+
+      <div
+        data-content-card-meta
+        class="relative z-[1] mt-4 flex flex-wrap items-center gap-2 border-t border-[color-mix(in_srgb,var(--color-neutral-300)_40%,transparent)] pt-3 text-[length:var(--text-caption)] text-[var(--color-neutral-500)]"
+      >
+        <span>
+          {datePrefixText} {formattedDate}
+        </span>
+        {readTime && (
+          <>
+            <span aria-hidden="true">&middot;</span>
+            <span class="flex items-center gap-1">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="6"
+                  cy="6"
+                  r="5"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M6 3.5V6l1.5 1.5"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              {readTime}
+            </span>
+          </>
+        )}
+        {metadataEntries.map(([, value]) => (
+          <>
+            <span aria-hidden="true">&middot;</span>
+            <span>{value}</span>
+          </>
+        ))}
+      </div>
+    </a>
+  )
+}
+
+{
+  variant === "secondary" && (
+    <a
+      href={item.href}
+      class:list={[
+        "content-card-secondary group relative block h-full no-underline",
+        isFeatured && "content-card-featured",
+      ]}
+    >
+      <p class="u-inline-metadata">
+        <span>{inlineMetadata}</span>
+        {isFeatured && <span>{` ${featuredBadgeText}`}</span>}
+      </p>
+      <h3
+        class="mt-2 font-heading font-bold leading-[1.15] text-[var(--color-brand-text)] transition-colors group-hover:text-[var(--color-brand-primary)]"
+        style="font-size: clamp(1.35rem, 1.8vw, 1.7rem);"
+      >
+        {item.title}
+      </h3>
+      <p class="mt-3 max-w-[52ch] text-[length:var(--text-body)] leading-[1.65] text-[var(--color-brand-muted)]">
+        {item.description}
+      </p>
+      <p class="mt-3 u-inline-metadata text-[length:var(--text-caption)]">
+        <span>
+          {datePrefixText} {formattedDate}
+        </span>
+        {readTime && <span>{` / ${readTime}`}</span>}
+      </p>
+    </a>
+  )
+}
+
+{
+  variant === "tight" && (
+    <a
+      href={item.href}
+      class:list={[
+        "content-card-tight group block no-underline",
+        isFeatured && "content-card-featured",
+      ]}
+    >
+      <h4
+        class="font-heading font-semibold leading-[1.2] text-[var(--color-brand-text)] transition-colors group-hover:text-[var(--color-brand-primary)]"
+        style="font-size: 1.08rem;"
+      >
+        {item.title}
+      </h4>
+      <p class="mt-1 u-inline-metadata" style="font-size: 0.82rem;">
+        {metadataSuffix}
+      </p>
+    </a>
+  )
+}

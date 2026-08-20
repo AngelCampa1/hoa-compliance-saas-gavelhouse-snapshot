@@ -1,0 +1,135 @@
+---
+import "../styles/global.css";
+import LandingLayout from "../layouts/landing-layout.astro";
+import DocHeader from "../components/doc-header.astro";
+import SchemaMarkup from "../seo/schema-markup.astro";
+import { siteConfig } from "../config/site";
+import { buildOrganizationSchema } from "../lib/schema-builders";
+
+const contactSchema = buildOrganizationSchema({
+  name: siteConfig.name,
+  url: `https://${siteConfig.domain}/`,
+  founder: siteConfig.author,
+  sameAs: siteConfig.sameAs,
+  contactPoint: siteConfig.contactEmail
+    ? {
+        type: "sales",
+        email: siteConfig.contactEmail,
+        url: `https://${siteConfig.domain}/contact/`,
+      }
+    : undefined,
+  areaServed: siteConfig.areaServed,
+  logo: siteConfig.logo?.light
+    ? `https://${siteConfig.domain}${siteConfig.logo.light}`
+    : undefined,
+});
+---
+
+<LandingLayout
+  config={siteConfig}
+  canonicalPath="/contact/"
+  title="Contact Gavelhouse"
+  description="Contact Gavelhouse for sales, trial questions, support, security, and press."
+  enableScrollReveal={false}
+>
+  <section class="b1-section">
+    <div class="b1-container">
+      <DocHeader
+        kicker="CONTACT MEMO · 2026"
+        re="Send any question to one inbox."
+        meta={[
+          { label: "OWNER", value: "Angel Campa" },
+          { label: "REPLIES", value: "Usually same day", tone: "resolved" },
+        ]}
+      />
+      <div class="b1-grid-2">
+        <div>
+          <h1 class="b1-h1">
+            Tell us what you need. We usually reply the same day.
+          </h1>
+          <p class="b1-body-lg">All inquiries: {siteConfig.contactEmail}</p>
+          <p class="b1-body">
+            Sales, trial questions, support, security, and press all go to one
+            inbox. The same person reads them.
+          </p>
+        </div>
+        <div class="b1-card contact-card">
+          <div>
+            <p class="contact-card__label">Best route</p>
+            <a
+              class="contact-card__email"
+              href={`mailto:${siteConfig.contactEmail}`}
+              >{siteConfig.contactEmail}</a
+            >
+          </div>
+          <dl class="contact-card__details">
+            <div>
+              <dt>Sales</dt>
+              <dd>Trial fit, pricing, and onboarding questions.</dd>
+            </div>
+            <div>
+              <dt>Support</dt>
+              <dd>Account access, product issues, and data questions.</dd>
+            </div>
+            <div>
+              <dt>Security</dt>
+              <dd>Responsible disclosure and vendor review requests.</dd>
+            </div>
+          </dl>
+          <a
+            class="b1-button b1-button--primary"
+            href={`mailto:${siteConfig.contactEmail}`}>Email Angel</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+  <SchemaMarkup schemas={[contactSchema]} />
+</LandingLayout>
+
+<style>
+  .contact-card {
+    display: grid;
+    gap: 20px;
+  }
+
+  .contact-card__label,
+  .contact-card__details dt {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .contact-card__email {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 6px;
+    font-size: clamp(1.15rem, 2vw, 1.45rem);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-card__details {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+  }
+
+  .contact-card__details div {
+    display: grid;
+    gap: 4px;
+  }
+
+  .contact-card__details dd {
+    margin: 0;
+    color: var(--ink-2);
+  }
+
+  .contact-card .b1-button {
+    width: fit-content;
+  }
+</style>

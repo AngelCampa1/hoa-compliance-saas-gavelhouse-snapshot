@@ -1,0 +1,214 @@
+---
+import BaseLayout from "./base-layout.astro";
+import SchemaMarkup from "../seo/schema-markup.astro";
+import {
+  buildOrganizationSchema,
+  buildProductSchema,
+  buildSoftwareApplicationSchema,
+  buildWebSiteSchema,
+  buildFaqPageSchema,
+} from "../lib/schema-builders";
+import { buildLandingSoftwareApplicationProps } from "../lib/landing-schema";
+import { buildGraph, withId } from "../lib/schema-graph";
+import SiteHeader from "../components/site-header.astro";
+import SiteFooter from "../components/site-footer.astro";
+import { ExitIntentPopup } from "../components/exit-intent-popup";
+import { resolveExitPopupProps } from "../lib/exit-popup-props";
+import { buildFooterEmailCaptureProps } from "../lib/footer-utils";
+import { ensureTrailingSlash, resolveLandingTitle } from "../lib/meta";
+import { resolvePublicApiUrl } from "../lib/public-runtime-urls";
+import type { SiteConfig, LeadMagnet } from "../lib/types";
+
+interface Props {
+  config: SiteConfig;
+  publishedAt?: string;
+  updatedAt?: string;
+  canonicalPath?: string;
+  title?: string;
+  description?: string;
+  preferCategoryTitle?: boolean;
+  enableScrollReveal?: boolean;
+  leadMagnetOverride?: LeadMagnet;
+  noindex?: boolean;
+}
+const {
+  config,
+  publishedAt,
+  updatedAt,
+  canonicalPath,
+  title,
+  description,
+  preferCategoryTitle = false,
+  enableScrollReveal = true,
+  leadMagnetOverride,
+  noindex = false,
+} = Astro.props;
+const exitPopupProps =
+  config.exitPopup?.enabled !== false
+    ? resolveExitPopupProps(config)
+    : undefined;
+const publicApiUrl = resolvePublicApiUrl(import.meta.env.PUBLIC_API_URL);
+const footerEmailCapture = buildFooterEmailCaptureProps(config, publicApiUrl);
+
+const siteUrl = `https://${config.domain}`;
+const canonicalUrl = ensureTrailingSlash(
+  `https://${config.domain}${canonicalPath ?? "/"}`,
+);
+const orgId = `${siteUrl}/#organization`;
+const productId = `${siteUrl}/#product`;
+const softwareId = `${siteUrl}/#software`;
+const websiteId = `${siteUrl}/#website`;
+const faqId = `${siteUrl}/#faqpage`;
+const landingSoftwareProps = buildLandingSoftwareApplicationProps(config, {
+  canonicalUrl,
+  imageUrl: `${siteUrl}${config.defaultOgImage}`,
+});
+
+const schemas = noindex
+  ? [
+      withId(
+        buildOrganizationSchema({
+          name: config.name,
+          url: siteUrl,
+          founder: config.author,
+          ...(config.sameAs && { sameAs: config.sameAs }),
+          ...(config.contactEmail && {
+            contactPoint: {
+              email: config.contactEmail,
+              type: "customer support",
+            },
+          }),
+          ...(config.areaServed && { areaServed: config.areaServed }),
+          ...(config.logo?.light && { logo: `${siteUrl}${config.logo.light}` }),
+        }),
+        orgId,
+      ),
+      withId(
+        buildWebSiteSchema({
+          name: config.name,
+          url: siteUrl,
+          description: config.tagline,
+          publisherId: orgId,
+        }),
+        websiteId,
+      ),
+    ]
+  : [
+      withId(
+        buildOrganizationSchema({
+          name: config.name,
+          url: siteUrl,
+          founder: config.author,
+          ...(config.sameAs && { sameAs: config.sameAs }),
+          ...(config.contactEmail && {
+            contactPoint: {
+              email: config.contactEmail,
+              type: "customer support",
+            },
+          }),
+          ...(config.areaServed && { areaServed: config.areaServed }),
+          ...(config.logo?.light && { logo: `${siteUrl}${config.logo.light}` }),
+        }),
+        orgId,
+      ),
+      withId(
+        buildProductSchema({
+          name: config.name,
+          description: config.tagline,
+          url: canonicalUrl,
+          image: `${siteUrl}${config.defaultOgImage}`,
+          category: config.product.category,
+          brand: { name: config.name },
+          offers:
+            config.pricingTiers && config.pricingTiers.length > 0
+              ? config.pricingTiers.map((t) => ({
+                  price: t.price,
+                  url: `${siteUrl}/pricing/`,
+                }))
+              : [{ price: config.product.price, url: `${siteUrl}/pricing/` }],
+        }),
+        productId,
+      ),
+      withId(buildSoftwareApplicationSchema(landingSoftwareProps), softwareId),
+      withId(
+        buildWebSiteSchema({
+          name: config.name,
+          url: siteUrl,
+          description: config.tagline,
+          ...(config.searchPathTemplate && {
+            searchAction: {
+              siteUrl,
+              searchPathTemplate: config.searchPathTemplate,
+            },
+          }),
+          publisherId: orgId,
+        }),
+        websiteId,
+      ),
+      ...(config.faqs.length > 0
+        ? [withId(buildFaqPageSchema(config.faqs), faqId)]
+        : []),
+    ];
+const graph = buildGraph(schemas);
+---
+
+<BaseLayout
+  title={resolveLandingTitle(config, title, preferCategoryTitle)}
+  description={description ?? config.metaDescription ?? config.tagline}
+  canonicalUrl={canonicalUrl}
+  siteName={config.name}
+  siteUrl={`https://${config.domain}`}
+  ogType="website"
+  ogImage={config.defaultOgImage}
+  twitterSite={config.social?.twitterHandle}
+  articleAuthor={config.author?.name}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  themeColor={config.theme.primary}
+  theme={config.theme}
+  fonts={config.theme.fonts}
+  preserveMetaTagCopy={config.preserveMetaTagCopy}
+  appleTouchIcon={config.appleTouchIcon}
+  analyticsEnabled={config.analytics?.enabled ?? true}
+  rssUrl="/rss.xml"
+  enableScrollReveal={enableScrollReveal}
+  noindex={noindex}
+>
+  <SiteHeader
+    slot="header"
+    siteName={config.name}
+    navItems={config.nav?.items}
+    ctaText={config.funnel.bofu.ctaText}
+    ctaHref={config.funnel.bofu.ctaTarget}
+  />
+  <div class="relative overflow-hidden">
+    <div
+      class="pointer-events-none absolute inset-x-0 top-0 h-[24rem] bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--color-primary-50)_38%,transparent)_0%,transparent_72%)]"
+    >
+    </div>
+    <slot />
+  </div>
+  <SchemaMarkup graph={graph} />
+  {
+    exitPopupProps && (
+      <ExitIntentPopup
+        client:load
+        apiUrl={publicApiUrl}
+        siteName={config.name}
+        leadMagnet={leadMagnetOverride ?? config.leadMagnet}
+        {...exitPopupProps}
+      />
+    )
+  }
+  <SiteFooter
+    slot="footer"
+    siteName={config.name}
+    tagline={config.tagline}
+    linkGroups={config.footer?.linkGroups}
+    legalLinks={config.footer?.legalLinks}
+    emailCapture={footerEmailCapture}
+    contactEmail={config.contactEmail}
+    surface="ink"
+    colophon="Built in public for self-managed HOA and condo boards. Gavelhouse is an operating tool, not legal advice — consult your state's HOA statute and a licensed attorney for specific obligations."
+  />
+</BaseLayout>

@@ -1,0 +1,22 @@
+---
+export const prerender = true;
+import "../../styles/global.css";
+import { getCollection } from "astro:content";
+import LeadMagnetPage from "../../components/lead-magnet-page.astro";
+import { siteConfig } from "../../config/site";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("lead-magnets");
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<LeadMagnetPage entry={entry} config={siteConfig}>
+  <Content />
+</LeadMagnetPage>

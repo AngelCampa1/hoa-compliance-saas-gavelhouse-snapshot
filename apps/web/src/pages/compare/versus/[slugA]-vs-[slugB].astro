@@ -1,0 +1,224 @@
+---
+import "../../../styles/global.css";
+import { getCollection } from "astro:content";
+import ComparisonLayout from "../../../layouts/comparison-layout.astro";
+import ComparisonTable from "../../../components/comparison-table.astro";
+import FaqSection from "../../../components/faq-section.astro";
+import FunnelCta from "../../../components/funnel-cta.astro";
+import RelatedPages from "../../../components/related-pages.astro";
+import InlineSignup from "../../../components/inline-signup.astro";
+import DataTableBlock from "../../../seo/data-table-block.astro";
+import ProsConsBlock from "../../../seo/pros-cons-block.astro";
+import AnswerBlock from "../../../seo/answer-block.astro";
+import { siteConfig } from "../../../config/site";
+import { getGavelhouseAsCompetitor } from "@boardstack/shared";
+import { buildVersusBreadcrumbs } from "@/lib/breadcrumbs";
+import { buildVersusComparisonRows } from "@/lib/comparison-rows";
+import { buildContentMap } from "@/lib/page-helpers";
+import { resolveRelatedPageLinks } from "../../../lib/related-page-resolver";
+import { resolveCompareProductVisualPreset } from "../../../lib/generated-product-visuals";
+import { resolveMagnetForPage } from "@/lib/resolve-lead-magnet";
+import { isRoutableContentEntry } from "@/lib/content-routing";
+
+export async function getStaticPaths() {
+  const entries = (await getCollection("comparisons")).filter(
+    isRoutableContentEntry,
+  );
+  return entries.map((entry) => ({
+    params: {
+      slugA: entry.data.competitorA.slug,
+      slugB: entry.data.competitorB.slug,
+    },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const {
+  title,
+  description,
+  bluf,
+  buyerStage,
+  publishedAt,
+  updatedAt,
+  reviewedAt,
+  competitorA: competitorARaw,
+  competitorB: competitorBRaw,
+  verdict,
+  faqs,
+  relatedPages,
+  tableData,
+  proscons,
+  answers,
+  sources,
+} = entry.data;
+
+const gavelhouseData = getGavelhouseAsCompetitor();
+
+const competitorA =
+  competitorARaw.slug === "gavelhouse"
+    ? {
+        ...gavelhouseData,
+        ...competitorARaw,
+        pricing: competitorARaw.pricing ?? gavelhouseData.pricing,
+        pros: competitorARaw.pros ?? gavelhouseData.pros,
+        cons: competitorARaw.cons ?? gavelhouseData.cons,
+      }
+    : {
+        ...competitorARaw,
+        pricing: competitorARaw.pricing ?? "",
+        pros: competitorARaw.pros ?? [],
+        cons: competitorARaw.cons ?? [],
+      };
+
+const competitorB =
+  competitorBRaw.slug === "gavelhouse"
+    ? {
+        ...gavelhouseData,
+        ...competitorBRaw,
+        pricing: competitorBRaw.pricing ?? gavelhouseData.pricing,
+        pros: competitorBRaw.pros ?? gavelhouseData.pros,
+        cons: competitorBRaw.cons ?? gavelhouseData.cons,
+      }
+    : {
+        ...competitorBRaw,
+        pricing: competitorBRaw.pricing ?? "",
+        pros: competitorBRaw.pros ?? [],
+        cons: competitorBRaw.cons ?? [],
+      };
+
+const canonicalPath = `/compare/versus/${competitorA.slug}-vs-${competitorB.slug}`;
+
+const breadcrumbs = buildVersusBreadcrumbs(
+  competitorA.name,
+  competitorB.name,
+  canonicalPath,
+);
+const comparisonRows = buildVersusComparisonRows(
+  competitorA.pricing,
+  competitorB.pricing,
+  siteConfig.product.price,
+);
+const productVisual = resolveCompareProductVisualPreset({
+  type: "versus",
+  competitorName: `${competitorA.name} and ${competitorB.name}`,
+});
+
+const [
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+] = await Promise.all([
+  getCollection("alternatives"),
+  getCollection("comparisons"),
+  getCollection("pricing-breakdowns"),
+  getCollection("listicles"),
+  getCollection("guides"),
+  getCollection("state-pages"),
+  getCollection("lead-magnets"),
+  getCollection("product-pages"),
+  getCollection("solutions"),
+]);
+const contentMap = buildContentMap({
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+});
+const relatedLinks = resolveRelatedPageLinks(relatedPages, contentMap);
+const leadMagnetOverride = await resolveMagnetForPage({
+  explicitSlug: entry.data.magnetSlug,
+  primaryKeyword: title,
+  tags: entry.data.tags,
+  path: canonicalPath,
+});
+---
+
+<ComparisonLayout
+  title={title}
+  description={description}
+  bluf={bluf}
+  buyerStage={buyerStage}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  reviewedAt={reviewedAt}
+  canonicalPath={canonicalPath}
+  config={siteConfig}
+  breadcrumbs={breadcrumbs}
+  answers={answers?.map((a) => ({ question: a.q, answer: a.a }))}
+  faqs={faqs}
+  sources={sources}
+  productVisual={productVisual}
+  leadMagnetOverride={leadMagnetOverride}
+>
+  <ComparisonTable
+    headers={["Feature", competitorA.name, competitorB.name, siteConfig.name]}
+    rows={comparisonRows}
+    highlightColumn={3}
+  />
+
+  <InlineSignup
+    heading="See the board work behind the price"
+    subtext="Try Scale features first. Pick a plan later."
+    sourcePage={Astro.url.pathname}
+  />
+
+  <Content />
+
+  {
+    tableData && (
+      <DataTableBlock
+        name={tableData.name}
+        description={tableData.description}
+        columns={tableData.columns}
+        rows={tableData.rows}
+      />
+    )
+  }
+
+  {
+    proscons?.map((pc) => (
+      <ProsConsBlock
+        subject={pc.subject}
+        pros={pc.pros}
+        cons={pc.cons}
+        reviewer={siteConfig.author}
+      />
+    ))
+  }
+
+  {answers?.map((a) => <AnswerBlock question={a.q} answer={a.a} />)}
+
+  <h2 class="text-2xl font-bold mt-12 mb-4">Verdict</h2>
+  <p class="text-lg text-[var(--color-brand-muted)] mb-8">{verdict}</p>
+
+  <FaqSection
+    faqs={faqs}
+    bottomCtaHeading={siteConfig.copy?.faq?.bottomCtaHeading}
+    bottomCtaText={siteConfig.copy?.faq?.bottomCtaText}
+    bottomCtaTarget={siteConfig.copy?.faq?.bottomCtaTarget}
+  />
+  <FunnelCta
+    stage="mofu"
+    funnel={siteConfig.funnel}
+    benefitBullets={siteConfig.copy?.funnelCta?.benefitBullets}
+  />
+
+  {
+    relatedLinks.length > 0 && (
+      <RelatedPages pages={relatedLinks} heading="Related Comparisons" />
+    )
+  }
+</ComparisonLayout>

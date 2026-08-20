@@ -1,0 +1,149 @@
+---
+import "../../styles/global.css";
+import LandingLayout from "../../layouts/landing-layout.astro";
+import DocHeader from "../../components/doc-header.astro";
+import { siteConfig } from "../../config/site";
+import { getCollection } from "astro:content";
+import {
+  getComparisonPath,
+  isRoutableContentEntry,
+} from "@/lib/content-routing";
+
+const allComparisons = (await getCollection("comparisons")).filter(
+  isRoutableContentEntry,
+);
+
+// Only surface comparisons where Gavelhouse is one of the two sides.
+const versusEntries = allComparisons.filter(
+  (entry) =>
+    entry.data.competitorA.slug === "gavelhouse" ||
+    entry.data.competitorB.slug === "gavelhouse",
+);
+
+// Some matchups exist as reverse-direction pairs (e.g. gavelhouse-vs-hoalife and
+// hoalife-vs-gavelhouse) and with slug spelling drift (condo-control vs
+// condocontrol). Collapse to one canonical row per competitor so the hub never
+// shows the same matchup twice. Prefer the gavelhouse-first entry so the linked
+// URL and the "Gavelhouse vs X" label stay consistent.
+const normalizeSlug = (slug: string): string =>
+  slug.replace(/[^a-z0-9]/gi, "").toLowerCase();
+
+const gavelhouseFirst = [...versusEntries].sort(
+  (x, y) =>
+    (x.data.competitorA.slug === "gavelhouse" ? 0 : 1) -
+    (y.data.competitorA.slug === "gavelhouse" ? 0 : 1),
+);
+
+const seenCompetitors = new Set<string>();
+const versus = gavelhouseFirst.flatMap((entry) => {
+  const { competitorA, competitorB } = entry.data;
+  const competitor =
+    competitorA.slug === "gavelhouse" ? competitorB : competitorA;
+  const key = normalizeSlug(competitor.slug);
+  if (seenCompetitors.has(key)) return [];
+  seenCompetitors.add(key);
+  const label = `Gavelhouse vs ${competitor.name}`;
+  const href = getComparisonPath(entry);
+  return [[label, href] as [string, string]];
+});
+
+const alternatives = [
+  [
+    "Best HOA accounting software",
+    "/resources/best/best-hoa-accounting-software/",
+  ],
+  ["PayHOA alternatives", "/compare/alternatives/payhoa/"],
+  ["Buildium alternatives", "/compare/alternatives/buildium/"],
+];
+
+const pricing = [
+  ["PayHOA pricing", "/compare/pricing/payhoa/"],
+  ["Buildium pricing", "/compare/pricing/buildium/"],
+  ["AppFolio pricing", "/compare/pricing/appfolio/"],
+];
+---
+
+<LandingLayout
+  config={siteConfig}
+  canonicalPath="/compare/"
+  title="Compare Gavelhouse"
+  description="Comparison hub for Gavelhouse alternatives, versus pages, and HOA software pricing breakdowns."
+>
+  <section class="b1-section">
+    <div class="b1-container">
+      <DocHeader
+        kicker="COMPARISON INDEX · 2026"
+        re="Where Gavelhouse fits against accounting tools and HOA platforms."
+        meta={[
+          { label: "FORMAT", value: "Evidence brief" },
+          { label: "STATUS", value: "Open", tone: "action" },
+        ]}
+      />
+      <h1 class="b1-h1">Compare HOA tools without the noise.</h1>
+      <p class="b1-body-lg">
+        See price, fund controls, and fit. Then pick the tool your board can
+        use.
+      </p>
+    </div>
+  </section>
+
+  <section class="b1-section b1-section--alt">
+    <div class="b1-container hub-stack">
+      <section>
+        <p class="b1-eyebrow">§ 1 · Versus</p>
+        {
+          versus.length > 0 ? (
+            <div class="b1-grid-3">
+              {versus.map(([label, href]) => (
+                <a class="b1-card hub-card" href={href}>
+                  <h2 class="b1-h3">{label}</h2>
+                  <span>Open comparison</span>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <p class="b1-body">No head-to-head comparisons available yet.</p>
+          )
+        }
+      </section>
+      {
+        [
+          ["§ 2 · Alternatives lists", alternatives],
+          ["§ 3 · Pricing breakdowns", pricing],
+        ].map(([title, items]) => (
+          <section>
+            <p class="b1-eyebrow">{title}</p>
+            <div class="b1-grid-3">
+              {(items as string[][]).map(([label, href]) => (
+                <a class="b1-card hub-card" href={href}>
+                  <h2 class="b1-h3">{label}</h2>
+                  <span>Open page</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</LandingLayout>
+
+<style define:vars={{}}>
+  .hub-stack {
+    display: grid;
+    gap: 34px;
+  }
+
+  .hub-card {
+    display: grid;
+    gap: 18px;
+    color: var(--ink-0);
+    text-decoration: none;
+  }
+
+  .hub-card span {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+</style>

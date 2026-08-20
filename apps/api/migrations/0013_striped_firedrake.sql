@@ -1,0 +1,1 @@
+ALTER TABLE "nurture_sequence_enrollments" ADD COLUMN "failure_count" smallint DEFAULT 0 NOT NULL;

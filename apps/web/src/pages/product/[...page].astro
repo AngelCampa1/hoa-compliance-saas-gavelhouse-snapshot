@@ -1,0 +1,69 @@
+---
+import "../../styles/global.css";
+import { getCollection } from "astro:content";
+import CategoryHub from "../../hubs/category-hub.astro";
+import PublicSignupCta from "../../components/public-signup-cta.astro";
+import FeaturedWorkflowHero from "../../components/heroes/featured-workflow-hero.astro";
+import SectionBand from "../../components/section-band.astro";
+import { siteConfig } from "../../config/site";
+import { hubFaqs } from "../../config/hub-faqs";
+import { mapToContentItems, sortByUpdatedAtDesc } from "../../lib/collections";
+import type { GetStaticPathsOptions } from "astro";
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const entries = await getCollection("product-pages");
+  const sorted = sortByUpdatedAtDesc(entries);
+  const items = mapToContentItems(
+    sorted,
+    (entry) => `/product/${entry.slug}/`,
+    (entry) => ({
+      category: entry.data.productCategory,
+      keyword: entry.data.primaryKeyword,
+    }),
+  );
+  return paginate(items, { pageSize: 12 });
+}
+
+const { page } = Astro.props;
+
+const featuredBody =
+  "Boards need clean reserve records. Gavelhouse keeps reserve balances, fund rules, and board work easier to review.";
+---
+
+<CategoryHub
+  config={siteConfig}
+  title="One place for board money, decisions, and owner work."
+  description="Gavelhouse helps volunteer HOA and condo boards replace scattered spreadsheets, inboxes, payment records, and meeting notes."
+  items={page.data}
+  page={page}
+  basePath="/product"
+  breadcrumbs={[
+    { label: "Home", href: "/" },
+    { label: "Product", href: "/product/" },
+  ]}
+  faqs={hubFaqs["/product"]}
+  eyebrow="Product pages"
+  variant="editorial"
+>
+  <FeaturedWorkflowHero
+    slot="custom-hero"
+    featuredTitle="HOA Reserve Fund Compliance Software"
+    featuredSubtitle="Start with the records your board checks most."
+    featuredBody={featuredBody}
+    featuredHref="/product/hoa-reserve-fund-compliance-software/"
+  />
+  <SectionBand slot="cta" surface="ink">
+    <section class="py-2 text-center">
+      <h2 class="mb-2 text-2xl font-bold">Ready to clean up board work?</h2>
+      <p class="mx-auto mb-6 max-w-2xl">
+        Start with money records. Then bring meetings, owners, and notes into
+        the same place.
+      </p>
+      <PublicSignupCta sourcePage="/product" buttonText="Start trial" />
+      <p class="mx-auto mt-4 max-w-xl text-[length:var(--text-caption)]">
+        Try Scale features first. Pick a plan later. Keep the 30-day money-back
+        guarantee.
+      </p>
+    </section>
+  </SectionBand>
+</CategoryHub>

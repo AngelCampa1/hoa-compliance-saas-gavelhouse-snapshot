@@ -1,0 +1,97 @@
+---
+import "../styles/global.css";
+import LandingLayout from "../layouts/landing-layout.astro";
+import DocHeader from "../components/doc-header.astro";
+import { siteConfig } from "../config/site";
+
+const links = [
+  ["Pricing", "See the fee schedule", "/pricing/"],
+  ["Features", "Review the controls", "/features/"],
+  ["HOA compliance by state", "Open state rule packs", "/hoa-compliance/"],
+  ["Compare", "Read alternatives", "/compare/"],
+  ["Contact Angel", "Ask where to go", "/contact/"],
+];
+---
+
+<LandingLayout
+  config={siteConfig}
+  title="Page not found"
+  description="This Gavelhouse page does not exist."
+  canonicalPath="/404/"
+  noindex
+>
+  <section class="b1-section">
+    <div class="b1-container">
+      <DocHeader
+        kicker="FINDING · F-404"
+        re="Page not found."
+        meta={[{ label: "STATUS", value: "Unresolved", tone: "action" }]}
+      />
+      <div class="b1-grid-2 error-grid">
+        <div>
+          <span class="error-code">404</span>
+          <h1 class="b1-h1">This page doesn't exist.</h1>
+          <p class="b1-body-lg">
+            The requested record is missing from the packet. That is annoying,
+            but at least it is not a reserve transfer with no memo.
+          </p>
+        </div>
+        <div class="b1-card">
+          <h2 class="b1-h3">Where were you headed?</h2>
+          <div class="error-links">
+            {
+              links.map(([title, description, href]) => (
+                <a href={href}>
+                  <>
+                    <strong>{title}</strong>
+                    <span>{description}</span>
+                    <em>→</em>
+                  </>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</LandingLayout>
+
+<style>
+  .error-grid {
+    align-items: center;
+  }
+  .error-code {
+    display: block;
+    color: var(--paper-2);
+    font-family: var(--serif);
+    font-size: clamp(80px, 14vw, 160px);
+    font-weight: 800;
+    line-height: 0.8;
+  }
+  .error-links {
+    display: grid;
+    gap: 0;
+    margin-top: 18px;
+  }
+  .error-links a {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 16px;
+    border-top: 1px solid var(--hairline);
+    padding: 14px 0;
+    color: var(--ink-0);
+    text-decoration: none;
+  }
+  .error-links span {
+    color: var(--ink-2);
+    font-size: 13px;
+  }
+  .error-links em {
+    grid-row: 1 / 3;
+    grid-column: 2;
+    align-self: center;
+    color: var(--accent);
+    font-style: normal;
+  }
+</style>

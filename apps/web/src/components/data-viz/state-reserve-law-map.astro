@@ -1,0 +1,305 @@
+---
+import {
+  STATE_RESERVE_REQUIREMENTS,
+  type StateReserveRule,
+} from "@boardstack/shared";
+
+interface Props {
+  variant?: "ink" | "parchment";
+  showLegend?: boolean;
+  compact?: boolean;
+}
+
+interface TileCell {
+  code: string;
+  row: number;
+  col: number;
+}
+
+// Industry-standard U.S. tile-grid layout (similar to FiveThirtyEight/NPR).
+// Empty grid positions are simply absent from this list; the parent grid
+// reserves the column with an empty spacer div where needed.
+const TILE_LAYOUT: readonly TileCell[] = [
+  { code: "AK", row: 0, col: 0 },
+  { code: "ME", row: 0, col: 11 },
+
+  { code: "VT", row: 1, col: 10 },
+  { code: "NH", row: 1, col: 11 },
+
+  { code: "WA", row: 2, col: 1 },
+  { code: "ID", row: 2, col: 2 },
+  { code: "MT", row: 2, col: 3 },
+  { code: "ND", row: 2, col: 4 },
+  { code: "MN", row: 2, col: 5 },
+  { code: "IL", row: 2, col: 6 },
+  { code: "WI", row: 2, col: 7 },
+  { code: "MI", row: 2, col: 8 },
+  { code: "NY", row: 2, col: 9 },
+  { code: "MA", row: 2, col: 10 },
+
+  { code: "OR", row: 3, col: 1 },
+  { code: "UT", row: 3, col: 2 },
+  { code: "WY", row: 3, col: 3 },
+  { code: "SD", row: 3, col: 4 },
+  { code: "IA", row: 3, col: 5 },
+  { code: "IN", row: 3, col: 6 },
+  { code: "OH", row: 3, col: 7 },
+  { code: "PA", row: 3, col: 8 },
+  { code: "NJ", row: 3, col: 9 },
+  { code: "CT", row: 3, col: 10 },
+  { code: "RI", row: 3, col: 11 },
+
+  { code: "CA", row: 4, col: 1 },
+  { code: "NV", row: 4, col: 2 },
+  { code: "CO", row: 4, col: 3 },
+  { code: "NE", row: 4, col: 4 },
+  { code: "MO", row: 4, col: 5 },
+  { code: "KY", row: 4, col: 6 },
+  { code: "WV", row: 4, col: 7 },
+  { code: "VA", row: 4, col: 8 },
+  { code: "MD", row: 4, col: 9 },
+  { code: "DE", row: 4, col: 10 },
+
+  { code: "AZ", row: 5, col: 2 },
+  { code: "NM", row: 5, col: 3 },
+  { code: "KS", row: 5, col: 4 },
+  { code: "AR", row: 5, col: 5 },
+  { code: "TN", row: 5, col: 6 },
+  { code: "NC", row: 5, col: 7 },
+  { code: "SC", row: 5, col: 8 },
+  { code: "DC", row: 5, col: 9 },
+
+  { code: "HI", row: 6, col: 1 },
+  { code: "TX", row: 6, col: 3 },
+  { code: "OK", row: 6, col: 4 },
+  { code: "LA", row: 6, col: 5 },
+  { code: "MS", row: 6, col: 6 },
+  { code: "AL", row: 6, col: 7 },
+  { code: "GA", row: 6, col: 8 },
+  { code: "FL", row: 6, col: 9 },
+];
+
+const TOTAL_COLS = 12;
+const TOTAL_ROWS = 7;
+
+const { variant = "ink", showLegend = true, compact = false } = Astro.props;
+
+function classify(rule: StateReserveRule): "mandate" | "disclosure" | "silent" {
+  if (rule.reserveStudyRequired) return "mandate";
+  if (rule.statuteCitation !== null) return "disclosure";
+  return "silent";
+}
+
+function tooltipFor(rule: StateReserveRule): string {
+  const kind = classify(rule);
+  if (kind === "mandate") {
+    const freq = rule.reserveStudyFrequencyYears
+      ? `every ${rule.reserveStudyFrequencyYears} yrs`
+      : "mandated";
+    return `${rule.stateName}: reserve study ${freq}`;
+  }
+  if (kind === "disclosure") {
+    return `${rule.stateName}: reserve disclosure required`;
+  }
+  return `${rule.stateName}: no state reserve statute`;
+}
+
+type GridEntry = { code: string; rule: StateReserveRule };
+const gridMap = new Map<number, GridEntry>();
+for (const cell of TILE_LAYOUT) {
+  const rule = STATE_RESERVE_REQUIREMENTS[cell.code];
+  if (!rule) continue;
+  gridMap.set(cell.row * TOTAL_COLS + cell.col, { code: cell.code, rule });
+}
+
+const cells: Array<GridEntry | null> = [];
+for (let r = 0; r < TOTAL_ROWS; r += 1) {
+  for (let c = 0; c < TOTAL_COLS; c += 1) {
+    const key = r * TOTAL_COLS + c;
+    cells.push(gridMap.get(key) ?? null);
+  }
+}
+
+// Sorted list for the mobile scrollable view
+const sortedEntries: GridEntry[] = [...TILE_LAYOUT]
+  .map((cell) => {
+    const rule = STATE_RESERVE_REQUIREMENTS[cell.code];
+    return rule ? { code: cell.code, rule } : null;
+  })
+  .filter((e): e is GridEntry => e !== null)
+  .sort((a, b) => a.rule.stateName.localeCompare(b.rule.stateName));
+
+const mapClasses = [
+  "us-tile-map",
+  variant === "parchment" ? "us-tile-map--parchment" : null,
+  compact ? "us-tile-map--compact" : null,
+]
+  .filter((value): value is string => value !== null)
+  .join(" ");
+
+const legendClasses = [
+  "us-tile-legend",
+  variant === "parchment" ? "us-tile-legend--parchment" : null,
+]
+  .filter((value): value is string => value !== null)
+  .join(" ");
+
+const mandateSwatch = "var(--color-accent-400)";
+const disclosureSwatch =
+  variant === "parchment"
+    ? "color-mix(in srgb, var(--color-accent-400) 55%, var(--color-neutral-300))"
+    : "color-mix(in srgb, var(--color-accent-400) 45%, var(--color-primary-800))";
+const silentSwatch =
+  variant === "parchment"
+    ? "var(--color-neutral-300)"
+    : "var(--color-primary-700)";
+---
+
+{/* Desktop tile map - hidden on mobile */}
+<div class="hidden sm:block">
+  <div
+    class={mapClasses}
+    role="img"
+    aria-label="United States reserve fund regulation map"
+  >
+    {
+      cells.map((entry) =>
+        entry ? (
+          <div
+            class:list={["state-hex", `state-hex--${classify(entry.rule)}`]}
+            data-state={entry.code}
+            data-tooltip={tooltipFor(entry.rule)}
+          >
+            {entry.code}
+          </div>
+        ) : (
+          <div aria-hidden="true" />
+        ),
+      )
+    }
+  </div>
+  {
+    showLegend && (
+      <div class={legendClasses} aria-hidden="true">
+        <span style={`--swatch: ${mandateSwatch};`}>Mandate</span>
+        <span style={`--swatch: ${disclosureSwatch};`}>Disclosure</span>
+        <span style={`--swatch: ${silentSwatch};`}>Silent</span>
+      </div>
+    )
+  }
+</div>
+
+{/* Mobile scrollable state list - shown only on small screens */}
+<div
+  class="sm:hidden state-law-list"
+  aria-label="State reserve fund regulations by state"
+>
+  {
+    showLegend && (
+      <div
+        class={legendClasses}
+        style="margin-bottom: 1rem;"
+        aria-hidden="true"
+      >
+        <span style={`--swatch: ${mandateSwatch};`}>Mandate</span>
+        <span style={`--swatch: ${disclosureSwatch};`}>Disclosure</span>
+        <span style={`--swatch: ${silentSwatch};`}>Silent</span>
+      </div>
+    )
+  }
+  <ul class="state-law-list__items" role="list">
+    {
+      sortedEntries.map((entry) => {
+        const kind = classify(entry.rule);
+        return (
+          <li
+            class:list={[
+              "state-law-list__item",
+              `state-law-list__item--${kind}`,
+            ]}
+          >
+            <span class="state-law-list__code">{entry.code}</span>
+            <span class="state-law-list__name">{entry.rule.stateName}</span>
+            <span class="state-law-list__status">
+              {kind === "mandate"
+                ? entry.rule.reserveStudyFrequencyYears
+                  ? `Study req. every ${entry.rule.reserveStudyFrequencyYears} yrs`
+                  : "Study mandated"
+                : kind === "disclosure"
+                  ? "Disclosure req."
+                  : "No statute"}
+            </span>
+          </li>
+        );
+      })
+    }
+  </ul>
+</div>
+
+<style>
+  .state-law-list__items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  .state-law-list__item {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-neutral-300) 60%, transparent);
+    min-height: 44px;
+  }
+
+  .state-law-list__item:last-child {
+    border-bottom: none;
+  }
+
+  .state-law-list__code {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--color-brand-text);
+    background: var(--color-neutral-100);
+    border-radius: 4px;
+    padding: 0.2rem 0.35rem;
+    text-align: center;
+  }
+
+  .state-law-list__item--mandate .state-law-list__code {
+    background: var(--color-accent-400);
+    color: var(--color-accent-950);
+  }
+
+  .state-law-list__item--disclosure .state-law-list__code {
+    background: color-mix(
+      in srgb,
+      var(--color-accent-400) 45%,
+      var(--color-primary-800)
+    );
+    color: var(--color-neutral-50);
+  }
+
+  .state-law-list__item--silent .state-law-list__code {
+    background: var(--color-primary-700);
+    color: color-mix(in srgb, var(--color-neutral-300) 80%, white);
+  }
+
+  .state-law-list__name {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--color-brand-text);
+  }
+
+  .state-law-list__status {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    color: var(--color-brand-muted);
+    text-align: right;
+  }
+</style>

@@ -1,0 +1,21 @@
+---
+interface Props {
+  text: string;
+  label?: string;
+}
+const { text, label = "TLDR" } = Astro.props;
+---
+
+<div
+  class="bluf-block rounded-[var(--radius-md)] border-l-4 border-[var(--color-accent-500)] bg-[var(--color-accent-50)] px-6 py-4 mb-8"
+  role="note"
+>
+  <p class="u-kicker-serif text-[var(--color-accent-700)] mb-1.5">
+    {label}
+  </p>
+  <p
+    class="text-[length:var(--text-body-lg)] font-medium leading-relaxed text-brand-text"
+  >
+    {text}
+  </p>
+</div>

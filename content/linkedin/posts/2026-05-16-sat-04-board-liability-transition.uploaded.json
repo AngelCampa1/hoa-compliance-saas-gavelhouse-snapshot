@@ -1,0 +1,12 @@
+{
+  "uploadedAt": "2026-05-11T20:14:25.802Z",
+  "postizId": "cmp1n49u203kkqf0y3xikanet",
+  "entry": {
+    "id": "2026-05-16-sat-04",
+    "scheduledAt": "2026-05-16T10:30:00-05:00",
+    "channel": "company",
+    "pillar": "board-liability",
+    "hook": "When board members change, reserve fund liabilities do not reset. Incoming boards inherit the problems they did not create.",
+    "file": "content/linkedin/posts/2026-05-16-sat-04-board-liability-transition.md"
+  }
+}

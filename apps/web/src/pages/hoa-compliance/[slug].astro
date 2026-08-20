@@ -1,0 +1,232 @@
+---
+import "../../styles/global.css";
+import { getCollection } from "astro:content";
+import ArticleLayout from "../../layouts/article-layout.astro";
+import FaqSection from "../../components/faq-section.astro";
+import FunnelCta from "../../components/funnel-cta.astro";
+import RelatedPages from "../../components/related-pages.astro";
+import InlineSignup from "../../components/inline-signup.astro";
+import StatisticCitation from "../../seo/statistic-citation.astro";
+import DataTableBlock from "../../seo/data-table-block.astro";
+import AnswerBlock from "../../seo/answer-block.astro";
+import { siteConfig } from "../../config/site";
+import { buildStateBreadcrumbs } from "@/lib/breadcrumbs";
+import { buildGeoArticleSchema } from "../../lib/schema-builders";
+import { formatNumber } from "../../lib/collections";
+import { buildContentMap } from "@/lib/page-helpers";
+import { resolveRelatedPageLinks } from "../../lib/related-page-resolver";
+import { resolveMagnetForPage } from "@/lib/resolve-lead-magnet";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("state-pages");
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await entry.render();
+const {
+  title,
+  description,
+  bluf,
+  buyerStage,
+  publishedAt,
+  updatedAt,
+  reviewedAt,
+  faqs,
+  relatedPages,
+  state,
+  stateCode,
+  regulations,
+  topMarkets,
+  marketSize,
+  pricingStats,
+  tableData,
+  answers,
+  sources,
+} = entry.data;
+const canonicalPath = `/hoa-compliance/${entry.slug}`;
+
+const breadcrumbs = buildStateBreadcrumbs(state, canonicalPath);
+const geoSchema = buildGeoArticleSchema({
+  title,
+  description,
+  state,
+  author: siteConfig.author,
+});
+
+const [
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+] = await Promise.all([
+  getCollection("alternatives"),
+  getCollection("comparisons"),
+  getCollection("pricing-breakdowns"),
+  getCollection("listicles"),
+  getCollection("guides"),
+  getCollection("state-pages"),
+  getCollection("lead-magnets"),
+  getCollection("product-pages"),
+  getCollection("solutions"),
+]);
+const contentMap = buildContentMap({
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+});
+const relatedLinks = resolveRelatedPageLinks(relatedPages, contentMap);
+const leadMagnetOverride = await resolveMagnetForPage({
+  explicitSlug: entry.data.magnetSlug,
+  primaryKeyword: title,
+  tags: entry.data.tags,
+  path: canonicalPath,
+});
+
+const variantStyles = {
+  info: "border-[var(--color-primary-200)] bg-[var(--color-primary-50)]",
+  warning: "border-[var(--color-accent-200)] bg-[var(--color-accent-50)]",
+  success: "border-[var(--color-success-200)] bg-[var(--color-success-50)]",
+};
+
+const topMarketsLabel =
+  topMarkets.length > 0 && topMarkets[0].label ? topMarkets[0].label : "Count";
+---
+
+<ArticleLayout
+  title={title}
+  description={description}
+  bluf={bluf}
+  buyerStage={buyerStage}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  reviewedAt={reviewedAt}
+  canonicalPath={canonicalPath}
+  config={siteConfig}
+  breadcrumbs={breadcrumbs}
+  schemas={[geoSchema]}
+  headings={headings}
+  answers={answers?.map((a) => ({ question: a.q, answer: a.a }))}
+  faqs={faqs}
+  sources={sources}
+  leadMagnetOverride={leadMagnetOverride}
+>
+  <Content />
+
+  {
+    regulations.length > 0 &&
+      regulations.map((reg) => (
+        <section
+          class={`my-8 rounded-lg border p-6 ${variantStyles[reg.variant]}`}
+        >
+          <h2 class="mb-2 text-lg font-semibold text-[var(--color-brand-text)]">
+            {reg.heading}
+          </h2>
+          <p class="text-sm text-[var(--color-neutral-700)]">{reg.content}</p>
+        </section>
+      ))
+  }
+
+  {
+    topMarkets.length > 0 && (
+      <section class="my-8 rounded-lg border border-[var(--color-neutral-200)] bg-[var(--surface-secondary)] p-6">
+        <h2 class="mb-4 text-lg font-semibold text-[var(--color-brand-text)]">
+          Top {state} Markets by HOA Community Count
+        </h2>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-[var(--color-neutral-200)] text-left">
+              <th class="pb-2 font-medium text-[var(--color-neutral-700)]">
+                Market
+              </th>
+              <th class="pb-2 font-medium text-[var(--color-neutral-700)] text-right">
+                {topMarketsLabel}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {topMarkets.map((market) => (
+              <tr class="border-b border-[var(--color-neutral-100)] last:border-0">
+                <td class="py-2 text-[var(--color-neutral-800)]">
+                  {market.name}
+                </td>
+                <td class="py-2 text-[var(--color-neutral-800)] text-right">
+                  {formatNumber(market.count)}
+                </td>
+              </tr>
+            ))}
+            {marketSize !== undefined && (
+              <tr class="font-medium">
+                <td class="pt-3 text-[var(--color-brand-text)]">
+                  Total, {stateCode}
+                </td>
+                <td class="pt-3 text-[var(--color-brand-text)] text-right">
+                  {formatNumber(marketSize)}+
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </section>
+    )
+  }
+
+  {
+    pricingStats?.map((s) => (
+      <StatisticCitation
+        stat={s.stat}
+        source={s.source}
+        sourceUrl={s.sourceUrl}
+      />
+    ))
+  }
+
+  {
+    tableData && (
+      <DataTableBlock
+        name={tableData.name}
+        description={tableData.description}
+        columns={tableData.columns}
+        rows={tableData.rows}
+      />
+    )
+  }
+
+  {answers?.map((a) => <AnswerBlock question={a.q} answer={a.a} />)}
+
+  <InlineSignup
+    heading="See state rule work in Gavelhouse"
+    subtext="Try Scale features first. Pick a plan later."
+    sourcePage={Astro.url.pathname}
+  />
+
+  <FunnelCta
+    stage={buyerStage}
+    funnel={siteConfig.funnel}
+    heading={`Ready to clean up your ${state} board records?`}
+    benefitBullets={siteConfig.copy?.funnelCta?.benefitBullets}
+  />
+
+  <FaqSection
+    faqs={faqs}
+    bottomCtaHeading={siteConfig.copy?.faq?.bottomCtaHeading}
+    bottomCtaText={siteConfig.copy?.faq?.bottomCtaText}
+    bottomCtaTarget={siteConfig.copy?.faq?.bottomCtaTarget}
+  />
+
+  {relatedLinks.length > 0 && <RelatedPages pages={relatedLinks} />}
+</ArticleLayout>

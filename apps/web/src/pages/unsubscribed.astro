@@ -1,0 +1,75 @@
+---
+import "../styles/global.css";
+import BaseLayout from "../layouts/base-layout.astro";
+import SiteHeader from "../components/site-header.astro";
+import SiteFooter from "../components/site-footer.astro";
+import { siteConfig } from "../config/site";
+---
+
+<BaseLayout
+  title={`Unsubscribed | ${siteConfig.name}`}
+  description="You've been unsubscribed from Gavelhouse emails."
+  canonicalUrl={`https://${siteConfig.domain}/unsubscribed/`}
+  siteName={siteConfig.name}
+  themeColor={siteConfig.theme.primary}
+  noindex={true}
+>
+  <SiteHeader
+    slot="header"
+    siteName={siteConfig.name}
+    navItems={siteConfig.nav?.items}
+    ctaText={siteConfig.funnel.bofu.ctaText}
+    ctaHref={siteConfig.funnel.bofu.ctaTarget}
+  />
+
+  <div class="max-w-2xl mx-auto px-4 py-16">
+    <h1 class="text-3xl font-bold text-[var(--color-brand-text)] mb-6">
+      You're unsubscribed
+    </h1>
+
+    <div class="prose prose-lg max-w-none text-[var(--color-brand-muted)]">
+      {
+        /* Default content rendered at build time; client script swaps in error message when ?error=invalid */
+      }
+      <div id="unsubscribe-default">
+        <p>Your email address will no longer receive Gavelhouse emails.</p>
+        <p>
+          Transactional emails (payment receipts, dues notices) are unaffected.
+        </p>
+      </div>
+      <div id="unsubscribe-invalid" style="display:none">
+        <p class="text-[var(--color-brand-muted)]">
+          We couldn't find that unsubscribe link. If you're still receiving
+          emails, reply to any of them and we'll remove you manually.
+        </p>
+      </div>
+
+      <p>
+        <a
+          href="/"
+          class="text-[var(--color-primary-500)] underline hover:no-underline"
+        >
+          Back to the homepage
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <SiteFooter
+    slot="footer"
+    siteName={siteConfig.name}
+    tagline={siteConfig.tagline}
+    linkGroups={siteConfig.footer?.linkGroups}
+    legalLinks={siteConfig.footer?.legalLinks}
+  />
+</BaseLayout>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("error") === "invalid") {
+    const defaultEl = document.getElementById("unsubscribe-default");
+    const invalidEl = document.getElementById("unsubscribe-invalid");
+    if (defaultEl) defaultEl.style.display = "none";
+    if (invalidEl) invalidEl.style.display = "";
+  }
+</script>

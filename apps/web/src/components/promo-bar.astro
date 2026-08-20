@@ -1,0 +1,129 @@
+---
+import { knowledgeBase } from "@boardstack/shared";
+import { resolvePublicApiUrl } from "../lib/public-runtime-urls";
+
+interface Props {
+  ctaHref?: string;
+}
+
+const marketingKnowledge = knowledgeBase.marketing;
+const { ctaHref = marketingKnowledge.funnel.publicSignupUrl } = Astro.props;
+const publicApiUrl = resolvePublicApiUrl(import.meta.env.PUBLIC_API_URL);
+---
+
+<aside class="b1-promo-bar" aria-label="Limited offer">
+  <div class="b1-promo-bar__inner">
+    <span>
+      Use code <span class="b1-promo-bar__code"
+        >{marketingKnowledge.offer.code}</span
+      > for
+      <strong>{marketingKnowledge.offer.label}</strong>
+    </span>
+    <span class="b1-promo-bar__rule" aria-hidden="true"></span>
+    <span>
+      {marketingKnowledge.pricing.config.promoText} &middot; {
+        marketingKnowledge.pricing.config.guaranteeText
+      } &middot;
+      <a href={ctaHref} class="b1-promo-bar__cta-link">Start trial</a>
+    </span>
+  </div>
+</aside>
+
+<script is:inline define:vars={{ publicApiUrl }}>
+  const API_URL = publicApiUrl;
+  if (API_URL) {
+    fetch(`${API_URL}/billing/limited-offer`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data) return;
+        const annualOffer = data.offers?.find(
+          (offer) => offer.cycle === "annual",
+        );
+        const monthlyOffer = data.offers?.find(
+          (offer) => offer.cycle === "monthly",
+        );
+        const activeOffer =
+          annualOffer?.available === true
+            ? annualOffer
+            : monthlyOffer?.available === true
+              ? monthlyOffer
+              : null;
+        const codeEl = document.querySelector(".b1-promo-bar__code");
+        const labelEl = document.querySelector(".b1-promo-bar strong");
+        if (codeEl && activeOffer?.code) codeEl.textContent = activeOffer.code;
+        if (labelEl && activeOffer?.terms)
+          labelEl.textContent = activeOffer.terms;
+      })
+      .catch(() => {});
+  }
+</script>
+
+<style>
+  .b1-promo-bar {
+    position: relative;
+    z-index: 100;
+    border-bottom: 1px solid #2a2418;
+    background: var(--ink-0);
+    color: #f0ead8;
+  }
+
+  .b1-promo-bar__inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 18px;
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .b1-promo-bar__code {
+    display: inline-flex;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    padding: 3px 9px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .b1-promo-bar__rule {
+    width: 1px;
+    align-self: stretch;
+    background: #2a2418;
+  }
+
+  .b1-promo-bar a {
+    color: var(--accent-2);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .b1-promo-bar__cta-link {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    min-height: 44px;
+    padding: 0 0.5rem;
+  }
+
+  .b1-promo-bar__rule {
+    display: none;
+  }
+
+  @media (min-width: 44rem) {
+    .b1-promo-bar__inner {
+      flex-direction: row;
+      gap: 14px;
+    }
+
+    .b1-promo-bar__rule {
+      display: block;
+    }
+  }
+</style>

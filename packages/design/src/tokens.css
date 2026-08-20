@@ -1,0 +1,125 @@
+:root {
+  /* ── Navy (primary) scale ── */
+  --color-primary-50: #eef5fb;
+  --color-primary-100: #d7e6f4;
+  --color-primary-200: #b1cde6;
+  --color-primary-300: #84aed4;
+  --color-primary-400: #5f93c1;
+  --color-primary-500: #3b749f;
+  --color-primary-600: #163a5f;
+  --color-primary-700: #14314f;
+  --color-primary-800: #112840;
+  --color-primary-900: #0d1f31;
+  --color-primary-950: #07111c;
+
+  /* ── Gold (accent) scale ── */
+  --color-accent-50: #fcf6ea;
+  --color-accent-100: #f8e9cc;
+  --color-accent-200: #f0d29d;
+  --color-accent-300: #e4b86a;
+  --color-accent-400: #d79d45;
+  --color-accent-500: #cb8a2e;
+  --color-accent-600: #ad7220;
+  --color-accent-700: #8c5a1a;
+  --color-accent-800: #684114;
+  --color-accent-900: #43290d;
+  --color-accent-950: #241406;
+
+  /* ── Warm neutral (parchment/ink) scale ── */
+  --color-neutral-50: #fbf7f1;
+  --color-neutral-100: #f3ebe0;
+  --color-neutral-200: #e4d7c6;
+  --color-neutral-300: #d1bfa8;
+  --color-neutral-400: #aa987f;
+  --color-neutral-500: #7f6e5d;
+  --color-neutral-600: #635547;
+  --color-neutral-700: #483d34;
+  --color-neutral-800: #302720;
+  --color-neutral-900: #1c1714;
+  --color-neutral-950: #0f0c0a;
+
+  /* ── Success (Emerald) scale ── */
+  --color-success-50: #ecfdf5;
+  --color-success-100: #d1fae5;
+  --color-success-200: #a7f3d0;
+  --color-success-300: #6ee7b7;
+  --color-success-400: #34d399;
+  --color-success-500: #10b981;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+  --color-success-800: #065f46;
+  --color-success-900: #064e3b;
+  --color-success-950: #022c22;
+
+  /* ── Error (Red) scale ── */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-900: #7f1d1d;
+  --color-error-950: #450a0a;
+
+  /* ── Shadow system — navy-tinted, never pure black ── */
+  --shadow-sm: 0 1px 2px 0 rgba(20, 34, 53, 0.05);
+  --shadow-md:
+    0 10px 24px -18px rgba(20, 34, 53, 0.18),
+    0 3px 8px -6px rgba(20, 34, 53, 0.11);
+  --shadow-lg:
+    0 26px 54px -32px rgba(20, 34, 53, 0.26),
+    0 12px 24px -18px rgba(20, 34, 53, 0.16);
+  --shadow-xl:
+    0 38px 72px -36px rgba(20, 34, 53, 0.28),
+    0 18px 28px -22px rgba(20, 34, 53, 0.17);
+  --shadow-card:
+    0 18px 36px -28px rgba(20, 34, 53, 0.18),
+    0 6px 14px -12px rgba(20, 34, 53, 0.09);
+
+  /* ── Border radii ── */
+  --radius-sm: 6px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* ── Transitions ── */
+  --transition-fast: 160ms cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-base: 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-slow: 420ms cubic-bezier(0.18, 1, 0.32, 1);
+}
+
+/* ── Shared keyframes (prefixed bs- to avoid conflicts) ── */
+@keyframes bs-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bs-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bs-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

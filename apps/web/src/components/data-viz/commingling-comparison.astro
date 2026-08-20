@@ -1,0 +1,128 @@
+---
+interface Props {
+  variant?: "ink" | "parchment";
+}
+
+interface LedgerEntry {
+  date: string;
+  description: string;
+  amount: string;
+  type: "operating" | "reserve";
+}
+
+const { variant = "parchment" } = Astro.props;
+
+const transactions: readonly LedgerEntry[] = [
+  {
+    date: "2026-04-02",
+    description: "Landscaping maintenance",
+    amount: "-$1,840",
+    type: "operating",
+  },
+  {
+    date: "2026-04-05",
+    description: "Pool chemicals",
+    amount: "-$420",
+    type: "operating",
+  },
+  {
+    date: "2026-04-08",
+    description: "Reserve transfer",
+    amount: "-$5,000",
+    type: "reserve",
+  },
+  {
+    date: "2026-04-12",
+    description: "Electric utility",
+    amount: "-$1,210",
+    type: "operating",
+  },
+  {
+    date: "2026-04-15",
+    description: "Roof inspection deposit",
+    amount: "-$3,500",
+    type: "reserve",
+  },
+  {
+    date: "2026-04-22",
+    description: "Reserve study invoice",
+    amount: "-$2,750",
+    type: "reserve",
+  },
+];
+
+const operatingRows = transactions.filter((t) => t.type === "operating");
+const reserveRows = transactions.filter((t) => t.type === "reserve");
+
+const containerClass = `commingle-compare commingle-compare--${variant}`;
+---
+
+<div class={containerClass}>
+  <div class="commingle-panel">
+    <p class="commingle-panel__label">
+      <span>-- generic software (QuickBooks, spreadsheets)</span>
+      <span class="commingle-badge commingle-badge--bad">Commingled</span>
+    </p>
+    <div class="commingle-ledger commingle-ledger--commingled">
+      <div class="commingle-ledger__header">
+        Bank of America &middot; Main Checking
+      </div>
+      {
+        transactions.map((tx) => (
+          <div
+            class:list={[
+              "commingle-row",
+              tx.type === "reserve" && "commingle-row--reserve",
+            ]}
+          >
+            <span class="commingle-row__date">{tx.date}</span>
+            <span class="commingle-row__desc">{tx.description}</span>
+            <span class="commingle-row__amount">{tx.amount}</span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="commingle-panel">
+    <p class="commingle-panel__label">
+      <span>-- Gavelhouse</span>
+      <span class="commingle-badge commingle-badge--good"
+        >Enforced separation</span
+      >
+    </p>
+    <div class="commingle-ledger commingle-ledger--separated">
+      <div class="commingle-ledger__sub-header">
+        Gavelhouse &middot; Operating Fund
+      </div>
+      {
+        operatingRows.map((tx) => (
+          <div class="commingle-row">
+            <span class="commingle-row__date">{tx.date}</span>
+            <span class="commingle-row__desc">{tx.description}</span>
+            <span class="commingle-row__amount">{tx.amount}</span>
+          </div>
+        ))
+      }
+      <div
+        class="commingle-ledger__sub-header commingle-ledger__sub-header--reserve"
+      >
+        Gavelhouse &middot; Reserve Fund
+      </div>
+      {
+        reserveRows.map((tx) => (
+          <div class="commingle-row commingle-row--reserve">
+            <span class="commingle-row__date">{tx.date}</span>
+            <span class="commingle-row__desc">{tx.description}</span>
+            <span class="commingle-row__amount">{tx.amount}</span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</div>
+<p class="commingle-footnote">
+  California Civil Code §5510, Florida Statutes §720.303(6)(a) and §718.111(14),
+  Washington RCW 64.34.364, Maryland Real Property §11-109.1, and New Jersey
+  N.J.S.A. 46:8B-19 prohibit commingling by statute.
+</p>

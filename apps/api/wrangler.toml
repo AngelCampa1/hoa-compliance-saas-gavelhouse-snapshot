@@ -1,0 +1,82 @@
+name = "boardstack-api"
+main = "src/index.ts"
+compatibility_date = "2025-04-14"
+compatibility_flags = ["nodejs_compat"]
+upload_source_maps = true
+
+[vars]
+BETTER_AUTH_URL = "https://api.gavelhouse.app"
+APP_URL = "https://my.gavelhouse.app"
+# Observability — set real values via Cloudflare dashboard secrets or wrangler secret put
+# See docs/infra-bootstrap.md step 6 for setup instructions
+SENTRY_ENVIRONMENT = "production"
+SENTRY_RELEASE = ""
+POSTHOG_KEY = "REPLACE_WITH_POSTHOG_PROJECT_KEY"
+POSTHOG_HOST = "https://us.i.posthog.com"
+GAVELHOUSE_SHUTDOWN = "true"
+SEQUENCER_BASE_URL = "https://sequencer.ventoralabs.com"
+# CAN-SPAM physical address — shown in marketing email footers.
+# Set the real registered business address as a Worker secret:
+# pnpm --filter @boardstack/api exec wrangler secret put COMPANY_POSTAL_ADDRESS --name boardstack-api
+# pnpm --filter @boardstack/api exec wrangler secret put SEQUENCER_CF_ACCESS_CLIENT_ID --name boardstack-api
+# pnpm --filter @boardstack/api exec wrangler secret put SEQUENCER_CF_ACCESS_CLIENT_SECRET --name boardstack-api
+# Cloudflare Turnstile secret — verifies proof-of-humanity on public marketing forms.
+# MUST be set in production: the verifier fails closed (rejects every public-form
+# submission) when SENTRY_ENVIRONMENT="production" and this secret is unset.
+# pnpm --filter @boardstack/api exec wrangler secret put TURNSTILE_SECRET_KEY --name boardstack-api
+# AI-CS Worker origin — required in production; the proxy fails closed (503) when absent.
+# pnpm --filter @boardstack/api exec wrangler secret put AI_CS_WORKER_ORIGIN --name boardstack-api
+AI_CS_WORKER_ORIGIN = "https://ventora-ai-cs-worker.REPLACE_WITH_WORKERS_DEV_SUBDOMAIN.workers.dev"
+# AI-CS context secret — HMAC secret shared with the AI-CS Worker. Used to verify
+# the Worker's signed app-context requests and sign the responses. Fails closed (503)
+# when unset. Set as a secret (never a committed var):
+# pnpm --filter @boardstack/api exec wrangler secret put AI_CS_CONTEXT_SECRET --name boardstack-api
+
+[dev]
+port = 8060
+
+[[routes]]
+pattern = "api.gavelhouse.app"
+zone_name = "gavelhouse.app"
+custom_domain = true
+
+[env.dev]
+vars = { DATABASE_URL = "postgres://postgres:postgres@127.0.0.1:55460/boardstack_dev", BETTER_AUTH_URL = "http://localhost:8060", APP_URL = "http://localhost:3060" }
+
+[[r2_buckets]]
+binding = "GOVERNANCE_BUCKET"
+bucket_name = "boardstack-governance"
+preview_bucket_name = "boardstack-governance-preview"
+
+[[r2_buckets]]
+binding = "AUDIT_PACK_BUCKET"
+bucket_name = "boardstack-audit-packs"
+preview_bucket_name = "boardstack-audit-packs-preview"
+
+[[r2_buckets]]
+binding = "LEAD_MAGNETS_BUCKET"
+bucket_name = "boardstack-lead-magnets"
+preview_bucket_name = "boardstack-lead-magnets-preview"
+
+[[d1_databases]]
+binding = "AI_SDR_NONCE_DB"
+database_name = "boardstack-ai-sdr-nonces"
+database_id = "7a252c72-313a-4ed8-baab-0338daf68f15"
+migrations_dir = "d1-migrations"
+
+# AI-CS app-context replay protection (table `ai_cs_nonces`). Bound to the same
+# physical database as AI_SDR_NONCE_DB; the shared `d1-migrations` directory owns
+# both tables (see 0002_ai_cs_nonces.sql). Apply with:
+# pnpm --filter @boardstack/api exec wrangler d1 migrations apply boardstack-ai-sdr-nonces --remote
+[[d1_databases]]
+binding = "AI_CS_NONCE_DB"
+database_name = "boardstack-ai-sdr-nonces"
+database_id = "7a252c72-313a-4ed8-baab-0338daf68f15"
+
+[[kv_namespaces]]
+# Rate limiter for auth endpoints (sign-in, sign-up, forgot-password) and invitation sends.
+# Counters expire automatically via KV TTL; no manual cleanup needed.
+# Create via: pnpm --filter @boardstack/api exec wrangler kv namespace create AUTH_RATE_LIMIT_KV
+binding = "AUTH_RATE_LIMIT_KV"
+id = "5d95567f48f14eb5bb387334755888d2"
+preview_id = "985bd7307e7347a1a9bb462b5ae18d66"

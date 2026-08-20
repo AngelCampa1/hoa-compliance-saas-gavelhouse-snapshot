@@ -1,0 +1,48 @@
+---
+import { Image } from "astro:assets";
+import type { LocalImageProps, RemoteImageProps } from "astro:assets";
+
+type BaseImageProps = (LocalImageProps | RemoteImageProps) & {
+  priority?: boolean;
+};
+
+type Props = BaseImageProps;
+
+const DEFAULT_SIZES =
+  "(min-width: 64rem) 1024px, (min-width: 48rem) 768px, 100vw";
+
+const {
+  priority = false,
+  loading,
+  decoding,
+  fetchpriority,
+  ...rest
+} = Astro.props as Props & {
+  loading?: "eager" | "lazy";
+  decoding?: "async" | "auto" | "sync";
+  fetchpriority?: "high" | "low" | "auto";
+};
+
+// Provide a sensible default sizes when none is given so browsers can
+// pick the right srcset entry without layout-shift.
+const resolvedSizes: string =
+  (rest as { sizes?: string }).sizes ?? DEFAULT_SIZES;
+
+// When width and height are both known, enforce aspect-ratio on the wrapper
+// so the browser reserves space before the image loads.
+const knownWidth = (rest as { width?: number | string }).width;
+const knownHeight = (rest as { height?: number | string }).height;
+const aspectRatioStyle =
+  knownWidth && knownHeight
+    ? `aspect-ratio: ${String(knownWidth)} / ${String(knownHeight)}`
+    : undefined;
+---
+
+<Image
+  loading={loading ?? (priority ? "eager" : "lazy")}
+  decoding={decoding ?? "async"}
+  fetchpriority={fetchpriority ?? (priority ? "high" : "auto")}
+  sizes={resolvedSizes}
+  style={aspectRatioStyle}
+  {...rest as LocalImageProps | RemoteImageProps}
+/>

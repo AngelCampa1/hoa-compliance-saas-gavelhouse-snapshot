@@ -1,0 +1,35 @@
+---
+interface SocialProofMetric {
+  icon?: string;
+  value: string;
+  label: string;
+}
+
+interface Props {
+  metrics: SocialProofMetric[];
+}
+const { metrics } = Astro.props;
+---
+
+{
+  metrics && metrics.length > 0 && (
+    <section
+      data-section="social-proof"
+      class="social-proof-bar border-y border-[color-mix(in_srgb,var(--color-neutral-300)_45%,transparent)] bg-[color-mix(in_srgb,var(--surface-secondary)_65%,var(--surface-primary))] px-4 py-5"
+      aria-label="Social proof"
+    >
+      <ul class="social-proof-shell mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {metrics.map((metric) => (
+          <li class="social-proof-metric list-none border-l border-[color-mix(in_srgb,var(--color-neutral-300)_35%,transparent)] pl-4 first:border-l-0 first:pl-0">
+            <span class="block font-heading text-[clamp(1.4rem,2vw,2rem)] font-semibold leading-none text-[var(--color-brand-text)]">
+              {metric.value}
+            </span>
+            <span class="mt-3 block max-w-[15rem] text-[length:var(--text-body-sm)] leading-6 text-[var(--color-brand-muted)]">
+              {metric.label}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

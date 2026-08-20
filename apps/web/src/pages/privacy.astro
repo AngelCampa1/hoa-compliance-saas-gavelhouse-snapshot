@@ -1,0 +1,254 @@
+---
+import "../styles/global.css";
+import BaseLayout from "../layouts/base-layout.astro";
+import SiteHeader from "../components/site-header.astro";
+import SiteFooter from "../components/site-footer.astro";
+import { siteConfig } from "../config/site";
+---
+
+<BaseLayout
+  title={`Privacy Policy | ${siteConfig.name}`}
+  description={`Privacy policy for ${siteConfig.name}.`}
+  canonicalUrl={`https://${siteConfig.domain}/privacy`}
+  siteName={siteConfig.name}
+  themeColor={siteConfig.theme.primary}
+>
+  <SiteHeader
+    slot="header"
+    siteName={siteConfig.name}
+    navItems={siteConfig.nav?.items}
+    ctaText={siteConfig.funnel.bofu.ctaText}
+    ctaHref={siteConfig.funnel.bofu.ctaTarget}
+  />
+
+  <div class="max-w-2xl mx-auto px-4 py-16">
+    <h1 class="text-3xl font-bold text-[var(--color-brand-text)] mb-2">
+      Privacy Policy
+    </h1>
+    <p class="text-sm text-[var(--color-brand-muted)] mb-8">
+      Effective date: June 3, 2026
+    </p>
+
+    <div class="prose prose-lg max-w-none text-[var(--color-brand-muted)]">
+      <h2>Who We Are and Our Role</h2>
+      <p>
+        Gavelhouse is HOA and condo software operated by {
+          siteConfig.legalEntity
+        } ("Gavelhouse", "we", "us"). We provide software to volunteer boards and
+        self-managed community associations in the United States.
+      </p>
+      <p>
+        Our role depends on whose data is involved. For data your community
+        association enters into Gavelhouse about its homeowners and residents,
+        the association is the data controller (and, under California law, the
+        "business"), and we act as its service provider / processor &mdash; we
+        process that data only to provide the service on the association's
+        instructions, and we do not sell or share it. For data we collect
+        directly about board members and account holders who sign up, for our
+        billing relationship, and for marketing leads, we act as the controller.
+      </p>
+
+      <h2>Whose Data We Process</h2>
+      <p>
+        Gavelhouse processes personal data about: (a) board members, treasurers,
+        administrators, and other users who hold an account; (b) homeowners and
+        residents whose records a board enters or imports into the platform,
+        including through the owner portal; and (c) prospective customers who
+        contact us or download a resource.
+      </p>
+
+      <h2>What We Collect</h2>
+      <p>
+        <strong>Account and authentication data.</strong> When you create a Gavelhouse
+        account we collect your name, email address, and password (or, if you sign
+        in with Google, your Google account identifier and profile image). For security
+        and abuse prevention we also store session records that include IP address
+        and browser user-agent.
+      </p>
+      <p>
+        <strong>Community data.</strong> We collect information about your community
+        such as its name, units/addresses, and unit count, and we record board invitations
+        and roles.
+      </p>
+      <p>
+        <strong>Homeowner and resident data (entered by the board).</strong> The platform
+        stores homeowner first and last name, email address, phone number, move-in
+        date, unit/property address, and ownership history. This data is provided
+        by the community association, which is responsible for having a lawful basis
+        to enter it.
+      </p>
+      <p>
+        <strong>Financial and dues data.</strong> We store reserve and operating fund
+        balances, budget and journal/ledger line items, bank reconciliation records,
+        assessments, dues, and payment records (amount, method &mdash; ACH, card,
+        check, or other &mdash; and date). Card and bank account numbers are handled
+        by Stripe; Gavelhouse stores only payment metadata and Stripe identifiers,
+        not full card or bank numbers.
+      </p>
+      <p>
+        <strong>Governance and compliance records.</strong> We store violation and
+        complaint records (including a title, description, status history, and any
+        uploaded photos), architectural review requests (including descriptions and
+        uploaded attachments), meetings, motions, and audit events. Uploaded photos
+        and documents are stored as files in Cloudflare R2 object storage.
+      </p>
+      <p>
+        <strong>Support data.</strong> If you use the in-app AI support feature, we
+        forward your account email and the content of your support messages to a Ventora
+        customer-support service that uses an AI/LLM provider to generate a response.
+        See "Sub-processors" below.
+      </p>
+      <p>
+        <strong>Marketing and usage data.</strong> If you submit a contact or lead-magnet
+        form we store your email, the source page, any survey answers you provide,
+        and a download record that may include IP address and user-agent. We also
+        collect product and site analytics (pageviews, events, and device metadata)
+        as described under "Cookies and Analytics".
+      </p>
+
+      <h2>How and Why We Use Data, and Legal Bases</h2>
+      <p>
+        We use personal data to: operate and secure the platform and your
+        account (performance of a contract; our legitimate interest in
+        security); process subscription billing and dues payments (performance
+        of a contract; legal obligation for tax/accounting records); send
+        transactional communications such as account, billing, and dues notices
+        (performance of a contract); provide customer support, including the
+        optional AI support feature (legitimate interest / your request); send
+        marketing emails where you have opted in or as otherwise permitted, with
+        an unsubscribe link in every message (consent or legitimate interest);
+        and improve and debug the service (legitimate interest). Where we rely
+        on consent, you may withdraw it at any time.
+      </p>
+      <p>
+        We do not sell or share your personal data, and we do not use homeowner
+        or community data for our own marketing. We may produce aggregated or
+        de-identified statistics that cannot reasonably identify an individual
+        or a community.
+      </p>
+
+      <h2>Sub-processors</h2>
+      <p>
+        We rely on the third-party sub-processors listed on our{" "}
+        <a href="/subprocessors/" class="underline">Subprocessors page</a>,
+        which include Cloudflare (hosting, Workers runtime, CDN, DNS, R2 object
+        storage, and edge security), Neon (managed Postgres database), Stripe
+        (subscription billing and dues payment processing), Resend
+        (transactional and marketing email delivery), PostHog (product and site
+        analytics), Sentry (error monitoring), Google (OAuth sign-in), Apollo
+        (launch CRM for prospective-customer leads), and a Ventora-operated AI
+        customer-support service backed by an AI/LLM provider. Each
+        sub-processor handles data under its own terms and only as needed to
+        provide its function to us.
+      </p>
+
+      <h2>International Transfers</h2>
+      <p>
+        Gavelhouse is operated from the United States and stores data in the
+        United States. If you access the service from outside the United States,
+        your data will be transferred to and processed in the United States.
+        Where required for transfers from the European Economic Area or United
+        Kingdom, we and our sub-processors rely on appropriate safeguards such
+        as the EU Standard Contractual Clauses.
+      </p>
+
+      <h2>Data Retention</h2>
+      <p>
+        We retain account, community, governance, and financial records while
+        your subscription is active and for as long as needed to provide the
+        service. After an account is closed, we retain data only as long as
+        needed and intend to delete or anonymize it within a reasonable period
+        when it is no longer required, except where we are required to keep it
+        longer (for example, financial and tax records) or where the community
+        association instructs otherwise. Marketing leads are retained until you
+        unsubscribe or request deletion.
+      </p>
+
+      <h2>Security</h2>
+      <p>
+        Data is transmitted over encrypted TLS connections, and we run our
+        application on Cloudflare's network with edge security controls.
+        Authentication endpoints are rate-limited, and access to the production
+        database is restricted. We store data with reputable infrastructure
+        providers (Neon and Cloudflare) that maintain their own security
+        programs. No system is perfectly secure, and we cannot guarantee
+        absolute security.
+      </p>
+
+      <h2>Your Rights</h2>
+      <p>
+        You may request access to, correction of, or deletion of your personal
+        data, and you may export your community's data from your account. To
+        exercise these rights, contact us at the email below; we will verify
+        your request and respond within the time required by applicable law.
+        Because a community association controls homeowner records, requests
+        about a specific homeowner may be directed to that association, and we
+        will assist the association as its service provider.
+      </p>
+      <p>
+        <strong>California (CCPA/CPRA).</strong> California residents may request
+        the categories and specific pieces of personal information we have collected,
+        request deletion or correction, and are entitled not to be discriminated against
+        for exercising these rights. We do not sell or share personal information
+        as those terms are defined under the CCPA/CPRA.
+      </p>
+      <p>
+        <strong>EEA/UK (GDPR).</strong> If you are in the European Economic Area or
+        United Kingdom, you have rights of access, rectification, erasure, restriction,
+        portability, and objection, and the right to lodge a complaint with your supervisory
+        authority.
+      </p>
+
+      <h2>Children</h2>
+      <p>
+        Gavelhouse is a tool for community associations and is not directed to
+        children. We do not knowingly collect personal data from children under
+        13. If you believe a child's data has been provided to us, contact us
+        and we will delete it.
+      </p>
+
+      <h2>Cookies and Analytics</h2>
+      <p>
+        We use strictly necessary cookies to keep you signed in and to secure
+        the service. We use PostHog for product and site analytics to understand
+        how the platform is used. These analytics collect pageviews, events, and
+        device metadata associated with a distinct identifier. We do not use
+        third-party advertising cookies.
+      </p>
+
+      <h2>Changes to This Policy</h2>
+      <p>
+        We may update this policy from time to time. When we make material
+        changes, we will update the effective date above and, where appropriate,
+        notify account holders.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        For privacy-related questions or data requests, contact our privacy
+        contact, Angel Campa, at{" "}
+        <a href={`mailto:${siteConfig.privacyEmail}`} class="underline">
+          {siteConfig.privacyEmail}
+        </a>.
+      </p>
+      <p>
+        For enterprise customers requiring a Data Processing Agreement, see our{
+          ""
+        }
+        <a href="/dpa/" class="underline">DPA page</a>.
+      </p>
+      <p>
+        For the current list of subprocessors, see our{" "}
+        <a href="/subprocessors/" class="underline">Subprocessors page</a>.
+      </p>
+    </div>
+  </div>
+
+  <SiteFooter
+    slot="footer"
+    siteName={siteConfig.name}
+    tagline={siteConfig.tagline}
+    linkGroups={siteConfig.footer?.linkGroups}
+    legalLinks={siteConfig.footer?.legalLinks}
+  />
+</BaseLayout>

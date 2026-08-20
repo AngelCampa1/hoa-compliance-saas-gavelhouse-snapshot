@@ -1,0 +1,90 @@
+---
+import { toEmbedUrl } from "../lib/video";
+
+interface Props {
+  type: "video" | "image" | "embed";
+  src: string;
+  alt?: string;
+  heading?: string;
+  caption?: string;
+  aspectRatio?: string;
+  width?: number;
+  height?: number;
+}
+
+const {
+  type,
+  src,
+  alt = "",
+  heading,
+  caption,
+  aspectRatio = "16/9",
+  width,
+  height,
+} = Astro.props;
+
+const resolvedAlt = alt || heading || caption || "";
+const embedSrc = type === "video" ? toEmbedUrl(src) : src;
+---
+
+<section data-section="visual-proof" class="px-4 py-[var(--section-py)]">
+  <div class="max-w-4xl mx-auto">
+    {
+      heading && (
+        <h2 class="font-heading text-[length:var(--text-heading)] font-bold text-brand-text text-center mb-[var(--component-gap)]">
+          {heading}
+        </h2>
+      )
+    }
+
+    <div
+      class="relative overflow-hidden rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] bg-[var(--surface-sunken)]"
+      style={type !== "image" ? `aspect-ratio: ${aspectRatio}` : undefined}
+    >
+      {
+        type === "video" && (
+          <iframe
+            src={embedSrc}
+            title={alt || "Product demo video"}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            class="absolute inset-0 w-full h-full border-0"
+          />
+        )
+      }
+
+      {
+        type === "image" && (
+          <img
+            src={src}
+            alt={resolvedAlt}
+            loading="lazy"
+            class="w-full h-auto block"
+            width={width}
+            height={height}
+          />
+        )
+      }
+
+      {
+        type === "embed" && (
+          <iframe
+            src={src}
+            title={alt || "Interactive prototype"}
+            loading="lazy"
+            class="absolute inset-0 w-full h-full border-0"
+          />
+        )
+      }
+    </div>
+
+    {
+      caption && (
+        <p class="font-body mt-4 text-center text-[length:var(--text-caption)] text-brand-muted">
+          {caption}
+        </p>
+      )
+    }
+  </div>
+</section>

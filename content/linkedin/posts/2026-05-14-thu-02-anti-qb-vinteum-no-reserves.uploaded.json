@@ -1,0 +1,12 @@
+{
+  "uploadedAt": "2026-05-11T19:06:21.341Z",
+  "postizId": "cmp1koqcb0375qf0yeoixn78f",
+  "entry": {
+    "id": "2026-05-14-thu-02",
+    "scheduledAt": "2026-05-14T07:00:00-05:00",
+    "channel": "company",
+    "pillar": "anti-quickbooks",
+    "hook": "Vinteum has no reserve fund tracking. It relies on QuickBooks integration for accounting. You get two problems instead of one.",
+    "file": "content/linkedin/posts/2026-05-14-thu-02-anti-qb-vinteum-no-reserves.md"
+  }
+}

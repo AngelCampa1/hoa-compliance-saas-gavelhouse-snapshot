@@ -1,0 +1,76 @@
+---
+/**
+ * EditorialBody
+ *
+ * Asymmetric two-column body wrapper for long-form narrative pages
+ * (article detail, content detail, about). Renders a ~2/3 prose column
+ * and a ~1/3 annotation rail on desktop (>=1024px); collapses to a
+ * single stacked column below.
+ *
+ * - Default slot: narrative prose (left column).
+ * - Named "margin" slot: margin annotations - statute citations,
+ *   pull quotes, related-article links. Collapses below prose on
+ *   mobile. If the margin slot is empty, the prose fills the full
+ *   width with no rail.
+ *
+ * Typography defaults live in globals.css under `.editorial-body`.
+ * This component is intentionally unstyled at the surface level so it
+ * can render on whichever SectionBand surface the caller supplies.
+ */
+interface Props {
+  as?: "div" | "section" | "article";
+  id?: string;
+  class?: string;
+  /**
+   * When true, applies `.editorial-body__prose` magazine-default
+   * typography to the narrative column (serif heads, generous leading,
+   * left-aligned prose). Defaults to true. Set false if the caller
+   * wants to style prose themselves (e.g. when wrapping Tailwind
+   * `prose` classes).
+   */
+  proseTypography?: boolean;
+  /**
+   * When true, renders the annotation rail sticky on desktop. Defaults
+   * to false - sticky rails are useful only when prose is meaningfully
+   * taller than the rail content.
+   */
+  stickyMargin?: boolean;
+}
+
+const {
+  as: Tag = "div",
+  id,
+  class: className,
+  proseTypography = true,
+  stickyMargin = false,
+} = Astro.props as Props;
+
+const hasMargin = Astro.slots.has("margin");
+
+const composedClass = [
+  "editorial-body",
+  hasMargin ? "editorial-body--with-margin" : "editorial-body--single",
+  stickyMargin ? "editorial-body--sticky-margin" : null,
+  className,
+]
+  .filter(Boolean)
+  .join(" ");
+---
+
+<Tag id={id} class={composedClass}>
+  <div
+    class:list={[
+      "editorial-body__prose-column",
+      proseTypography && "editorial-body__prose",
+    ]}
+  >
+    <slot />
+  </div>
+  {
+    hasMargin && (
+      <aside class="editorial-body__margin" aria-label="Margin annotations">
+        <slot name="margin" />
+      </aside>
+    )
+  }
+</Tag>

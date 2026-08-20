@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 88" width="280" height="88" role="img" aria-label="Gavelhouse logo">
+  <g data-brand-logo-mark="true">
+    <path d="M12 26.4 31.8 15a6 6 0 0 1 6 0l19.8 11.4a3.8 3.8 0 0 1 0 6.6L37.8 44.4a6 6 0 0 1-6 0L12 33a3.8 3.8 0 0 1 0-6.6Z" fill="#163a5f"/>
+    <path d="M12 44.4 31.8 33a6 6 0 0 1 6 0l19.8 11.4a3.8 3.8 0 0 1 0 6.6L37.8 62.4a6 6 0 0 1-6 0L12 51a3.8 3.8 0 0 1 0-6.6Z" fill="#2d4e6f"/>
+    <path d="M12 62.4 31.8 51a6 6 0 0 1 6 0l19.8 11.4a3.8 3.8 0 0 1 0 6.6L37.8 80.4a6 6 0 0 1-6 0L12 69a3.8 3.8 0 0 1 0-6.6Z" fill="#cb8a2e"/>
+    <path d="m24.8 25.3 9.4 8.2 24-27.3" fill="none" stroke="#cb8a2e" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <path d="M88 16v56" stroke="#e4d5c3" stroke-width="1.5"/>
+  <text x="112" y="55" font-family="Public Sans, system-ui, sans-serif" font-size="29" font-weight="700" letter-spacing="0">
+    <tspan fill="#163a5f">Gavel</tspan><tspan fill="#cb8a2e">house</tspan>
+  </text>
+</svg>

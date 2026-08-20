@@ -1,0 +1,60 @@
+---
+import "../../../styles/global.css";
+import LandingLayout from "../../../layouts/landing-layout.astro";
+import DocHeader from "../../../components/doc-header.astro";
+import { siteConfig } from "../../../config/site";
+
+const cards = [
+  ["PayHOA pricing breakdown","/compare/pricing/payhoa/"],
+  ["Buildium pricing breakdown","/compare/pricing/buildium/"],
+  ["AppFolio pricing breakdown","/compare/pricing/appfolio/"],
+];
+---
+
+<LandingLayout
+  config={siteConfig}
+  canonicalPath="/compare/pricing/"
+  title="HOA software pricing breakdowns"
+  description="Pricing breakdown hub for HOA software costs, hidden fees, and annual savings."
+>
+  <section class="b1-section">
+    <div class="b1-container">
+      <DocHeader
+        kicker="PRICING INDEX · 2026"
+        re="What HOA software costs after the headline price."
+        meta={[{ label: "FORMAT", value: "Calculator" }]}
+      />
+      <h1 class="b1-h1">Read the fee schedule before the board votes.</h1>
+      <p class="b1-body-lg">
+        Each breakdown compares competitor lines against Gavelhouse's flat
+        annual pricing.
+      </p>
+    </div>
+  </section>
+  <section class="b1-section b1-section--alt">
+    <div class="b1-container b1-grid-3">
+      {
+        cards.map(([title, href]) => (
+          <a class="b1-card hub-card" href={href}>
+            <>
+              <h2 class="b1-h3">{title}</h2>
+              <span>Open calculator →</span>
+            </>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</LandingLayout>
+
+<style>
+  .hub-card {
+    color: var(--ink-0);
+    text-decoration: none;
+  }
+  .hub-card span {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+</style>

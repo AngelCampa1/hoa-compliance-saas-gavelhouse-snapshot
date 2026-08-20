@@ -1,0 +1,61 @@
+---
+import "../../../styles/global.css";
+import { getCollection } from "astro:content";
+import CategoryHub from "../../../hubs/category-hub.astro";
+import PublicSignupCta from "../../../components/public-signup-cta.astro";
+import { siteConfig } from "../../../config/site";
+import { hubFaqs } from "../../../config/hub-faqs";
+import {
+  sortByUpdatedAtDesc,
+  mapToContentItems,
+} from "../../../lib/collections";
+import type { GetStaticPathsOptions } from "astro";
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const entries = await getCollection("alternatives");
+  const sorted = sortByUpdatedAtDesc(entries);
+  const items = mapToContentItems(
+    sorted,
+    (e) => `/compare/alternatives/${e.data.competitor.slug}/`,
+    (e) => ({ competitor: e.data.competitor.name }),
+  );
+  return paginate(items, { pageSize: 12 }).filter(
+    (path) => path.params.page !== undefined,
+  );
+}
+
+const { page } = Astro.props;
+---
+
+<CategoryHub
+  config={siteConfig}
+  title="Software alternatives"
+  description={`See how ${siteConfig.name} compares on price and fit.`}
+  items={page.data}
+  page={page}
+  basePath="/compare/alternatives"
+  breadcrumbs={[
+    { label: "Home", href: "/" },
+    { label: "Compare", href: "/compare/" },
+    { label: "Alternatives", href: "/compare/alternatives/" },
+  ]}
+  faqs={hubFaqs["/compare/alternatives"]}
+>
+  <section
+    slot="cta"
+    class="mt-8 py-10 text-center border-t border-[var(--color-neutral-100)]"
+    id="signup"
+  >
+    <h2 class="text-2xl font-bold text-[var(--color-brand-text)] mb-2">
+      Ready to compare with less noise?
+    </h2>
+    <p class="text-[var(--color-brand-muted)] mb-6 max-w-2xl mx-auto">
+      Try Scale features first. Pick a plan later. Keep the 30-day money-back
+      guarantee.
+    </p>
+    <PublicSignupCta
+      sourcePage="/compare/alternatives"
+      buttonText="Start trial"
+    />
+  </section>
+</CategoryHub>

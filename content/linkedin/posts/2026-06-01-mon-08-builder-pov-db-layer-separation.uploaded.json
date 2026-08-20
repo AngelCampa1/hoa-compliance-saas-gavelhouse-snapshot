@@ -1,0 +1,12 @@
+{
+  "uploadedAt": "2026-05-11T22:54:40.641Z",
+  "postizId": "cmp1suct304kiqf0ymugjmjv9",
+  "entry": {
+    "id": "2026-06-01-mon-08",
+    "scheduledAt": "2026-06-01T12:00:00-05:00",
+    "channel": "company",
+    "pillar": "builder-pov",
+    "hook": "UI-level fund separation is not enforcement. We built it at the database layer, and here is why that distinction matters.",
+    "file": "content/linkedin/posts/2026-06-01-mon-08-builder-pov-db-layer-separation.md"
+  }
+}

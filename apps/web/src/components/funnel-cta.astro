@@ -1,0 +1,121 @@
+---
+import { buildCtaAnalyticsAttributes } from "../lib/cta-analytics";
+import { resolveFunnelConfig } from "../lib/funnel-cta-utils";
+import type { BuyerStage, FunnelStage } from "../lib/types";
+
+interface Props {
+  stage: BuyerStage;
+  funnel: Record<BuyerStage, FunnelStage>;
+  heading?: string;
+  trustNote?: string;
+  secondaryCtaText?: string;
+  secondaryCtaTarget?: string;
+  subtitle?: string;
+  benefitBullets?: string[];
+}
+const {
+  stage,
+  funnel,
+  heading,
+  trustNote,
+  secondaryCtaText,
+  secondaryCtaTarget,
+  subtitle,
+  benefitBullets,
+} = Astro.props;
+const config = resolveFunnelConfig(funnel, stage);
+const primaryAnalyticsAttributes = config
+  ? buildCtaAnalyticsAttributes({
+      buyerStage: stage,
+      intent: config.ctaMode,
+      placement: "funnel-primary",
+      target: config.ctaTarget,
+    })
+  : undefined;
+const secondaryAnalyticsAttributes =
+  secondaryCtaTarget &&
+  buildCtaAnalyticsAttributes({
+    buyerStage: stage,
+    intent: config?.ctaMode,
+    placement: "funnel-secondary",
+    target: secondaryCtaTarget,
+  });
+---
+
+{
+  config && (
+    <section
+      class="w-full px-4 py-[var(--section-py-sm)] text-center"
+      style="background: var(--section-gradient-cta)"
+      data-funnel-cta
+      data-section="funnel-cta"
+      data-stage={stage}
+    >
+      <div
+        data-funnel-shell
+        class="mx-auto max-w-5xl overflow-hidden rounded-[calc(var(--radius-xl)+4px)] border border-[color-mix(in_srgb,var(--color-neutral-300)_34%,transparent)] bg-[linear-gradient(145deg,color-mix(in_srgb,var(--surface-primary)_94%,white),color-mix(in_srgb,var(--surface-secondary)_76%,var(--surface-primary)))] px-6 py-8 shadow-[var(--shadow-lg)] sm:px-8 lg:px-10 lg:py-10"
+      >
+        {heading && (
+          <h2 class="mx-auto mb-[var(--component-gap-sm)] max-w-3xl text-balance font-heading text-[length:var(--text-heading)] font-bold text-brand-text">
+            {heading}
+          </h2>
+        )}
+        {subtitle && (
+          <p class="mx-auto mb-[var(--component-gap)] max-w-2xl text-[length:var(--text-body)] leading-7 text-brand-muted">
+            {subtitle}
+          </p>
+        )}
+        {benefitBullets && benefitBullets.length > 0 && (
+          <ul class="mb-[var(--component-gap)] flex list-none flex-wrap justify-center gap-x-4 gap-y-3 p-0">
+            {benefitBullets.map((bullet) => (
+              <li class="inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--color-brand-primary)_16%,transparent)] bg-[color-mix(in_srgb,var(--surface-elevated)_74%,white)] px-4 py-2 shadow-[var(--shadow-sm)]">
+                <span
+                  class="flex-shrink-0 font-[family-name:var(--font-heading)] text-[var(--color-primary-700)]"
+                  aria-hidden="true"
+                >
+                  &gt;
+                </span>
+                <span class="text-[length:var(--text-caption)] font-semibold text-brand-text">
+                  {bullet}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div class="inline-flex flex-col items-center gap-[var(--component-gap-sm)]">
+          <div class="inline-flex flex-col items-center gap-[var(--component-gap-sm)] sm:flex-row">
+            {stage === "bofu" ? (
+              <a
+                href={config.ctaTarget}
+                class="btn-primary btn-primary--pulse btn-shimmer"
+                {...primaryAnalyticsAttributes}
+              >
+                {config.ctaText} -&gt;
+              </a>
+            ) : (
+              <a
+                href={config.ctaTarget}
+                class="btn-secondary btn-shimmer"
+                {...primaryAnalyticsAttributes}
+              >
+                {config.ctaText}
+              </a>
+            )}
+            {secondaryCtaText && secondaryCtaTarget && (
+              <a
+                href={secondaryCtaTarget}
+                class="btn-secondary btn-shimmer"
+                {...secondaryAnalyticsAttributes}
+              >
+                {secondaryCtaText}
+              </a>
+            )}
+          </div>
+        </div>
+        {trustNote && (stage === "mofu" || stage === "bofu") && (
+          <p class="u-inline-metadata mt-5 text-brand-muted">{trustNote}</p>
+        )}
+      </div>
+    </section>
+  )
+}

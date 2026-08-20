@@ -1,0 +1,156 @@
+---
+import "../styles/global.css";
+import BaseLayout from "../layouts/base-layout.astro";
+import SiteHeader from "../components/site-header.astro";
+import SiteFooter from "../components/site-footer.astro";
+import { siteConfig } from "../config/site";
+import {
+  GUARANTEE_CONFIG,
+  LIMITED_SUBSCRIPTION_PROMO,
+} from "@boardstack/shared";
+
+const guaranteeDays = GUARANTEE_CONFIG.days;
+const offerText = `Use ${LIMITED_SUBSCRIPTION_PROMO.annual.code} yearly or ${LIMITED_SUBSCRIPTION_PROMO.monthly.code} monthly for ${LIMITED_SUBSCRIPTION_PROMO.percentOff}% off your first year.`;
+---
+
+<BaseLayout
+  title={`Terms of Service | ${siteConfig.name}`}
+  description={`Terms of service for ${siteConfig.name}.`}
+  canonicalUrl={`https://${siteConfig.domain}/terms/`}
+  siteName={siteConfig.name}
+  themeColor={siteConfig.theme.primary}
+>
+  <SiteHeader
+    slot="header"
+    siteName={siteConfig.name}
+    navItems={siteConfig.nav?.items}
+    ctaText={siteConfig.funnel.bofu.ctaText}
+    ctaHref={siteConfig.funnel.bofu.ctaTarget}
+  />
+
+  <div class="max-w-2xl mx-auto px-4 py-16">
+    <h1 class="text-3xl font-bold text-[var(--color-brand-text)] mb-2">
+      Terms of Service
+    </h1>
+    <p class="text-sm text-[var(--color-brand-muted)] mb-8">
+      Last updated: April 14, 2026
+    </p>
+
+    <div class="prose prose-lg max-w-none text-[var(--color-brand-muted)]">
+      <h2>Introduction</h2>
+      <p>
+        These Terms of Service govern your use of Gavelhouse, a software product
+        operated by {siteConfig.legalEntity}. By accessing or using Gavelhouse,
+        you agree to be bound by these terms. If you do not agree, please do not
+        use the service.
+      </p>
+      <p>
+        Gavelhouse is designed to help volunteer HOA boards manage reserve funds
+        and maintain compliance. These terms apply to all users of the platform,
+        including board members, treasurers, and administrators.
+      </p>
+
+      <h2>Use of Service</h2>
+      <p>
+        You may use Gavelhouse only for lawful purposes and in accordance with
+        these terms. You agree not to use the service in any way that could
+        damage, disable, or impair the platform or interfere with other users'
+        access.
+      </p>
+      <p>
+        Gavelhouse provides tools to help manage HOA finances and compliance
+        tracking. It is not a substitute for professional legal or financial
+        advice. You are responsible for verifying that your use complies with
+        applicable state and local laws governing your HOA.
+      </p>
+
+      <h2>Account Registration</h2>
+      <p>
+        To use Gavelhouse, you must create an account and provide accurate
+        information. You are responsible for maintaining the confidentiality of
+        your account credentials and for all activity that occurs under your
+        account.
+      </p>
+      <p>
+        You must be authorized by your HOA board to register and use Gavelhouse
+        on behalf of the community. Each community should have a single
+        designated administrator account.
+      </p>
+
+      <h2>Payment Terms</h2>
+      <p>
+        Gavelhouse offers monthly and annual subscriptions after you select a
+        plan. Annual billing is selected by default, and limited offers may be
+        applied at checkout when active. Subscriptions are billed monthly or
+        annually depending on your selected plan.
+      </p>
+      <p>
+        New paid subscriptions include a {guaranteeDays}-day money-back
+        guarantee. To request a refund under the guarantee, contact us within
+        {guaranteeDays} days of the first paid subscription charge. After that window,
+        fees are non-refundable except as required by law. We reserve the right to
+        change our pricing with 30 days' notice to active subscribers. Downgrading
+        or canceling your plan takes effect at the end of the current billing period.
+      </p>
+      <p>
+        Portfolio customers need a written order form. Setup commitments or
+        service levels apply only when expressly agreed in writing. No uptime
+        SLA is provided on the Starter tier unless expressly stated in writing.
+      </p>
+
+      <h2 id="limited-offer">Limited Offer Details</h2>
+      <p>
+        {offerText} Discounted display prices are rounded up to the next whole dollar.
+      </p>
+
+      <h2>Limitation of Liability</h2>
+      <p>
+        Gavelhouse is provided "as is" without warranties of any kind, express
+        or implied. We do not warrant that the service will be uninterrupted,
+        error-free, or free of harmful components.
+      </p>
+      <p>
+        To the maximum extent permitted by applicable law, Gavelhouse's
+        aggregate liability to you for any claims arising from your use of the
+        service shall not exceed the total fees paid by you in the 12 months
+        preceding the claim. We are not liable for indirect, incidental, or
+        consequential damages.
+      </p>
+
+      <h2>Governing Law</h2>
+      <p>
+        These terms are governed by the laws of the State of Texas, without
+        regard to its conflict of law provisions. Any disputes arising under
+        these terms shall be resolved in the courts located in Travis County,
+        Texas.
+      </p>
+      <p>
+        If any provision of these terms is found to be unenforceable, the
+        remaining provisions will continue in full force and effect. Our failure
+        to enforce any right or provision does not constitute a waiver of that
+        right or provision.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        If you have questions about these terms, please contact us at{" "}
+        <a href={`mailto:${siteConfig.contactEmail}`} class="underline">
+          {siteConfig.contactEmail}
+        </a>.
+      </p>
+      <p>Gavelhouse is operated by {siteConfig.legalEntity}.</p>
+      <p>
+        We typically respond to legal inquiries within 5 business days. For
+        urgent compliance matters, please indicate that in your subject line.
+      </p>
+    </div>
+  </div>
+
+  <SiteFooter
+    slot="footer"
+    siteName={siteConfig.name}
+    tagline={siteConfig.tagline}
+    linkGroups={siteConfig.footer?.linkGroups}
+    legalLinks={siteConfig.footer?.legalLinks}
+  />
+</BaseLayout>

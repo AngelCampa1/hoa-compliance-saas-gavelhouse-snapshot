@@ -1,0 +1,244 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { Hono } from "hono";
+import type { Env } from "../../../src/types/env.js";
+
+const mockEnv: Env = {
+  BETTER_AUTH_SECRET: "test-secret",
+  BETTER_AUTH_URL: "http://localhost:8060",
+  APP_URL: "http://localhost:3060",
+  STRIPE_SECRET_KEY: "sk_test_dummy",
+  STRIPE_WEBHOOK_SECRET: "whsec_test",
+  STRIPE_PRICE_STARTER_MONTHLY: "price_starter_monthly",
+  STRIPE_PRICE_STARTER_ANNUAL: "price_starter_annual",
+  STRIPE_PRICE_GROWTH_MONTHLY: "price_growth_monthly",
+  STRIPE_PRICE_GROWTH_ANNUAL: "price_growth_annual",
+  STRIPE_PRICE_SCALE_MONTHLY: "price_scale_monthly",
+  STRIPE_PRICE_SCALE_ANNUAL: "price_scale_annual",
+  STRIPE_PRICE_PORTFOLIO_MONTHLY: "price_portfolio_monthly",
+  STRIPE_PRICE_PORTFOLIO_ANNUAL: "price_portfolio_annual",
+  RESEND_API_KEY: "resend_test",
+  DATABASE_URL: "postgres://localhost/test",
+};
+
+const mockGetSession = vi.fn();
+
+vi.mock("../../../src/lib/auth.js", () => ({
+  createAuth: vi.fn(() => ({
+    api: { getSession: mockGetSession },
+    handler: vi.fn(),
+  })),
+  getAuth: vi.fn(() => ({
+    api: { getSession: mockGetSession },
+    handler: vi.fn(),
+  })),
+}));
+
+const mockSelect = vi.fn();
+
+vi.mock("../../../src/db/client.js", () => ({
+  createDb: vi.fn(() => ({
+    select: mockSelect,
+  })),
+}));
+
+const mockIncomeStatement = vi.fn();
+vi.mock("../../../src/domain/reporting/incomeStatement.js", () => ({
+  incomeStatement: mockIncomeStatement,
+}));
+
+const { default: incomeStatementRouter } =
+  await import("../../../src/routes/reports/incomeStatement.js");
+
+function makeApp() {
+  const app = new Hono<{ Bindings: Env }>();
+  app.route("/", incomeStatementRouter);
+  app.onError((err, c) => c.json({ error: err.message }, 500));
+  return app;
+}
+
+function makeRequest(path: string, options: RequestInit, env: Env) {
+  const req = new Request(`http://localhost${path}`, options);
+  return makeApp().fetch(req, env);
+}
+
+const sampleIncomeStatement = {
+  from: "2024-01-01",
+  to: "2024-12-31",
+  lines: [],
+  operatingRevenueCents: 25000,
+  operatingExpenseCents: 4000,
+  operatingNetCents: 21000,
+  reserveRevenueCents: 8000,
+  reserveExpenseCents: 1500,
+  reserveNetCents: 6500,
+};
+
+describe("GET /reports/income-statement", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns 401 when not authenticated", async () => {
+    mockGetSession.mockResolvedValueOnce(null);
+
+    const res = await makeRequest("/reports/income-statement?communityId=comm-1&from=2024-01-01&to=2024-12-31",
+      { method: "GET" },
+      mockEnv,
+    );
+
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body).toEqual({ error: "Unauthorized" });
+  });
+
+  it("returns 400 when communityId is missing (zValidator rejects)", async () => {
+    mockGetSession.mockResolvedValueOnce({ user: { id: "user-1" } });
+
+    // No communityId in query — zValidator runs first and rejects
+    const res = await makeRequest("/reports/income-statement?from=2024-01-01&to=2024-12-31",
+      { method: "GET" },
+      mockEnv,
+    );
+
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toBe("Invalid query parameters");
+  });
+
+  it("returns 403 when user is not a community member", async () => {
+    mockGetSession.mockResolvedValueOnce({ user: { id: "user-1" } });
+
+    mockSelect.mockReturnValueOnce({
+      from: vi.fn(() => ({
+        where: vi.fn(() => ({
+          limit: vi.fn().mockResolvedValue([]),
+        })),
+      })),
+    });
+
+    const res = await makeRequest("/reports/income-statement?communityId=comm-1&from=2024-01-01&to=2024-12-31",
+      { method: "GET" },
+      mockEnv,
+    );
+
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body).toEqual({ error: "Forbidden" });
+  });
+
+  it("returns 403 when community tier is below Scale", async () => {
+    mockGetSession.mockResolvedValueOnce({ user: { id: "user-1" } });
+
+    mockSelect.mockReturnValueOnce({
+      from: vi.fn(() => ({
+        where: vi.fn(() => ({
+          limit: vi
+            .fn()
+            .mockResolvedValue([
+              { communityId: "comm-1", userId: "user-1", role: "owner" },
+            ]),
+        })),
+      })),
+    });
+
+    mockSelect.mockReturnValueOnce({
+      from: vi.fn(() => ({
+        where: vi.fn(() => ({
+          limit: vi
+            .fn()
+            .mockResolvedValue([{ stripePriceId: "price_starter" }]),
+        })),
+      })),
+    });
+
+    const res = await makeRequest("/reports/income-statement?communityId=comm-1&from=2024-01-01&to=2024-12-31",
+      { method: "GET" },
+      mockEnv,
+    );
+
+    expect(res.status).toBe(403);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toBe("upgrade_required");
+  });
+
+  it("returns 400 when from or to params are missing", async () => {
+    mockGetSession.mockResolvedValueOnce({ user: { id: "user-1" } });
+
+    mockSelect.mockReturnValueOnce({
+      from: vi.fn(() => ({
+        where: vi.fn(() => ({
+          limit: vi
+            .fn()
+            .mockResolvedValue([
+              { communityId: "comm-1", userId: "user-1", role: "owner" },
+            ]),
+        })),
+      })),
+    });
+
+    mockSelect.mockReturnValueOnce({
+      from: vi.fn(() => ({
+        where: vi.fn(() => ({
+          limit: vi.fn().mockResolvedValue([{ stripePriceId: "price_scale" }]),
+        })),
+      })),
+    });
+
+    // Missing 'to' param
+    const res = await makeRequest("/reports/income-statement?communityId=comm-1&from=2024-01-01",
+      { method: "GET" },
+      mockEnv,
+    );
+
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 200 with income statement on happy path", async () => {
+    mockGetSession.mockResolvedValueOnce({ user: { id: "user-1" } });
+
+    mockSelect.mockReturnValueOnce({
+      from: vi.fn(() => ({
+        where: vi.fn(() => ({
+          limit: vi
+            .fn()
+            .mockResolvedValue([
+              { communityId: "comm-1", userId: "user-1", role: "owner" },
+            ]),
+        })),
+      })),
+    });
+
+    mockSelect.mockReturnValueOnce({
+      from: vi.fn(() => ({
+        where: vi.fn(() => ({
+          limit: vi.fn().mockResolvedValue([{ stripePriceId: "price_scale" }]),
+        })),
+      })),
+    });
+
+    mockIncomeStatement.mockResolvedValueOnce(sampleIncomeStatement);
+
+    const res = await makeRequest("/reports/income-statement?communityId=comm-1&from=2024-01-01&to=2024-12-31",
+      { method: "GET" },
+      mockEnv,
+    );
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({
+      rows: [
+        {
+          fundType: "operating",
+          revenue: 25000,
+          expenses: 4000,
+          netIncome: 21000,
+        },
+        {
+          fundType: "reserve",
+          revenue: 8000,
+          expenses: 1500,
+          netIncome: 6500,
+        },
+      ],
+    });
+  });
+});

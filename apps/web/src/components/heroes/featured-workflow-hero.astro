@@ -1,0 +1,84 @@
+---
+import SectionBand from "../section-band.astro";
+import GeneratedProductMockup from "../generated-product-mockup.astro";
+import { resolveProductVisualPreset } from "../../lib/generated-product-visuals";
+import { STATE_RESERVE_REQUIREMENTS } from "@boardstack/shared";
+
+interface Props {
+  featuredTitle: string;
+  featuredSubtitle: string;
+  featuredBody: string;
+  featuredHref: string;
+}
+
+const { featuredTitle, featuredSubtitle, featuredBody, featuredHref } =
+  Astro.props as Props;
+
+const mandateCount = Object.values(STATE_RESERVE_REQUIREMENTS).filter(
+  (r) => r.reserveStudyRequired,
+).length;
+const productVisual = resolveProductVisualPreset({
+  slug: "hoa-reserve-fund-compliance-software",
+  productCategory: "Reserve compliance",
+});
+---
+
+<SectionBand surface="parchment-gradient">
+  <p class="u-kicker-serif">Product pages</p>
+
+  <h1
+    class="mt-5 font-heading font-bold text-[var(--color-brand-text)] leading-[1.05]"
+    style="font-size: clamp(2.4rem, 4vw, 3.6rem); letter-spacing: 0;"
+  >
+    The work your board needs in one place.
+  </h1>
+
+  <p class="u-lede mt-6" style="max-width: var(--content-measure-wide);">
+    Track reserve funds, board records, and owner work without spreading it
+    across files.
+  </p>
+
+  <div class="mt-8 max-w-[44rem]">
+    <GeneratedProductMockup {...productVisual} compact />
+  </div>
+
+  <article class="featured-workflow-block">
+    <p class="u-kicker-serif" style="margin: 0;">Editor's pick</p>
+    <h2 class="featured-workflow-block__title">{featuredTitle}</h2>
+    <p
+      class="font-body text-[length:var(--text-body-lg)] text-[var(--color-brand-muted)]"
+      style="line-height: 1.55;"
+    >
+      {featuredSubtitle}
+    </p>
+    <p
+      class="font-body text-[length:var(--text-body)] text-[var(--color-brand-text)]"
+      style="line-height: 1.6; max-width: 52ch;"
+    >
+      {featuredBody}
+    </p>
+    <a
+      href={featuredHref}
+      class="inline-flex items-center gap-2 font-heading font-semibold text-[var(--color-accent-600)] hover:text-[var(--color-accent-700)]"
+      style="font-size: 1.05rem;"
+    >
+      Open feature
+    </a>
+    <div class="featured-workflow-block__stats">
+      <span><strong>{mandateCount}</strong>states mandate studies</span>
+      <span><strong>2027</strong>Fannie Mae rule tightens disclosure</span>
+    </div>
+  </article>
+
+  <div class="u-kicker-serif mt-8 flex items-center gap-3" aria-hidden="true">
+    <span
+      class="inline-block h-px flex-1"
+      style="background: color-mix(in srgb, var(--color-brand-primary) 22%, transparent);"
+    ></span>
+    <span>More workflows below</span>
+    <span
+      class="inline-block h-px flex-1"
+      style="background: color-mix(in srgb, var(--color-brand-primary) 22%, transparent);"
+    ></span>
+  </div>
+</SectionBand>

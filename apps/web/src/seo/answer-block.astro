@@ -1,0 +1,32 @@
+---
+import SchemaMarkup from "./schema-markup.astro";
+import { buildAnswerSchema } from "../lib/ai-extractable";
+
+interface Props {
+  question: string;
+  answer: string;
+  label?: string;
+  emitSchema?: boolean;
+}
+const { question, answer, label, emitSchema = true } = Astro.props;
+const schema = buildAnswerSchema({ question, answer });
+---
+
+{
+  question && answer && (
+    <>
+      <div class="rounded-[var(--radius-md)] px-6 py-4 mb-6 bg-[var(--surface-secondary)] shadow-[var(--shadow-sm)]">
+        <p class="u-kicker-serif text-[var(--color-primary-600)] mb-2">
+          {label ?? "Q&A"}
+        </p>
+        <p class="font-medium text-[var(--color-brand-muted)] text-[length:var(--text-caption)] mb-2">
+          {question}
+        </p>
+        <p class="answer-block-answer text-[length:var(--text-body-lg)] font-medium leading-relaxed text-[var(--color-brand-text)]">
+          {answer}
+        </p>
+      </div>
+      {emitSchema && <SchemaMarkup schemas={[schema]} />}
+    </>
+  )
+}

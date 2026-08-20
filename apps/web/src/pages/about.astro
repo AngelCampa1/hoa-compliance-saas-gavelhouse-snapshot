@@ -1,0 +1,196 @@
+---
+import "../styles/global.css";
+import LandingLayout from "../layouts/landing-layout.astro";
+import DocHeader from "../components/doc-header.astro";
+import SchemaMarkup from "../seo/schema-markup.astro";
+import { siteConfig } from "../config/site";
+import { knowledgeBase } from "@boardstack/shared";
+import { buildOrganizationSchema } from "../lib/schema-builders";
+
+const organizationSchema = buildOrganizationSchema({
+  name: siteConfig.name,
+  url: `https://${siteConfig.domain}/`,
+  founder: siteConfig.author,
+  sameAs: siteConfig.sameAs,
+  contactPoint: siteConfig.contactEmail
+    ? {
+        type: "sales",
+        email: siteConfig.contactEmail,
+        url: `https://${siteConfig.domain}/contact/`,
+      }
+    : undefined,
+  areaServed: siteConfig.areaServed,
+  logo: siteConfig.logo?.light
+    ? `https://${siteConfig.domain}${siteConfig.logo.light}`
+    : undefined,
+});
+
+const principles = [
+  [
+    "001",
+    "Clean records first",
+    "The board needs clear money records before anything else.",
+  ],
+  [
+    "002",
+    "Built for volunteers",
+    "A treasurer with a day job should understand it.",
+  ],
+  ["003", "Plain pricing", "Flat plans by community size. No per-door fees."],
+  [
+    "004",
+    "Show the work",
+    "We show what the product does instead of telling you.",
+  ],
+  [
+    "005",
+    "Builder direct",
+    "Questions go to Angel while the product is still small.",
+  ],
+  ["006", "No legal advice", "Gavelhouse is an operating tool, not counsel."],
+];
+---
+
+<LandingLayout
+  config={siteConfig}
+  canonicalPath="/about/"
+  title="About Gavelhouse"
+  description="Gavelhouse is built by Angel Campa for self-managed HOA and condo boards."
+  enableScrollReveal={false}
+>
+  <section class="b1-section">
+    <div class="b1-container">
+      <DocHeader
+        kicker="ABOUT"
+        re="Built by Angel Campa."
+        meta={[
+          { label: "FROM", value: "Angel Campa" },
+          { label: "STATUS", value: "Bootstrapped", tone: "resolved" },
+        ]}
+      />
+      <div class="founder-note">
+        <h1 class="b1-h1">Built by one person who answers you.</h1>
+        <p class="b1-body-lg">
+          Gavelhouse is small on purpose. There is no sales team. There is no
+          handoff. It is me, Angel Campa, building the product and reading the
+          notes you send.
+        </p>
+        <p class="b1-body">
+          A small product is not right for every board. That is fair. If you do
+          choose Gavelhouse, your feedback goes straight to the person building
+          it.
+        </p>
+        <p class="b1-body">
+          I am not promising a big-company support machine. I am promising
+          attention. I built this because HOA board work gets messy fast.
+        </p>
+        <p class="b1-body">
+          If Gavelhouse does not fit your community, send me a note. I will read
+          it.
+        </p>
+        <div class="founder-actions">
+          <a
+            class="b1-button b1-button--primary"
+            href={knowledgeBase.marketing.funnel.publicSignupUrl}
+          >
+            Start trial
+          </a>
+          <a class="b1-button" href={`mailto:${siteConfig.contactEmail}`}>
+            Email Angel
+          </a>
+          <a
+            class="founder-linkedin"
+            href="https://www.linkedin.com/in/angelcampa1/"
+            rel="noopener noreferrer me"
+            target="_blank"
+          >
+            LinkedIn &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section b1-section--alt">
+    <div class="b1-container">
+      <p class="b1-eyebrow">How we build</p>
+      <h2 class="b1-h2">Simple rules for the product.</h2>
+      <div class="b1-grid-3 principle-grid">
+        {
+          principles.map(([id, title, body]) => (
+            <article class="b1-card">
+              <span class="principle-id">{id}</span>
+              <h3 class="b1-h3">{title}</h3>
+              <p class="b1-body">{body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="b1-section">
+    <div class="b1-container contact-strip">
+      <p class="b1-eyebrow">Contact</p>
+      <h2 class="b1-h2">Questions go to one inbox.</h2>
+      <a class="b1-button b1-button--primary" href="/contact/"
+        >{siteConfig.contactEmail}</a
+      >
+    </div>
+  </section>
+  <SchemaMarkup schemas={[organizationSchema]} />
+</LandingLayout>
+
+<style>
+  .founder-note {
+    max-width: 680px;
+    display: grid;
+    gap: 20px;
+  }
+
+  .founder-note h1 {
+    margin: 0;
+  }
+
+  .founder-note p {
+    margin: 0;
+  }
+
+  .founder-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 6px;
+  }
+
+  .founder-linkedin {
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .founder-linkedin:hover {
+    text-decoration: underline;
+  }
+
+  .principle-grid {
+    margin-top: 24px;
+  }
+
+  .principle-id {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+
+  .contact-strip {
+    display: grid;
+    justify-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+</style>

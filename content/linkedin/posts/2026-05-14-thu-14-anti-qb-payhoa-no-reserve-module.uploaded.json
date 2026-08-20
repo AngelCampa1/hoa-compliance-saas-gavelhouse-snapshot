@@ -1,0 +1,12 @@
+{
+  "uploadedAt": "2026-05-11T19:07:02.148Z",
+  "postizId": "cmp1kpltl037jqf0y0ak9xv4n",
+  "entry": {
+    "id": "2026-05-14-thu-14",
+    "scheduledAt": "2026-05-14T18:00:00-05:00",
+    "channel": "company",
+    "pillar": "anti-quickbooks",
+    "hook": "PayHOA has no dedicated reserve study module. Reserve tracking runs through its accounting module only.",
+    "file": "content/linkedin/posts/2026-05-14-thu-14-anti-qb-payhoa-no-reserve-module.md"
+  }
+}

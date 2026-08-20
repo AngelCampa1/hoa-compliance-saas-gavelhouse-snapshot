@@ -1,0 +1,78 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+.astro/
+.wrangler/
+.vite/
+*.tsbuildinfo
+
+# Turbo
+.turbo/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Coverage
+coverage/
+
+# Logs
+*.log
+tmp-*.log
+tmp-*.err
+
+# Generated reports and artifacts. Anchored with a leading slash: an
+# unanchored `reports/` matches a directory of that name at any depth, which
+# silently swallowed apps/api/src/routes/reports and apps/app/src/components/reports.
+# Nested generated directories are named outright rather than caught by a
+# pattern that would also match a source directory someone adds later.
+/artifacts/
+/reports/
+/output/
+.claude/artifacts/
+apps/app/output/
+content/linkedin/posts/output/
+public-seo-audit-report.json
+apps/web/public-seo-audit-report.json
+apps/web/public/downloads/*.pdf
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code worktrees (inside repo, must be gitignored)
+.claude/worktrees/
+.clone/
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+.claude/launch.json
+
+# Superpowers plugin local state
+.superpowers/
+docs/superpowers/
+
+# Wrangler local state
+.wrangler/
+
+# Playwright
+playwright-report/
+test-results/
+.claire/
+.playwright-mcp/
+.playwright-cli/
+/screenshots/
+qa-*.png
+
+# Anchored for the same reason as /reports/ above: unanchored, this rule also
+# excluded docs/getting-badges/assets/screenshots and needed a `!docs/screenshots/`
+# negation to keep the curated archive. Both archives are documentation and ship
+# with the repo; what stays out of them is listed in docs/screenshots/.gitignore.
+
+# Wrangler local dev secrets (every workspace, never commit)
+**/.dev.vars
+apps/api/.wrangler.deploy.toml

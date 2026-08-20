@@ -1,0 +1,166 @@
+---
+import "../../../styles/global.css";
+import { getCollection } from "astro:content";
+import ArticleLayout from "../../../layouts/article-layout.astro";
+import FaqSection from "../../../components/faq-section.astro";
+import FunnelCta from "../../../components/funnel-cta.astro";
+import RelatedPages from "../../../components/related-pages.astro";
+import InlineSignup from "../../../components/inline-signup.astro";
+import DefinitionBlock from "../../../seo/definition-block.astro";
+import AnswerBlock from "../../../seo/answer-block.astro";
+import ExpertQuote from "../../../seo/expert-quote.astro";
+import DataTableBlock from "../../../seo/data-table-block.astro";
+import { siteConfig } from "../../../config/site";
+import { buildGuideBreadcrumbs } from "@/lib/breadcrumbs";
+import { buildOptionalHowToSchema, buildContentMap } from "@/lib/page-helpers";
+import { resolveRelatedPageLinks } from "../../../lib/related-page-resolver";
+import { resolveMagnetForPage } from "@/lib/resolve-lead-magnet";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("guides");
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await entry.render();
+const {
+  title,
+  description,
+  bluf,
+  buyerStage,
+  publishedAt,
+  updatedAt,
+  reviewedAt,
+  faqs,
+  relatedPages,
+  definitions,
+  answers,
+  expertQuotes,
+  tableData,
+  sources,
+} = entry.data;
+const canonicalPath = `/resources/guides/${entry.slug}`;
+
+const breadcrumbs = buildGuideBreadcrumbs(title, canonicalPath);
+const howToSchema = buildOptionalHowToSchema(
+  entry.data.steps,
+  title,
+  description,
+);
+
+const [
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+] = await Promise.all([
+  getCollection("alternatives"),
+  getCollection("comparisons"),
+  getCollection("pricing-breakdowns"),
+  getCollection("listicles"),
+  getCollection("guides"),
+  getCollection("state-pages"),
+  getCollection("lead-magnets"),
+  getCollection("product-pages"),
+  getCollection("solutions"),
+]);
+const contentMap = buildContentMap({
+  alternatives,
+  comparisons,
+  pricingBreakdowns,
+  listicles,
+  guides,
+  statePages,
+  leadMagnets,
+  productPages,
+  solutions,
+});
+const relatedLinks = resolveRelatedPageLinks(relatedPages, contentMap);
+const leadMagnetOverride = await resolveMagnetForPage({
+  explicitSlug: entry.data.magnetSlug,
+  primaryKeyword: title,
+  tags: entry.data.tags,
+  path: canonicalPath,
+});
+---
+
+<ArticleLayout
+  title={title}
+  description={description}
+  bluf={bluf}
+  buyerStage={buyerStage}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  reviewedAt={reviewedAt}
+  canonicalPath={canonicalPath}
+  config={siteConfig}
+  breadcrumbs={breadcrumbs}
+  schemas={howToSchema ? [howToSchema] : []}
+  headings={headings}
+  leadMagnetOverride={leadMagnetOverride}
+  answers={answers?.map((a) => ({ question: a.q, answer: a.a }))}
+  faqs={faqs}
+  sources={sources}
+>
+  <Content />
+
+  <InlineSignup
+    sourcePage={Astro.url.pathname}
+    heading="Want to see this in Gavelhouse?"
+    subtext="Try Scale features first. Pick a plan later."
+  />
+
+  {
+    definitions?.map((d) => (
+      <DefinitionBlock term={d.term} definition={d.definition} />
+    ))
+  }
+
+  {answers?.map((a) => <AnswerBlock question={a.q} answer={a.a} />)}
+
+  {
+    expertQuotes?.map((q) => (
+      <ExpertQuote
+        quote={q.quote}
+        personName={q.personName}
+        jobTitle={q.jobTitle}
+        organization={q.organization}
+      />
+    ))
+  }
+
+  {
+    tableData && (
+      <DataTableBlock
+        name={tableData.name}
+        description={tableData.description}
+        columns={tableData.columns}
+        rows={tableData.rows}
+      />
+    )
+  }
+
+  <FunnelCta
+    stage={buyerStage}
+    funnel={siteConfig.funnel}
+    heading="See how Gavelhouse helps"
+    benefitBullets={siteConfig.copy?.funnelCta?.benefitBullets}
+  />
+
+  <FaqSection
+    faqs={faqs}
+    bottomCtaHeading={siteConfig.copy?.faq?.bottomCtaHeading}
+    bottomCtaText={siteConfig.copy?.faq?.bottomCtaText}
+    bottomCtaTarget={siteConfig.copy?.faq?.bottomCtaTarget}
+  />
+
+  {relatedLinks.length > 0 && <RelatedPages pages={relatedLinks} />}
+</ArticleLayout>
