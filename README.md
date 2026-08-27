@@ -25,7 +25,7 @@ presidents who run a community without a management company.
 
 ![status](https://img.shields.io/badge/status-shut%20down-lightgrey)
 ![coverage gate](https://img.shields.io/badge/coverage%20gate-95%25%20per%20file-blue)
-![tests](https://img.shields.io/badge/tests-~6%2C580%20cases-brightgreen)
+![tests](https://img.shields.io/badge/tests-6%2C580%2B%20cases-brightgreen)
 
 ![Reserve Fund page showing a $166,000 reserve balance at 44.3% funded, with a Fannie Mae LL-2026-03 badge confirming the 18% budget allocation clears the 15% threshold](portfolio/screenshots/finance-reserves.png)
 
@@ -50,16 +50,22 @@ Captured from the local stack against seeded data._
 
 ## If you read one thing
 
-[`postEntry.ts`](apps/api/src/domain/accounting/postEntry.ts) sums debits and
-credits separately for the operating and reserve sides of a journal entry and
-throws before either side can cross into the other, the one rule the whole
-product argues for. Its own reports don't fully live up to it: the default
-chart of accounts seeds no equity account, so the balance sheet's
-"Liabilities & Equity" stat sums liabilities only and never ties to Assets.
-The journal underneath is still balanced (that's what a trial balance is
-for), but the presentation bug is real, it's in the screenshots below
-unretouched, and it's explained in
-[`ACCOUNTING-ENGINE.md`](portfolio/ACCOUNTING-ENGINE.md#an-honest-gap-in-the-balance-sheet).
+[`postEntry.ts`](apps/api/src/domain/accounting/postEntry.ts) is the one
+function that posts debits and credits to the ledger, and it enforces a
+rule stricter than textbook double-entry: it sums debits and credits
+separately for the operating and reserve sides of every journal entry and
+throws a dedicated `CommingleError` before either side can cross into the
+other. An entry that balances in total but tries to move money between funds
+without an explicit contra-entry on each side gets rejected before it
+reaches the database, and each line's fund is copied server-side from the
+account it references, so a client can't relabel which fund a line belongs
+to. That single rule is the product's entire argument against QuickBooks,
+which has no structural way to stop the two funds from commingling.
+[`ACCOUNTING-ENGINE.md`](portfolio/ACCOUNTING-ENGINE.md) covers the chart of
+accounts, the four report generators built as pure reads over that ledger,
+and the one place those reports don't fully live up to the invariant yet: a
+balance-sheet display gap, scoped and shown unretouched in the screenshots
+below.
 
 ## What it did
 
@@ -166,12 +172,13 @@ its own race condition and quantified the worst case rather than pretending
 it was airtight. →
 [`CONCURRENCY-AND-IDEMPOTENCY.md`](portfolio/CONCURRENCY-AND-IDEMPOTENCY.md)
 
-**A tenant-isolation defect found six times, not once.** The same missing
-`communityId` predicate was caught in a `journalLines` read in the Phase 2
-review, then five more times in Phase 4: two `UPDATE` statements, two
-`SELECT` filters, and a sixth (`monthEndCloses`) that the review itself labels
-"Same class as C-1/C-2": evidence the rule was real but never structurally
-enforced. →
+**A mandatory review pass that caught the same tenant-isolation defect six
+times before any instance shipped.** The same missing `communityId`
+predicate turned up in a `journalLines` read in the Phase 2 review, then
+five more times in Phase 4: two `UPDATE` statements, two `SELECT` filters,
+and a sixth (`monthEndCloses`) that the review itself labels "Same class as
+C-1/C-2." Every instance was found and fixed in the same review cycle it
+surfaced in, and none reached production. →
 [`ENGINEERING-LOG.md`](portfolio/ENGINEERING-LOG.md)
 
 Also worth a look: a [51-entry legal rule table](packages/shared/src/compliance/states.ts)
@@ -200,7 +207,7 @@ still reproducible with `pnpm run metrics:generate`.
 |               |                                        |
 | ------------- | -------------------------------------- |
 | Source        | 224,885 lines across 981 files         |
-| Tests         | 418 files, ~6,580 cases                |
+| Tests         | 418 files, at least 6,580 cases        |
 | Coverage gate | 95% per file, enforced in 5 workspaces |
 | Database      | 42 tables, 27 migrations               |
 | API           | 107 endpoints across 36 route files    |

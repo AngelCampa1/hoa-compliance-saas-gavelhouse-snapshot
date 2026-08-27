@@ -331,7 +331,7 @@ export function renderReadmeBlock(metrics: Metrics): string {
     "| | |",
     "| --- | --- |",
     `| Source | ${formatNumber(loc.lines)} lines across ${formatNumber(loc.files)} files |`,
-    `| Tests | ${formatNumber(tests.files)} files, ~${formatNumber(tests.cases)} cases |`,
+    `| Tests | ${formatNumber(tests.files)} files, at least ${formatNumber(tests.cases)} cases |`,
     `| Coverage gate | ${metrics.coverageThreshold}% per file, enforced in ${metrics.coveredWorkspaces} workspaces |`,
     `| Database | ${schema.tables} tables, ${schema.migrations} migrations |`,
     `| API | ${api.endpoints} endpoints across ${api.routeFiles} route files |`,
@@ -379,10 +379,10 @@ files.
 
 ## Tests
 
-${formatNumber(tests.files)} test files containing approximately
+${formatNumber(tests.files)} test files containing at least
 ${formatNumber(tests.cases)} cases.
 
-The case count is a static approximation: it counts \`it(\` and \`test(\` call
+The case count is a floor: it counts \`it(\` and \`test(\` call
 sites, so it undercounts table-driven suites written with \`it.each\`. Running
 vitest to get an exact number would make this script slow and dependent on a
 working environment, which defeats the purpose of a fast reproducible check.

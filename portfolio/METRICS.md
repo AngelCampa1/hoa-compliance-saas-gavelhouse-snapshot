@@ -22,10 +22,10 @@ files.
 
 ## Tests
 
-418 test files containing approximately
+418 test files containing at least
 6,580 cases.
 
-The case count is a static approximation: it counts `it(` and `test(` call
+The case count is a floor: it counts `it(` and `test(` call
 sites, so it undercounts table-driven suites written with `it.each`. Running
 vitest to get an exact number would make this script slow and dependent on a
 working environment, which defeats the purpose of a fast reproducible check.

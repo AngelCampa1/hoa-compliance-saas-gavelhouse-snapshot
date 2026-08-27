@@ -83,8 +83,8 @@ constraint layered on top of the per-community checks, not a bypass of them
 ## Tenant-isolation defects
 
 The `communityId` predicate was missing from a write or read at least six separate times across
-two review cycles a day apart (2026-04-16 and 2026-04-17), all caught before merge and all fixed
-in the same review cycle that found them:
+two review cycles a day apart (2026-04-16 and 2026-04-17), each caught and fixed in the review
+cycle that found it, and none reaching production:
 
 | # | Finding | ID | Lines |
 | --- | --- | --- | --- |
@@ -113,10 +113,10 @@ and the reporting layer carries the fix as a standing comment:
 > [!NOTE]
 > This was recorded as "found five times" until 2026-08-18. Reading [`phase-4-review.md`][p4] in
 > full shows a sixth: finding I-4 is explicitly labeled "Same class as C-1/C-2" in that document
-> and belongs in the same count. The root [`README.md`](../README.md) now says six;
-> [`ENGINEERING-LOG.md`][elog] narrates the incidents without totalling them.
+> and belongs in the same count. The root [`README.md`](../README.md) and
+> [`ENGINEERING-LOG.md`][elog] both now count all six.
 
-[elog]: ./ENGINEERING-LOG.md#2026-04-17-the-same-defect-class-twice-more-caught-before-shipping-the-reporting-tier
+[elog]: ./ENGINEERING-LOG.md#2026-04-17-the-same-defect-class-five-more-times-caught-before-shipping-the-reporting-tier
 
 A related but distinct finding belongs in the same family: Phase 1's review found
 `POST /billing/checkout` and `POST /billing/portal` checked authentication but never verified the

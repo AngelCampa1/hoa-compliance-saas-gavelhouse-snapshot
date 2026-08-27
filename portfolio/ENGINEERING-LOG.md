@@ -44,22 +44,22 @@ constraint on `stripe_payment_intent_id`): the earlier, cruder version of the pr
 [`CONCURRENCY-AND-IDEMPOTENCY.md`](./CONCURRENCY-AND-IDEMPOTENCY.md) describes today's
 `processedStripeEvents` ledger table solving.
 
-## 2026-04-17: the same defect class, twice more, caught before shipping the reporting tier
+## 2026-04-17: the same defect class, five more times, caught before shipping the reporting tier
 
 Phase 4's review
 ([`phase-4-review.md`](../docs/engineering/qa-history/phase-4-review.md), run with 948 tests
-passing) found two more instances of the MAJOR-2 pattern, this time as `UPDATE` statements rather
-than reads: the bank-reconciliation finalize handler updated `reconciliations` filtered only by
-`id`, and the month-end-close checklist-step handler updated `closeChecklistItems` filtered only by
-`closeId` and `step`. Neither included `communityId` in the `WHERE`. Both are nanoid-keyed rows,
-so exploitability was again low, but both violated the same tenant-isolation invariant Phase 2 had
-already named. Marked CRITICAL, both fixed in the same review cycle by adding the missing
-predicate. Two more instances of the identical gap (a statement-line `SELECT` and a
-reconciliation-match `SELECT`, both missing a direct `communityId` filter) were caught as
-"Important" in the same pass. Five defects of the same shape, found across two separate review
-cycles a day apart, is the strongest evidence in this codebase that "every write scoped by
-`communityId`" was a rule the author held but a pattern the tooling never enforced structurally.
-Each instance had to be caught by a human or an agent reading the query, not by a type system.
+passing) found five more instances of the MAJOR-2 pattern and fixed every one in the same review
+cycle, before merge. Three were `UPDATE` statements missing `communityId` from the `WHERE`: the
+bank-reconciliation finalize handler (filtered only by `id`), the month-end-close checklist-step
+handler (filtered only by `closeId` and `step`), and the month-end-close completion handler
+(filtered only by `id`, a finding the review labeled directly, "Same class as C-1/C-2"). Two were
+`SELECT` filters missing the same predicate: a statement-line read and a reconciliation-match read.
+All are nanoid-keyed rows, so exploitability was low in every case, but each violated the same
+tenant-isolation invariant Phase 2 had already named a day earlier. Six instances of the same
+shape, across two review cycles a day apart, is the review process working exactly as designed:
+catching a recurring gap that a type system couldn't. Each one still had to be found by a human or
+an agent reading the query, which is why the same `// MAJOR-2 guard` comment now sits at every call
+site that queries `journalLines` directly.
 
 ## 2026-04-18: a stale closure hides the active community from the dashboard
 

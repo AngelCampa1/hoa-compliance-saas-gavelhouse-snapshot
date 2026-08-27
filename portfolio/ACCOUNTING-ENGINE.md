@@ -116,7 +116,7 @@ check upstream. Balance sheet doesn't repeat the guard because it doesn't
 query the tables directly: it calls `trialBalance` and reshapes the
 result.
 
-### An honest gap in the balance sheet
+### The balance sheet's equity gap
 
 The balance sheet supports `equity` accounts everywhere it matters (the
 account-type union, the credit-normal balance math, the section grouping)
@@ -136,11 +136,12 @@ does not render those two values. It renders a "Liabilities & Equity" stat
 summed from every non-asset row, so with no equity account in the chart that
 stat is liabilities only, and it never ties to the Assets stat beside it.
 
-This is a presentation bug on top of a modelling gap, not a data-integrity
-one: the underlying journal is still balanced, which the trial balance shows
-directly (total debits equal total credits, per fund). It is called out here
-rather than quietly left out because the screenshots in this repo show it,
-and a reader who knows accounting will spot it in about four seconds.
+The underlying journal is still balanced: the trial balance shows it directly,
+total debits equal total credits, per fund. What's wrong is the balance
+sheet's presentation layer on top of a real modelling gap in the chart of
+accounts, not the ledger itself. It's called out here, by file and line,
+rather than left for a reader to find, because the screenshots in this repo
+show it unretouched.
 
 ## Month-end close
 

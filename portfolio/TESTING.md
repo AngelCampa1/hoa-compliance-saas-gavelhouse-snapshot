@@ -10,8 +10,8 @@ as written, including the findings nobody got around to fixing.
 
 ## The automated suite
 
-418 test files, approximately 6,580 cases (`it(`/`test(` call sites, a static
-count, so it undercounts `it.each` tables; see
+418 test files, at least 6,580 cases (`it(`/`test(` call sites, a static
+count that undercounts `it.each` tables; see
 [METRICS.md](./METRICS.md#tests) for the exact method). Vitest runs the unit
 and integration layer across five workspaces:
 [`apps/api`](../apps/api/vitest.config.ts),

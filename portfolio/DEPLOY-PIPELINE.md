@@ -166,6 +166,6 @@ post-deploy verification that the edge is actually serving what was just
 pushed. The guard only catches the failure mode of _codifying_ a raw
 wrangler call into a script someone else might run later. It does not, and
 cannot from a static scan of tracked files, stop an interactive terminal
-command. For a solo developer this is an honest tradeoff: the pipeline
+command. For a solo developer that tradeoff makes sense: the pipeline
 raises the cost of a careless deploy without pretending to make one
 impossible.
